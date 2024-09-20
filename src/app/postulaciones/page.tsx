@@ -1,17 +1,20 @@
 "use client"
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input" // Asegúrate de tener este componente
-import { Button } from "@/components/ui/button" // Para el botón de agregar
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import axios from "axios"
 
-export default function BenefitsPage() {
-  const [benefits, setBenefits] = useState([
-    { id: 1, name: "Front End Developer (Tucuman)", description: "San Miguel de Tucumán, Tucumán, Argentina · Híbrido Jornada completa · Sin experiencia", enrolled: 95 },
-    
-  ])
+// Definir el tipo de "benefit"
+interface Benefit {
+  id: number
+  name: string
+  description: string
+  enrolled: number
+}
 
+export default function BenefitsPage() {
+  const [benefits, setBenefits] = useState<Benefit[]>([]) // Lista vacía con tipado correcto
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -23,13 +26,13 @@ export default function BenefitsPage() {
       const jobTitle = response.data.title
 
       // Agregar nueva oferta a la lista
-      const newBenefit = {
-        id: benefits.length + 1,
+      const newBenefit: Benefit = {
+        id: benefits.length + 1, // Incrementa el ID de forma dinámica
         name: jobTitle,
         description: "Descripción extraída automáticamente de la publicación de LinkedIn",
-        enrolled: 0,
+        enrolled: 0, // Puedes cambiar este valor o manejarlo de otra manera si lo necesitas
       }
-      setBenefits([...benefits, newBenefit])
+      setBenefits([...benefits, newBenefit]) // Actualiza la lista con la nueva oferta
       setUrl("") // Limpiar el campo de URL
     } catch (error) {
       console.error("Error al extraer el título de la oferta:", error)
@@ -54,16 +57,20 @@ export default function BenefitsPage() {
         </Button>
       </div>
 
-      {/* Mostrar los beneficios / publicaciones */}
+      {/* Mostrar las publicaciones extraídas */}
       <div className="grid gap-4 md:grid-cols-2">
-        {benefits.map((benefit) => (
-          <Card key={benefit.id}>
-            <CardHeader>
-              <CardTitle>{benefit.name}</CardTitle>
-              <CardDescription>{benefit.description}</CardDescription>
-            </CardHeader>
-          </Card>
-        ))}
+        {benefits.length === 0 ? (
+          <p className="text-l font-semibold">No hay publicaciones aún. Agrega una nueva.</p>
+        ) : (
+          benefits.map((benefit) => (
+            <Card key={benefit.id}>
+              <CardHeader>
+                <CardTitle>{benefit.name}</CardTitle>
+                <CardDescription>{benefit.description}</CardDescription>
+              </CardHeader>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   )
