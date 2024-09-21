@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import axios from "axios"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { cn } from "@/lib/utils" // Si tienes alguna función para combinar clases
+import { cn } from "@/lib/utils"
+import { Search } from "lucide-react" // Usaremos este icono para la lupa
 
 // Definir el tipo de "benefit"
 interface Benefit {
@@ -19,7 +20,9 @@ export default function BenefitsPage() {
   const [benefits, setBenefits] = useState<Benefit[]>([]) // Lista vacía con tipado correcto
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
-  const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null) // Para manejar la publicación seleccionada para mostrar en el popup
+  const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null)
+  const [searchVisible, setSearchVisible] = useState(false) // Estado para mostrar/ocultar el buscador
+  const [searchTerm, setSearchTerm] = useState("") // Estado para almacenar el texto de búsqueda
 
   // Función para extraer el título del trabajo de la URL
   const handleAddJob = async () => {
@@ -27,21 +30,20 @@ export default function BenefitsPage() {
     try {
       const response = await axios.get("/api/extract-job-title", { params: { url } });
       const jobTitle = response.data.title;
-      const jobDescription = response.data.description; // Extraer la descripción también
+      const jobDescription = response.data.description;
   
       if (!jobDescription || jobDescription === "Descripción no disponible") {
         console.warn("Descripción no disponible o no extraída correctamente.");
       }
   
-      // Agregar nueva oferta a la lista
       const newBenefit = {
         id: benefits.length + 1,
         name: jobTitle,
-        description: jobDescription || "Descripción no disponible", // Usar la descripción extraída
+        description: jobDescription || "Descripción no disponible",
         enrolled: 0,
       };
       setBenefits([...benefits, newBenefit]);
-      setUrl(""); // Limpiar el campo de URL
+      setUrl("");
     } catch (error) {
       console.error("Error al extraer el título y la descripción de la oferta:", error);
     }
@@ -50,9 +52,14 @@ export default function BenefitsPage() {
 
   // Función para cortar la descripción a solo 3 líneas
   const truncateDescription = (description: string) => {
-    const maxLength = 120; // Ajusta esto para controlar el largo de las 3 líneas
+    const maxLength = 120;
     return description.length > maxLength ? description.slice(0, maxLength) + "..." : description;
   };
+
+  // Función para filtrar las publicaciones según el término de búsqueda
+  const filteredBenefits = benefits.filter((benefit) =>
+    benefit.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
@@ -71,12 +78,32 @@ export default function BenefitsPage() {
         </Button>
       </div>
 
+      {/* Lupa para buscar publicaciones */}
+      <div className="flex items-center space-x-2">
+        <Button
+          variant="ghost"
+          onClick={() => setSearchVisible(!searchVisible)}
+        >
+          <Search className="h-5 w-5" />
+        </Button>
+
+        {searchVisible && (
+          <Input
+            type="text"
+            placeholder="Buscar por título"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full"
+          />
+        )}
+      </div>
+
       {/* Mostrar las publicaciones extraídas */}
       <div className="grid gap-4 md:grid-cols-2">
-        {benefits.length === 0 ? (
-          <p className="text-l font-semibold">No hay publicaciones aún. Agrega una nueva.</p>
+        {filteredBenefits.length === 0 ? (
+          <p className="text-l font-semibold">No hay publicaciones que coincidan con la búsqueda.</p>
         ) : (
-          benefits.map((benefit) => (
+          filteredBenefits.map((benefit) => (
             <Card key={benefit.id}>
               <CardHeader>
                 <CardTitle>{benefit.name}</CardTitle>
