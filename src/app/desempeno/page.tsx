@@ -18,7 +18,7 @@ export default function PerformancePage() {
       <h1 className="text-3xl font-bold">Evaluación de Desempeño</h1>
       <div className="bg-white shadow-md rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Desempe�o Trimestral</h2>
+          <h2 className="text-xl font-semibold">Desempeño Trimestral</h2>
           <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Seleccionar trimestre" />

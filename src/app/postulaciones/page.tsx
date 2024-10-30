@@ -24,6 +24,15 @@ export default function BenefitsPage() {
   const [searchVisible, setSearchVisible] = useState(false) // Estado para mostrar/ocultar el buscador
   const [searchTerm, setSearchTerm] = useState("") // Estado para almacenar el texto de búsqueda
 
+  // Estados para el popup de registro de empleados
+  const [showEmployeePopup, setShowEmployeePopup] = useState(false) // Controla la visibilidad del segundo popup
+  const [employeeName, setEmployeeName] = useState("")
+  const [employeeLastName, setEmployeeLastName] = useState("")
+  const [employeeDepartment, setEmployeeDepartment] = useState("")
+
+  // Estado para el popup intermedio de confirmación
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false)
+
   // Función para extraer el título del trabajo de la URL
   const handleAddJob = async () => {
     setLoading(true);
@@ -61,6 +70,39 @@ export default function BenefitsPage() {
     benefit.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Función para registrar el empleado
+  const handleRegisterEmployee = async () => {
+    try {
+      // Lógica para enviar datos a la API
+      await axios.post("/api/register-employee", {
+        name: employeeName,
+        lastName: employeeLastName,
+        department: employeeDepartment,
+      })
+      console.log("Empleado registrado exitosamente")
+      // Limpiar los campos y cerrar el popup
+      setEmployeeName("")
+      setEmployeeLastName("")
+      setEmployeeDepartment("")
+      setShowEmployeePopup(false)
+    } catch (error) {
+      console.error("Error al registrar el empleado:", error)
+    }
+  }
+
+  // Función para mostrar el popup de confirmación antes de registrar
+  const handleConfirmRegister = () => {
+    setShowConfirmPopup(true) // Muestra el popup intermedio
+  }
+
+  // Función para manejar la respuesta del popup de confirmación
+  const handleConfirmResponse = (response: boolean) => {
+    setShowConfirmPopup(false) // Cierra el popup intermedio
+    if (response) {
+      setShowEmployeePopup(true) // Si la respuesta es "Sí", muestra el popup de registro
+    }
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Postulaciones de trabajo</h1> 
@@ -80,10 +122,7 @@ export default function BenefitsPage() {
 
       {/* Lupa para buscar publicaciones */}
       <div className="flex items-center space-x-2">
-        <Button
-          variant="ghost"
-          onClick={() => setSearchVisible(!searchVisible)}
-        >
+        <Button variant="ghost" onClick={() => setSearchVisible(!searchVisible)}>
           <Search className="h-5 w-5" />
         </Button>
 
@@ -109,9 +148,7 @@ export default function BenefitsPage() {
                 <CardTitle>{benefit.name}</CardTitle>
                 <CardDescription>{truncateDescription(benefit.description)}</CardDescription>
                 {/* Botón para ver más detalles */}
-                <Button onClick={() => setSelectedBenefit(benefit)}>
-                  Ver detalles
-                </Button>
+                <Button onClick={() => setSelectedBenefit(benefit)}>Ver detalles</Button>
               </CardHeader>
             </Card>
           ))
@@ -126,8 +163,73 @@ export default function BenefitsPage() {
               <DialogTitle className="text-lg font-bold">{selectedBenefit.name}</DialogTitle>
               <p className="mt-2 text-sm text-gray-600">{selectedBenefit.description}</p>
             </DialogHeader>
-            <Button className="bg-green-500 hover:bg-green-600" type="submit">Archivar</Button>
+            <Button
+              className="bg-green-500 hover:bg-green-600"
+              type="button"
+              onClick={handleConfirmRegister} // Muestra el popup intermedio
+            >
+              Archivar
+            </Button>
             <Button className="bg-red-500 hover:bg-red-600" type="submit">Eliminar</Button>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Popup intermedio para confirmar si desea registrar */}
+      {showConfirmPopup && (
+        <Dialog open={showConfirmPopup} onOpenChange={() => setShowConfirmPopup(false)}>
+          <DialogContent className="max-w-md bg-white rounded-lg shadow-lg p-6">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold">¿Registrar al empleado?</DialogTitle>
+              <p className="mt-2 text-gray-600">¿Deseas registrar al empleado ahora?</p>
+            </DialogHeader>
+            <div className="flex justify-end space-x-2">
+              <Button className="bg-gray-500 hover:bg-gray-600" onClick={() => handleConfirmResponse(false)}>
+                No
+              </Button>
+              <Button className="bg-green-500 hover:bg-green-600" onClick={() => handleConfirmResponse(true)}>
+                Sí
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Popup para registrar el nuevo empleado */}
+      {showEmployeePopup && (
+        <Dialog open={showEmployeePopup} onOpenChange={setShowEmployeePopup}>
+          <DialogContent className="max-w-md bg-white rounded-lg shadow-lg p-6">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold">Registrar nuevo empleado</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                type="text"
+                placeholder="Nombre"
+                value={employeeName}
+                onChange={(e) => setEmployeeName(e.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Apellido"
+                value={employeeLastName}
+                onChange={(e) => setEmployeeLastName(e.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Departamento"
+                value={employeeDepartment}
+                onChange={(e) => setEmployeeDepartment(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end mt-4 space-x-2">
+              <Button className="bg-gray-500 hover:bg-gray-600" onClick={() => setShowEmployeePopup(false)}>
+                Cancelar
+              </Button>
+              <Button className="bg-green-500 hover:bg-green-600" onClick={handleRegisterEmployee}>
+                Registrar
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
       )}
