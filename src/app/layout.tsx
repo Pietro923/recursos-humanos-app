@@ -1,47 +1,46 @@
-// app/layout.tsx
-"use client"
-import { Inter } from 'next/font/google'
-import '@/styles/globals.css'
-import Sidebar from '../components/Sidebar'
-import { usePathname, useRouter } from 'next/navigation'
-import { getAuth, onAuthStateChanged, setPersistence, browserSessionPersistence } from "firebase/auth"
-import { useEffect, useState } from 'react'
-import firebaseConfig from "@/lib/firebaseConfig"
-import { initializeApp } from "firebase/app"
+"use client";
+import { Inter } from 'next/font/google';
+import '@/styles/globals.css';
+import Sidebar from '../components/Sidebar';
+import { usePathname, useRouter } from 'next/navigation';
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState } from 'react';
+import { auth, db } from "@/lib/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
-// Inicializa Firebase si no está inicializado
-try {
-  initializeApp(firebaseConfig)
-} catch (error) {
-  // Ignora el error si Firebase ya está inicializado
-}
+const inter = Inter({ subsets: ['latin'] });
 
-const inter = Inter({ subsets: ['latin'] })
+type Role = "ADMIN" | "rrhh" | "nominas";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
-    const auth = getAuth()
-
-    setPersistence(auth, browserSessionPersistence).catch((error) => {
-      console.error("Error setting persistence: ", error)
-    })
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthenticated(!!user)
-      if (!user) {
-        router.push('/login')
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role);
+        } else {
+          setUserRole(null);
+          router.push('/login');
+        }
+      } else {
+        setIsAuthenticated(false);
+        router.push('/login');
       }
-    })
+    });
 
-    return () => unsubscribe()
-  }, [pathname, router])
+    return () => unsubscribe();
+  }, [pathname, router]);
+
+  const role = ["ADMIN", "rrhh", "nominas"].includes(userRole || "") ? (userRole as Role) : null;
 
   if (isAuthenticated === null) {
-    // Opcional: Muestra una pantalla de carga o spinner mientras verifica la autenticación
     return (
       <html lang="es">
         <body className={inter.className}>
@@ -50,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </body>
       </html>
-    )
+    );
   }
 
   if (!isAuthenticated && pathname === '/login') {
@@ -62,14 +61,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
         </body>
       </html>
-    )
+    );
   }
 
   return (
     <html lang="es">
       <body className={inter.className}>
         <div className="flex h-screen bg-gray-100">
-          <Sidebar />
+        <Sidebar role={role} />
           <div className="flex-1 flex flex-col overflow-hidden">
             <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 p-6">
               {children}
@@ -78,5 +77,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
       </body>
     </html>
-  )
+  );
 }
