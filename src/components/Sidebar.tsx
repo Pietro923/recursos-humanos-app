@@ -21,11 +21,13 @@ export default function Sidebar() {
   return (
     <aside className="bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
       <div className="text-center mb-6">
+        <Link href="/">
         <img 
           src="/pueble logo.png" // Asegúrate de que la ruta sea correcta
           alt="Pueble S.A Logo"
           className="h-40 mx-auto" // Ajusta la altura según sea necesario
         />
+        </Link>
       </div>
       <nav>
         {sidebarItems.map((item) => {

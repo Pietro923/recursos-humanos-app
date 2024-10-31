@@ -1,29 +1,59 @@
-// layout.tsx
+// app/layout.tsx
 "use client"
 import { Inter } from 'next/font/google'
-import { usePathname, useRouter } from 'next/navigation'
 import '@/styles/globals.css'
 import Sidebar from '../components/Sidebar'
+import { usePathname, useRouter } from 'next/navigation'
+import { getAuth, onAuthStateChanged, setPersistence, browserSessionPersistence } from "firebase/auth"
+import { useEffect, useState } from 'react'
+import firebaseConfig from "@/lib/firebaseConfig"
+import { initializeApp } from "firebase/app"
+
+// Inicializa Firebase si no está inicializado
+try {
+  initializeApp(firebaseConfig)
+} catch (error) {
+  // Ignora el error si Firebase ya está inicializado
+}
 
 const inter = Inter({ subsets: ['latin'] })
-
-
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  
-  // Aquí podría estar la lógica para verificar si el usuario está autenticado
-  const isAuthenticated = true // Cambia esto con la lógica real de autenticación
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
 
-  // Redirección a login si no está autenticado y no estamos ya en login
-  if (!isAuthenticated && pathname !== '/login') {
-    router.push('/login')
-    return null
+  useEffect(() => {
+    const auth = getAuth()
+
+    setPersistence(auth, browserSessionPersistence).catch((error) => {
+      console.error("Error setting persistence: ", error)
+    })
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user)
+      if (!user) {
+        router.push('/login')
+      }
+    })
+
+    return () => unsubscribe()
+  }, [pathname, router])
+
+  if (isAuthenticated === null) {
+    // Opcional: Muestra una pantalla de carga o spinner mientras verifica la autenticación
+    return (
+      <html lang="es">
+        <body className={inter.className}>
+          <div className="flex items-center justify-center h-screen bg-gray-100">
+            <p>Cargando...</p>
+          </div>
+        </body>
+      </html>
+    )
   }
 
-  // Si está en la página de login, solo renderizamos el contenido de login
-  if (pathname === '/login') {
+  if (!isAuthenticated && pathname === '/login') {
     return (
       <html lang="es">
         <body className={inter.className}>
@@ -35,7 +65,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     )
   }
 
-  // Layout para las páginas autenticadas
   return (
     <html lang="es">
       <body className={inter.className}>

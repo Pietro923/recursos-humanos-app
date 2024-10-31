@@ -4,7 +4,7 @@ import { Users, Calendar, DollarSign, BookOpen } from "lucide-react"
 export default function login() {
   return (
     <div className="space-y-6">
-      <h1>ACA va a ir EL LOGIN</h1>
+      <h1>Bienvenido ADMIN o RRHH o NOMINAS</h1>
     </div>
   )
 }
