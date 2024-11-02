@@ -6,6 +6,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "firebase/auth"; // Asegúrate de importar esto si usas Firebase para autenticación
 import { auth } from "@/lib/firebaseConfig"; // Importa tu configuración de Firebase
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 type Role = "ADMIN" | "rrhh" | "nominas"; // Define el tipo Role
 
@@ -34,6 +46,7 @@ const sidebarItems: Record<Role, { href: string; icon: React.ElementType; label:
 
 export default function Sidebar({ role }: { role: Role | null }) {
   const pathname = usePathname();
+  const [isAlertOpen, setIsAlertOpen] = useState(false); // Estado para manejar el diálogo de alerta
 
   // Verificamos que el role sea válido antes de renderizar
   if (!role || !(role in sidebarItems)) return null;
@@ -46,7 +59,7 @@ export default function Sidebar({ role }: { role: Role | null }) {
     <aside className="bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
       <div className="text-center mb-6">
         <Link href="/">
-          <img 
+          <img
             src="/pueble logo.png" // Asegúrate de que la ruta sea correcta
             alt="Pueble S.A Logo"
             className="h-40 mx-auto" // Ajusta la altura según sea necesario
@@ -71,13 +84,29 @@ export default function Sidebar({ role }: { role: Role | null }) {
         })}
       </nav>
       <div className="absolute bottom-6 left-0 w-full px-4">
-        <Button
-          onClick={handleLogout}
-          className="w-full flex items-center justify-center bg-red-600 hover:bg-red-700 text-white py-2 rounded"
-        >
-          <LogOut className="inline-block mr-2" size={18} />
-          Salir
-        </Button>
+        <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+          <AlertDialogTrigger asChild>
+            <Button
+              onClick={() => setIsAlertOpen(true)}
+              className="w-full flex items-center justify-center bg-red-600 hover:bg-red-700 text-white py-2 rounded"
+            >
+              <LogOut className="inline-block mr-2" size={18} />
+              Salir
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="bg-white rounded-lg shadow-lg p-6">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg font-bold text-gray-800">¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600">
+              Esta acción cerrará tu sesión. ¿Quieres continuar?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-gray-500 hover:text-gray-700">Cancelar</AlertDialogCancel>
+            <AlertDialogAction className="bg-red-600 text-white hover:bg-red-700 rounded-md px-4 py-2">Continuar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+        </AlertDialog>
       </div>
     </aside>
   );
