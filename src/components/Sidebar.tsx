@@ -103,7 +103,14 @@ export default function Sidebar({ role }: { role: Role | null }) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="text-gray-500 hover:text-gray-700">Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 text-white hover:bg-red-700 rounded-md px-4 py-2">Continuar</AlertDialogAction>
+            <AlertDialogAction
+                onClick={() => {
+                  handleLogout(); // Llama a la función de logout al confirmar
+                }}
+                className="bg-red-600 text-white hover:bg-red-700 rounded-md px-4 py-2"
+              >
+                Continuar
+              </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
         </AlertDialog>
