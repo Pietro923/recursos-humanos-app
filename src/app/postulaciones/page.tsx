@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import axios from "axios"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
 import { Search } from "lucide-react" // Usaremos este icono para la lupa
 
 // Definir el tipo de "benefit"

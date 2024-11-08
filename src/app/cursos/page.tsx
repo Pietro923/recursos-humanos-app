@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { db } from "@/lib/firebaseConfig";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs,} from "firebase/firestore";
 
 interface Course {
   id: number;

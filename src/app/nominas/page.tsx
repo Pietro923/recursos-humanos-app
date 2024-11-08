@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { db } from "@/lib/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
-import { Button } from "@/components/ui/button";
+
 
 // Definición de los tipos
 interface Employee {
@@ -21,9 +21,8 @@ interface Employee {
 
 export default function PayrollPage() {
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
-  const [selectedMonth, setSelectedMonth] = useState("1");
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [companies, setCompanies] = useState<string[]>(["Pueble SA - CASE IH", "KIA"]);
+  const [companies] = useState<string[]>(["Pueble SA - CASE IH", "KIA"]);
 
   useEffect(() => {
     if (selectedCompany) {

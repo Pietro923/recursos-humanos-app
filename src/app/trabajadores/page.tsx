@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebaseConfig"; // Asegúrate de importar tu configuración de Firebase
-import { collection, doc, getDocs, getDoc, updateDoc, setDoc, addDoc } from "firebase/firestore";
+import { collection, doc, getDocs, getDoc, updateDoc, setDoc } from "firebase/firestore";
 
 // Definición de los tipos
 interface Employee {
@@ -60,7 +60,7 @@ export default function EmployeesPage() {
     fetchEmployees();
   }, [selectedCompany]);
 
-  const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setNewEmployee({ ...newEmployee, [e.target.name]: e.target.value });
   };
 
