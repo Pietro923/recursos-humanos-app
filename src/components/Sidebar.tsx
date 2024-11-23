@@ -1,22 +1,16 @@
 "use client";
-import { Users, Calendar, BarChart2, DollarSign, Gift, BookOpen, LayoutDashboard, Clipboard, LogOut } from "lucide-react";
+import { Users, Calendar, BarChart2, DollarSign, Gift, BookOpen, LayoutDashboard, Clipboard, LogOut, AlarmClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebaseConfig";
 import { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 type Role = "ADMIN" | "rrhh" | "nominas";
 
@@ -30,97 +24,136 @@ const sidebarItems: Record<Role, { href: string; icon: React.ElementType; label:
     { href: "/beneficios", icon: Gift, label: "Beneficios" },
     { href: "/cursos", icon: BookOpen, label: "Formación" },
     { href: "/postulaciones", icon: Clipboard, label: "Postulaciones" },
+    { href: "/recordatorios", icon: AlarmClock, label: "Recordatorios" },
   ],
   rrhh: [
     { href: "/asistencia", icon: Calendar, label: "Asistencia" },
     { href: "/desempeno", icon: BarChart2, label: "Desempeño" },
     { href: "/beneficios", icon: Gift, label: "Beneficios" },
     { href: "/cursos", icon: BookOpen, label: "Formación" },
+    { href: "/recordatorios", icon: AlarmClock, label: "Recordatorios" },
   ],
   nominas: [
     { href: "/trabajadores", icon: Users, label: "Empleados" },
     { href: "/nominas", icon: DollarSign, label: "Nóminas" },
+    { href: "/recordatorios", icon: AlarmClock, label: "Recordatorios" },
   ],
 };
 
+const NavLink = ({ href, icon: Icon, label, isActive, onClick }: {
+  href: string;
+  icon: React.ElementType;
+  label: string;
+  isActive: boolean;
+  onClick?: () => void;
+}) => (
+  <Link
+    href={href}
+    onClick={onClick}
+    className={`
+      group relative flex items-center rounded-lg px-3 py-2.5 text-sm font-medium
+      transition-all duration-300 ease-in-out
+      hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-950 dark:hover:to-blue-900
+      ${isActive 
+        ? "bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800 text-blue-600 dark:text-blue-400" 
+        : "text-gray-600 dark:text-gray-300"}
+    `}
+  >
+    {/* Hover Effect Border */}
+    <span className={`
+      absolute left-0 top-0 h-full w-0.5 rounded-full
+      transition-all duration-300 ease-out
+      ${isActive ? "bg-blue-600" : "bg-transparent"}
+      group-hover:bg-blue-600 group-hover:h-full
+    `} />
+    
+    {/* Icon with hover effect */}
+    <Icon className={`
+      mr-3 h-5 w-5
+      transition-all duration-300 ease-in-out
+      ${isActive 
+        ? "text-blue-600 dark:text-blue-400" 
+        : "text-gray-500 dark:text-gray-400"}
+      group-hover:text-blue-600 dark:group-hover:text-blue-400
+      group-hover:scale-110
+    `} />
+    
+    {/* Label with hover effect */}
+    <span className={`
+      transition-all duration-300 ease-in-out
+      group-hover:translate-x-1
+      ${isActive 
+        ? "font-semibold" 
+        : "font-medium"}
+    `}>
+      {label}
+    </span>
+  </Link>
+);
+
 export default function Sidebar({ role }: { role: Role | null }) {
   const pathname = usePathname();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Estado para controlar la visibilidad del sidebar
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Verificamos que el role sea válido antes de renderizar
   if (!role || !(role in sidebarItems)) return null;
 
-  const handleLogout = async () => {
-    await signOut(auth); // Cierra sesión en Firebase
-  };
 
-  return (
-    <>
-      {/* Botón para abrir o cerrar el Sidebar en pantallas pequeñas */}
-      <button
-        className="md:hidden p-2 text-white bg-gray-800 fixed top-4 left-4 z-50"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-      >
-        ☰ {/* Ícono de menú */}
-      </button>
-
-      {/* Sidebar */}
-      <aside
-        className={`bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0 transition duration-200 ease-in-out z-40`}>
-        <div className="text-center mb-6">
-          <Link href="/">
+  const SidebarContent = () => (
+    <div className="flex h-full flex-col gap-4 bg-white">
+      <div className="flex-1 flex flex-col gap-6">
+        {/* Logo Section */}
+        <div className="flex items-center justify-center py-4">
+          <Link href="/" className="flex items-center justify-center group">
             <img
-              src="/pueble logo.png" // Asegúrate de que la ruta sea correcta
+              src="/pueble logo 2.png"
               alt="Pueble S.A Logo"
-              className="h-40 mx-auto"
+              className="h-32 w-auto object-contain transition-all duration-500 ease-in-out transform group-hover:scale-110 group-hover:brightness-110"
             />
           </Link>
         </div>
-        <nav>
-          {sidebarItems[role].map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
+        
+        <Separator className="opacity-50" />
+        
+        {/* Navigation Links */}
+        <ScrollArea className="flex-1 px-2">
+          <div className="space-y-1 py-2">
+            {sidebarItems[role].map((item) => (
+              <NavLink
                 key={item.href}
                 href={item.href}
-                className={`block py-2.5 px-4 rounded transition duration-200 ${
-                  pathname === item.href ? "bg-gray-700" : "hover:bg-gray-700"
-                }`}
-              >
-                <Icon className="inline-block mr-2" size={18} />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="absolute bottom-6 left-0 w-full px-4">
-          <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-            <AlertDialogTrigger asChild>
-              <Button
-                onClick={() => setIsAlertOpen(true)}
-                className="w-full flex items-center justify-center bg-red-600 hover:bg-red-700 text-white py-2 rounded"
-              >
-                <LogOut className="inline-block mr-2" size={18} />
-                Salir
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className="bg-white rounded-lg shadow-lg p-6">
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-lg font-bold text-gray-800">¿Estás seguro?</AlertDialogTitle>
-                <AlertDialogDescription className="text-gray-600">
-                  Esta acción cerrará tu sesión. ¿Quieres continuar?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="text-gray-500 hover:text-gray-700">Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={() => handleLogout()} className="bg-red-600 text-white hover:bg-red-700 rounded-md px-4 py-2">Continuar</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+                icon={item.icon}
+                label={item.label}
+                isActive={pathname === item.href}
+                onClick={() => setIsOpen(false)}
+              />
+            ))}
+          </div>
+        </ScrollArea>
+      </div>  
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile Trigger */}
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="md:hidden fixed top-4 left-4 z-50 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 bg-white"
+          >
+            ☰
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-64 p-0">
+          <SidebarContent />
+        </SheetContent>
+      </Sheet>
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:block w-64 border-r bg-background shadow-lg h-screen">
+        <SidebarContent />
       </aside>
     </>
   );
