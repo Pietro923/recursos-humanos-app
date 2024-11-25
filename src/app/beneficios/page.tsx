@@ -1,30 +1,84 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+"use client"
+import { Button } from "@/components/ui/button"
+import { Printer, Download } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-export default function BenefitsPage() {
-  const benefits = [
-    { id: 1, name: "Seguro Médico", description: "Cobertura médica completa para empleados y familiares directos", enrolled: 95 },
-    { id: 2, name: "Plan de Pensiones", description: "Contribución del 5% del salario con igualación de la empresa", enrolled: 80 },
-    { id: 3, name: "Días de Vacaciones", description: "20 días de vacaciones pagadas al año", enrolled: 100 },
-    { id: 4, name: "Gimnasio", description: "Membresía gratuita en gimnasio local", enrolled: 60 },
-  ]
+const CompanyChart = () => (
+  <div className="w-full p-4 bg-white rounded-lg shadow">
+    <h3 className="text-xl font-semibold mb-4">Organigrama de la Compañía</h3>
+    <div className="aspect-video bg-slate-50 rounded-lg p-4 flex items-center justify-center">
+      {/* Aquí podrías integrar el organigrama real de la empresa */}
+      <p className="text-slate-500">Organigrama de la Empresa</p>
+    </div>
+  </div>
+);
+
+const PrintableBenefits = () => {
+  const allBenefits = [
+    { category: "Tiempo Libre", items: [
+      "20 días de vacaciones pagadas al año",
+      "Día de cumpleaños libre",
+      "Paternidad extendida",
+      "Maternidad extendida"
+    ]},
+    { category: "Salud y Bienestar", items: [
+      "Seguro Médico completo para empleados y familiares directos",
+      "Membresía gratuita en gimnasio local"
+    ]},
+    { category: "Beneficios Financieros", items: [
+      "Plan de Pensiones con contribución del 5%",
+      "Bono por inicio de clases",
+      "Caja navideña"
+    ]}
+  ];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Beneficios para Empleados</h1>
-      <div className="grid gap-4 md:grid-cols-2">
-        {benefits.map((benefit) => (
-          <Card key={benefit.id}>
-            <CardHeader>
-              <CardTitle>{benefit.name}</CardTitle>
-              <CardDescription>{benefit.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Badge variant="secondary">{benefit.enrolled}% de empleados inscritos</Badge>
-            </CardContent>
-          </Card>
+    <div className="space-y-6 print:p-4">
+      <div className="flex justify-between items-center print:hidden">
+        <h3 className="text-xl font-semibold">Lista Completa de Beneficios</h3>
+        <Button onClick={() => window.print()} variant="outline" size="sm">
+          <Printer className="mr-2 h-4 w-4" />
+          Imprimir
+        </Button>
+      </div>
+      <div className="space-y-6">
+        {allBenefits.map((category, idx) => (
+          <div key={idx} className="space-y-2">
+            <h4 className="font-medium text-lg">{category.category}</h4>
+            <ul className="list-disc pl-6 space-y-2">
+              {category.items.map((item, itemIdx) => (
+                <li key={itemIdx} className="text-slate-600">{item}</li>
+              ))}
+            </ul>
+          </div>
         ))}
       </div>
     </div>
-  )
+  );
+};
+
+export default function BenefitsPage() {
+  return (
+    <div className="container mx-auto py-8 space-y-8">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold">Beneficios para Empleados</h1>
+        <p className="text-slate-600">Descubre todos los beneficios disponibles para nuestro equipo</p>
+      </div>
+
+      <Tabs defaultValue="list" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="list">Lista Imprimible</TabsTrigger>
+          <TabsTrigger value="org">Organigrama</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="list">
+          <PrintableBenefits />
+        </TabsContent>
+
+        <TabsContent value="org">
+          <CompanyChart />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 }

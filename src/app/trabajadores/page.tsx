@@ -41,7 +41,7 @@ export default function EmployeesPage() {
     genero: "",
     fechaNacimiento: ""
   });
-  const [selectedCompany, setSelectedCompany] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState(""); // Aca podes colocar una empresa que sea la que va a cargar de entrada
   const [view, setView] = useState("list");
 
   const companies = ["Pueble SA - CASE IH", "KIA"];
@@ -217,7 +217,7 @@ export default function EmployeesPage() {
             </label>
             <Select value={selectedCompany} onValueChange={setSelectedCompany}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Seleccionar empresa" />
+                <SelectValue placeholder="Seleccionar empresa"  />
               </SelectTrigger>
               <SelectContent>
                 {companies.map((company) => (

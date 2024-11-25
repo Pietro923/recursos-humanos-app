@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LayoutDashboard, Users, Calculator, Shield } from "lucide-react";
 
+
 export default function Inicio() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +34,7 @@ export default function Inicio() {
           setError("Error: no tienes permisos para acceder a esta información.");
         }
       } else {
+        // Redirigir al login sin mostrar la página intermedia
         router.push('/login');
       }
       setLoading(false);

@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -21,29 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Loader2, 
   Moon,
-  Bell,
-  Globe,
-  Clock,
-  Shield,
-  Smartphone,
-  Volume2,
-  Mail,
-  Keyboard,
-  Eye,
-  Lock,
-  AlertTriangle
 } from "lucide-react";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
 
 const SettingsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
