@@ -38,12 +38,13 @@ function Recordatorios() {
       try {
         const q = collection(db, "Grupo_Pueble", selectedCompany, "recordatorios");
         const snapshot = await getDocs(q);
-
+  
         if (snapshot.empty) {
           console.log("No se encontraron recordatorios");
+          setRecordatorios([]); // Limpia el estado si no hay recordatorios
           return;
         }
-
+  
         const data: Recordatorio[] = snapshot.docs.map((doc) => {
           const record = doc.data();
           return {
@@ -58,14 +59,14 @@ function Recordatorios() {
             empresa: selectedCompany, // Agregamos la empresa actual
           };
         });
-
+  
         console.log("Recordatorios obtenidos:", data);
         setRecordatorios(data);
       } catch (error) {
         console.error("Error al obtener recordatorios:", error);
       }
     };
-
+  
     fetchRecordatorios();
   }, [selectedCompany]);
 
@@ -78,39 +79,40 @@ function Recordatorios() {
 
     // Si faltan más de 5 días
     if (daysRemaining > 5) {
-      return "bg-green-50 text-green-600 border-green-200";
+      return "bg-green-50 text-green-600 border-green-200 dark:bg-green-700 dark:text-green-100 dark:border-green-600";
     }
 
     // Si quedan 5 días o menos
     if (daysRemaining > 0) {
-      return "bg-yellow-50 text-yellow-600 border-yellow-200";
+      return "bg-yellow-50 text-yellow-600 border-yellow-200 dark:bg-yellow-700 dark:text-yellow-100 dark:border-yellow-600";
     }
 
     // Si la fecha es hoy o ya ha pasado
-    return "bg-red-50 text-red-600 border-red-200";
+    return "bg-red-50 text-red-600 border-red-200 dark:bg-red-700 dark:text-red-100 dark:border-red-600";
   };
 
   return (
-    <Card className="w-full max-w-5xl mx-auto shadow-lg">
-      <CardHeader className="bg-gray-50 border-b">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center space-x-3">
-            <ClockIcon className="w-6 h-6 text-primary" />
-            <span>Recordatorios</span>
-          </CardTitle>
-          <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-            <SelectTrigger className="w-[250px]">
-              <SelectValue placeholder="Seleccionar empresa" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Pueble SA - CASE IH">Pueble SA - CASE IH</SelectItem>
-              <SelectItem value="KIA">KIA</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </CardHeader>
+    <Card className="w-full max-w-5xl mx-auto shadow-lg ">
+      <CardHeader className="bg-gray-50 border-b dark:bg-gray-950 dark:text-gray-100">
+    {/* Flex container with responsive behavior */}
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <CardTitle className="flex items-center space-x-3">
+        <ClockIcon className="w-6 h-6 text-primary" />
+        <span>Recordatorios</span>
+      </CardTitle>
+      <Select value={selectedCompany} onValueChange={setSelectedCompany}>
+        <SelectTrigger className="w-full md:w-[250px]">
+          <SelectValue placeholder="Seleccionar empresa" />
+        </SelectTrigger>
+        <SelectContent className="z-50 max-h-60 overflow-y-auto">
+          <SelectItem value="Pueble SA - CASE IH">Pueble SA - CASE IH</SelectItem>
+          <SelectItem value="KIA">KIA</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  </CardHeader>
 
-      <CardContent className="p-6">
+      <CardContent className="p-6  dark:text-gray-100">
         {recordatorios.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recordatorios.map((recordatorio) => {
@@ -129,16 +131,17 @@ function Recordatorios() {
                     hover:scale-105 hover:shadow-xl
                   `}
                 >
-                  <div className="flex justify-between items-start">
-                    <Badge variant="outline" className="capitalize">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
+                    {/* Badge Section */}
+                    <Badge variant="outline" className="capitalize flex items-center">
                       <InfoIcon className="w-4 h-4 mr-2" />
                       {recordatorio.tipo}
                     </Badge>
-                    <div className="flex items-center text-xs space-x-2">
+
+                    {/* Name Section */}
+                    <div className="flex items-center text-xs space-x-2 sm:ml-4">
                       <UserIcon className="w-4 h-4" />
-                      <span>
-                        {`${recordatorio.nombre} ${recordatorio.apellido}`}
-                      </span>
+                      <span>{`${recordatorio.nombre} ${recordatorio.apellido}`}</span>
                     </div>
                   </div>
 

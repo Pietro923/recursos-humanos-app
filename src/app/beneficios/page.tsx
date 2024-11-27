@@ -4,11 +4,11 @@ import { Printer, Download } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const CompanyChart = () => (
-  <div className="w-full p-4 bg-white rounded-lg shadow">
+  <div className="w-full p-4 bg-white rounded-lg shadow dark:text-white dark:bg-gray-950">
     <h3 className="text-xl font-semibold mb-4">Organigrama de la Compañía</h3>
-    <div className="aspect-video bg-slate-50 rounded-lg p-4 flex items-center justify-center">
+    <div className="aspect-video bg-slate-50 rounded-lg p-4 flex items-center justify-center dark:bg-gray-950">
       {/* Aquí podrías integrar el organigrama real de la empresa */}
-      <p className="text-slate-500">Organigrama de la Empresa</p>
+      <p className="text-slate-500 dark:text-white ">Organigrama de la Empresa</p>
     </div>
   </div>
 );
@@ -33,7 +33,7 @@ const PrintableBenefits = () => {
   ];
 
   return (
-    <div className="space-y-6 print:p-4">
+    <div className="space-y-6 print:p-4 dark:text-white dark:bg-gray-950 p-6 rounded-xl">
       <div className="flex justify-between items-center print:hidden">
         <h3 className="text-xl font-semibold">Lista Completa de Beneficios</h3>
         <Button onClick={() => window.print()} variant="outline" size="sm">
@@ -43,11 +43,11 @@ const PrintableBenefits = () => {
       </div>
       <div className="space-y-6">
         {allBenefits.map((category, idx) => (
-          <div key={idx} className="space-y-2">
+          <div key={idx} className="space-y-2 ">
             <h4 className="font-medium text-lg">{category.category}</h4>
             <ul className="list-disc pl-6 space-y-2">
               {category.items.map((item, itemIdx) => (
-                <li key={itemIdx} className="text-slate-600">{item}</li>
+                <li key={itemIdx} className="text-slate-600 dark:text-gray-100">{item}</li>
               ))}
             </ul>
           </div>
@@ -59,10 +59,10 @@ const PrintableBenefits = () => {
 
 export default function BenefitsPage() {
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <div className="container mx-auto py-8 space-y-8 dark:text-white">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Beneficios para Empleados</h1>
-        <p className="text-slate-600">Descubre todos los beneficios disponibles para nuestro equipo</p>
+        <h1 className="text-3xl font-bold ">Beneficios para Empleados</h1>
+        <p className="text-slate-600 dark:text-gray-100">Descubre todos los beneficios disponibles para nuestro equipo</p>
       </div>
 
       <Tabs defaultValue="list" className="space-y-6">

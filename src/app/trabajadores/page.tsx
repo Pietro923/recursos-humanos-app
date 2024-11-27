@@ -187,7 +187,7 @@ export default function EmployeesPage() {
 
 
   return (
-    <div className="space-y-6 p-6 bg-slate-50">
+    <div className="space-y-6 p-6 bg-slate-50 dark:bg-gray-800 dark:border-gray-700 dark:text-white rounded-2xl">
       {birthdayEmployees.length > 0 && (
         <div className="space-y-2">
           {birthdayEmployees.map((employee) => (
@@ -202,7 +202,7 @@ export default function EmployeesPage() {
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 ">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">Gestión de Empleados</h1>
           <p className="text-sm text-muted-foreground">
@@ -210,7 +210,7 @@ export default function EmployeesPage() {
           </p>
         </div>
   
-        <Card className="w-full sm:w-72 bg-white/50 backdrop-blur shadow-sm">
+        <Card className="w-full sm:w-72 bg-white/50 backdrop-blur shadow-sm dark:bg-gray-950 dark:border-gray-700 dark:text-white">
           <CardContent className="pt-4">
             <label className="block text-sm font-medium text-muted-foreground mb-2">
               Seleccionar Empresa
@@ -231,20 +231,20 @@ export default function EmployeesPage() {
         </Card>
       </div>
   
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6  ">
         <Button 
           onClick={() => setView("add")} 
           className={`flex-1 sm:flex-none ${view === "add" 
-            ? "bg-primary hover:bg-primary/90" 
-            : "bg-white text-primary hover:bg-slate-100"}`}>
+            ? "bg-primary hover:bg-primary/80 text-white dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200" 
+            : "bg-white text-primary hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-700 dark:text-white"}`}>
           <Users className="mr-2 h-4 w-4" />
           Agregar Nuevo Empleado
         </Button>
         <Button 
           onClick={() => setView("list")} 
           className={`flex-1 sm:flex-none ${view === "list" 
-            ? "bg-primary hover:bg-primary/90" 
-            : "bg-white text-primary hover:bg-slate-100"}`}>
+            ? "bg-primary hover:bg-primary/80 text-white dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200" 
+            : "bg-white text-primary hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-700 dark:text-white"}`}>
           <List className="mr-2 h-4 w-4" />
           Ver Lista de Empleados
         </Button>
@@ -253,7 +253,7 @@ export default function EmployeesPage() {
       {view === "list" && (
         <Card className="mb-6">
           <CardContent className="pt-4">
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 ">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-muted-foreground mb-2">
                   Filtrar por Departamento
@@ -441,7 +441,7 @@ export default function EmployeesPage() {
               <TableHead>Acciones</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="dark:hover:backdrop-brightness-125 dark:hover:text-primary dark:hover:shadow-md dark:transition-all dark:duration-300 rounded-lg">
             {filteredEmployees.map((employee) => (
               <TableRow key={employee.id}>
                 <TableCell>{employee.nombre}</TableCell>

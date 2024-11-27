@@ -53,7 +53,8 @@ const NavLink = ({ href, icon: Icon, label, isActive, onClick }: {
     className={`
       group relative flex items-center rounded-lg px-3 py-2.5 text-sm font-medium
       transition-all duration-300 ease-in-out
-      hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-950 dark:hover:to-blue-900
+      hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 
+      dark:hover:from-blue-900 dark:hover:to-blue-800 // Ajuste para tema oscuro
       ${isActive 
         ? "bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800 text-blue-600 dark:text-blue-400" 
         : "text-gray-600 dark:text-gray-300"}
@@ -99,7 +100,7 @@ export default function Sidebar({ role }: { role: Role | null }) {
 
 
   const SidebarContent = () => (
-    <div className="flex h-full flex-col gap-4 bg-white">
+    <div className="flex h-full flex-col gap-4 bg-white dark:bg-gray-900"> 
       <div className="flex-1 flex flex-col gap-6">
         {/* Logo Section */}
         <div className="flex items-center justify-center py-4">
@@ -107,12 +108,12 @@ export default function Sidebar({ role }: { role: Role | null }) {
             <img
               src="/pueble logo 2.png"
               alt="Pueble S.A Logo"
-              className="h-32 w-auto object-contain transition-all duration-500 ease-in-out transform group-hover:scale-110 group-hover:brightness-110"
+              className="h-32 w-auto object-contain transition-all duration-500 ease-in-out transform group-hover:scale-110 group-hover:brightness-110 dark:brightness-75" // Ajuste para logo en modo oscuro
             />
           </Link>
         </div>
         
-        <Separator className="opacity-50" />
+        <Separator className="opacity-50 dark:opacity-20" /> {/* Ajuste para separador en modo oscuro */}
         
         {/* Navigation Links */}
         <ScrollArea className="flex-1 px-2">
@@ -141,18 +142,21 @@ export default function Sidebar({ role }: { role: Role | null }) {
           <Button
             variant="outline"
             size="icon"
-            className="md:hidden fixed top-4 left-4 z-50 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 bg-white"
+            className="md:hidden fixed top-4 left-4 z-50 
+            hover:bg-blue-50 hover:text-blue-600 
+            dark:hover:bg-blue-900 dark:hover:text-blue-400 // Añadir hover para modo oscuro
+            transition-all duration-300 bg-white dark:bg-gray-800" // Añadir fondo oscuro
           >
             ☰
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0">
+        <SheetContent side="left" className="w-64 p-0 dark:bg-gray-900"> {/* Añadir fondo oscuro */}
           <SidebarContent />
         </SheetContent>
       </Sheet>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden md:block w-64 border-r bg-background shadow-lg h-screen">
+      <aside className="hidden md:block w-64 border-r bg-background dark:border-gray-700 dark:bg-gray-900 shadow-lg h-screen"> {/* Añadir estilos para modo oscuro */}
         <SidebarContent />
       </aside>
     </>

@@ -224,7 +224,7 @@ const RecordatoriosForm = () => {
             />
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white">
             Guardar Recordatorio
           </Button>
         </form>

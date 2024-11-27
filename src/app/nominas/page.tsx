@@ -167,26 +167,26 @@ export default function PayrollPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="max-w-screen-2xl container mx-auto py-8 space-y-6 ">
       <div className="flex items-center gap-2 mb-8">
         <Users className="h-8 w-8 text-primary" />
-        <h1 className="text-4xl font-bold text-gray-900 tracking-tight">Gestión de Nóminas</h1>
+        <h1 className="text-4xl font-bold text-gray-900 tracking-tight dark:text-white">Gestión de Nóminas</h1>
       </div>
   
-      <Card className="border-none shadow-lg rounded-lg overflow-hidden">
-        <CardHeader className="bg-muted/50">
+      <Card className="max-w-screen-2xl border-none shadow-lg rounded-lg overflow-hidden ">
+        <CardHeader className="bg-muted/50 dark:bg-gray-800">
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 " >
                 <Building2 className="h-5 w-5 text-muted-foreground" />
-                <CardTitle className="text-lg font-semibold text-gray-700">
+                <CardTitle className="text-lg font-semibold text-gray-700  dark:text-white">
                   Nómina Mensual - Período {periodId}
                 </CardTitle>
               </div>
     
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 ">
                 <Select value={selectedCompany || ""} onValueChange={setSelectedCompany}>
-                  <SelectTrigger className="w-[250px] bg-white rounded-md shadow-sm">
+                  <SelectTrigger className="w-[250px] bg-white rounded-md shadow-sm dark:bg-gray-950 dark:text-white">
                     <SelectValue placeholder="Seleccionar empresa" />
                   </SelectTrigger>
                   <SelectContent>
@@ -201,21 +201,21 @@ export default function PayrollPage() {
                 <Button 
                   onClick={saveAbsences} 
                   disabled={isLoading || !selectedCompany}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 dark:bg-gray-950 dark:text-white"
                 >
-                  <Save className="h-4 w-4" />
+                  <Save className="h-4 w-4 dark:text-white" />
                   Guardar Inasistencias
                 </Button>
               </div>
             </div>
 
             {selectedCompany && (
-              <div className="flex justify-end">
+              <div className="flex justify-end ">
                 <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                  <SelectTrigger className="w-[250px] bg-white rounded-md shadow-sm">
+                  <SelectTrigger className="w-[250px] bg-white rounded-md shadow-sm dark:bg-gray-950 dark:text-white">
                     <SelectValue placeholder="Filtrar por departamento" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="">
                     <SelectItem value="todos">Todos los departamentos</SelectItem>
                     {departments.map((dept) => (
                       <SelectItem key={dept} value={dept}>
@@ -229,25 +229,25 @@ export default function PayrollPage() {
           </div>
         </CardHeader>
   
-        <CardContent className="p-6">
-          <div className="rounded-b-lg overflow-hidden bg-white shadow-sm">
+        <CardContent className="p-0">
+          <div className="rounded-b-lg overflow-hidden bg-white shadow-sm dark:bg-gray-950 dark:text-white">
             <div className="overflow-x-auto">
               <Table className="min-w-full table-auto">
                 <TableHeader>
-                  <TableRow className="bg-muted/50 text-sm text-gray-700">
-                    <TableHead className="font-semibold">Nombre</TableHead>
-                    <TableHead className="font-semibold">Apellido</TableHead>
-                    <TableHead className="font-semibold">DNI</TableHead>
-                    <TableHead className="font-semibold">Correo</TableHead>
-                    <TableHead className="font-semibold">Departamento</TableHead>
-                    <TableHead className="font-semibold text-right">Sueldo Básico</TableHead>
-                    <TableHead className="font-semibold text-right">Incentivo Promedio</TableHead>
-                    <TableHead className="font-semibold text-right">Incentivo Mensual</TableHead>
-                    <TableHead className="font-semibold text-center">Días Inasistencia</TableHead>
-                    <TableHead className="font-semibold text-right">Descuento Inasistencias</TableHead>
-                    <TableHead className="font-semibold text-right">Total Básico + Incentivo</TableHead>
-                    <TableHead className="font-semibold text-right">Bono</TableHead>
-                    <TableHead className="font-semibold text-right">Total Final</TableHead>
+                  <TableRow className="bg-muted/50 text-sm text-gray-700 dark:bg-gray-800  ">
+                    <TableHead className="font-semibold text-center dark:text-white">Nombre</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Apellido</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">DNI</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Correo</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Departamento</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Sueldo Básico</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Incentivo Promedio</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Incentivo Mensual</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Días Inasistencia</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Descuento Inasistencias</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Total Básico + Incentivo</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Bono</TableHead>
+                    <TableHead className="font-semibold text-center dark:text-white">Total Final</TableHead>
                   </TableRow>
                 </TableHeader>
   
@@ -256,7 +256,7 @@ export default function PayrollPage() {
                     <TableRow>
                       <TableCell
                         colSpan={13}
-                        className="text-center py-8 text-muted-foreground italic"
+                        className="text-center py-8 text-muted-foreground italic dark:text-white "
                       >
                         {selectedCompany ? "No hay empleados para mostrar" : "Seleccione una empresa para ver los datos de nómina"}
                       </TableCell>
@@ -288,14 +288,14 @@ export default function PayrollPage() {
                           <TableCell className="text-right font-medium">
                             {formatCurrency(employee.incentivoMensual)}
                           </TableCell>
-                          <TableCell className="text-center">
+                          <TableCell className="text-center ">
                             <Input
                               type="number"
                               min="0"
                               max="31"
                               value={diasInasistencia || ""}
                               onChange={(e) => handleAbsenceChange(employee, e.target.value)}
-                              className="w-20 text-center mx-auto text-red-600"
+                              className="w-20 text-center mx-auto text-red-600 "
                             />
                           </TableCell>
                           <TableCell className="text-right font-medium text-red-600">

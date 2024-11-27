@@ -112,7 +112,7 @@ const NotificationBell = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative dark:text-white">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 rounded-full flex items-center justify-center">
@@ -125,22 +125,22 @@ const NotificationBell = () => {
         <div className="flex justify-between items-center px-4 py-2 border-b">
           <p className="font-semibold">Recordatorios</p>
         </div>
-        <div className="max-h-[70vh] overflow-y-auto">
+        <div className="max-h-[70vh] overflow-y-auto ">
           {recordatorios.length > 0 ? (
             recordatorios.map((recordatorio) => (
-              <DropdownMenuItem key={recordatorio.id} className="px-4 py-3 hover:bg-gray-50">
-                <div className="space-y-1 w-full">
-                  <div className="flex justify-between items-start">
-                    <div className="flex flex-col">
-                      <span className={`font-medium ${getStatusColor(recordatorio.fechaFin)}`}>
+              <DropdownMenuItem key={recordatorio.id} className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <div className="space-y-1 w-full ">
+                  <div className="flex justify-between items-start ">
+                    <div className="flex flex-col ">
+                      <span className={`font-medium  ${getStatusColor(recordatorio.fechaFin)}`}>
                         {recordatorio.tipo}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 dark:text-white">
                         {recordatorio.empresa}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 dark:text-white">
                         {format(recordatorio.fechaFin.toDate(), "dd MMM", { locale: es })}
                       </span>
                       <Button
@@ -152,15 +152,15 @@ const NotificationBell = () => {
                           archiveNotification(recordatorio);
                         }}
                       >
-                        <Archive className="h-4 w-4 text-gray-500" />
+                        <Archive className="h-4 w-4 text-gray-500 dark:text-white" />
                       </Button>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 line-clamp-2">
+                  <p className="text-sm text-gray-600 line-clamp-2 dark:text-white">
                     {recordatorio.descripcion}
                   </p>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-white">
                       {recordatorio.nombre} {recordatorio.apellido}
                     </span>
                     <span className={`text-xs font-medium ${getStatusColor(recordatorio.fechaFin)}`}>

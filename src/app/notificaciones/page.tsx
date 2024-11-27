@@ -84,39 +84,39 @@ export default function ArchivedNotifications() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6">Notificaciones Archivadas</h1>
-      <div className="bg-white rounded-lg shadow">
+      <h1 className="text-2xl font-bold mb-6 dark:text-white">Notificaciones Archivadas</h1>
+      <div className="bg-white rounded-lg shadow dark:bg-gray-950">
         {archivedNotifications.length > 0 ? (
           <div className="divide-y">
             {archivedNotifications.map((notification) => (
-              <div key={notification.id} className="p-4 hover:bg-gray-50">
+              <div key={notification.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl ">
                 <div className="space-y-2">
                   <div className="flex justify-between items-start">
                     <div className="flex flex-col">
-                      <span className={`font-medium ${getStatusColor(notification.fechaFin)}`}>
+                      <span className={`font-medium  ${getStatusColor(notification.fechaFin)}`}>
                         {notification.tipo}
                       </span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-white">
                         {notification.empresa}
                       </span>
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 dark:text-white">
                       Archivado el {format(notification.archivedAt.toDate(), "dd MMM yyyy", { locale: es })}
                     </div>
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-white">
                     {notification.descripcion}
                   </p>
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center dark:text-white">
                 {/* Nombre y apellido del empleado */}
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500 dark:text-white">
                     {notification.nombre} {notification.apellido}
                 </div>
 
                 {/* Estado del recordatorio */}
                     <div className="text-right">
                         {/* Estado con días restantes o vencido */}
-                        <span className={`text-sm font-medium block ${getStatusColor(notification.fechaFin)}`}>
+                        <span className={`text-sm font-medium block  ${getStatusColor(notification.fechaFin)}`}>
                         {differenceInDays(notification.fechaFin.toDate(), new Date()) === 0
                             ? "Vence hoy"
                             : `${Math.abs(differenceInDays(notification.fechaFin.toDate(), new Date()))} días 
@@ -125,7 +125,7 @@ export default function ArchivedNotifications() {
 
                         {/* Fecha de vencimiento */}
                         <time
-                        className="text-xs text-gray-500"
+                        className="text-xs text-gray-500 dark:text-white"
                         dateTime={notification.fechaFin.toDate().toISOString()}
                         >
                         Vence el {format(notification.fechaFin.toDate(), "dd MMM yyyy", { locale: es })}
@@ -137,7 +137,7 @@ export default function ArchivedNotifications() {
             ))}
           </div>
         ) : (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-8 text-center text-gray-500 dark:text-white">
             No hay notificaciones archivadas
           </div>
         )}

@@ -10,7 +10,7 @@ export default function UnauthorizedPage() {
   const router = useRouter()
 
   return (
-    <div className=" bg-gray-50 flex items-center justify-center p-4">
+    <div className=" bg-gray-50 flex items-center justify-center p-4 dark:bg-gray-900">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center space-x-2">

@@ -96,55 +96,58 @@ export default function Inicio() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900">
       <div className="container mx-auto px-4 py-16">
-        <Card className="max-w-4xl mx-auto">
+        <Card className="max-w-4xl mx-auto dark:bg-gray-800 dark:border-gray-700">
           <CardHeader className="text-center">
-            <CardTitle className="text-4xl font-bold tracking-tight">
+            <CardTitle className="text-4xl font-bold tracking-tight dark:text-white">
               Bienvenido, {userRole || 'Usuario'}
             </CardTitle>
-            <CardDescription className="text-lg mt-2">
+            <CardDescription className="text-lg mt-2 dark:text-gray-300">
               Selecciona una de las siguientes opciones para comenzar
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 mt-6">
               {/* Dashboard Card - Available to all */}
-              <Card className="group hover:shadow-lg transition-all duration-300">
+              <Card className="group hover:shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-300">
                 <CardContent className="flex items-center p-6">
-                  <div className="bg-blue-500/10 p-3 rounded-lg mr-4 group-hover:bg-blue-500/20 transition-all duration-300">
-                    <LayoutDashboard className="h-6 w-6 text-blue-500" />
+                  <div className="bg-blue-500/10 dark:bg-blue-500/20 p-3 rounded-lg mr-4 group-hover:bg-blue-500/20 dark:group-hover:bg-blue-500/30 transition-all duration-300">
+                    <LayoutDashboard className="h-6 w-6 text-blue-500 dark:text-blue-400" />
                   </div>
                   <div className="flex-grow">
-                    <h3 className="font-semibold text-lg mb-1">Dashboard Principal</h3>
-                    <p className="text-muted-foreground">Accede al panel principal del sistema</p>
+                    <h3 className="font-semibold text-lg mb-1 dark:text-white">Dashboard Principal</h3>
+                    <p className="text-muted-foreground dark:text-gray-300">Accede al panel principal del sistema</p>
                   </div>
                   <Button
                     onClick={() => router.push('/dashboard')}
                     variant="default"
-                    className="ml-4"
+                    className="ml-4 dark:bg-blue-600 dark:hover:bg-blue-500"
                   >
                     Acceder
                   </Button>
                 </CardContent>
               </Card>
-
+  
               {/* Role-specific cards */}
               {roleCards.map((card) => (
                 userRole?.toUpperCase() === card.role && (
-                  <Card key={card.role} className="group hover:shadow-lg transition-all duration-300">
+                  <Card 
+                    key={card.role} 
+                    className="group hover:shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-300"
+                  >
                     <CardContent className="flex items-center p-6">
-                      <div className={`p-3 rounded-lg mr-4 group-hover:opacity-80 transition-all duration-300 ${card.color}`}>
-                        <card.icon className="h-6 w-6" />
+                      <div className={`p-3 rounded-lg mr-4 group-hover:opacity-80 transition-all duration-300 ${card.color} dark:opacity-70`}>
+                        <card.icon className="h-6 w-6 dark:text-white" />
                       </div>
                       <div className="flex-grow">
-                        <h3 className="font-semibold text-lg mb-1">{card.title}</h3>
-                        <p className="text-muted-foreground">{card.description}</p>
+                        <h3 className="font-semibold text-lg mb-1 dark:text-white">{card.title}</h3>
+                        <p className="text-muted-foreground dark:text-gray-300">{card.description}</p>
                       </div>
                       <Button
                         onClick={() => router.push(card.path)}
                         variant="default"
-                        className="ml-4"
+                        className="ml-4 dark:bg-blue-600 dark:hover:bg-blue-500"
                       >
                         Acceder
                       </Button>

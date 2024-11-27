@@ -101,18 +101,18 @@ export default function Dashboard() {
   const salaryStats: SalaryStat[] = useSalaryStats(departmentData); // Especificamos el tipo de salaryStats
 
   return (
-  <div className="space-y-8 p-6 bg-slate-50">
+  <div className="space-y-8 p-6 bg-slate-50 dark:bg-gray-800 dark:border-gray-700 rounded-2xl  ">
     <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard RRHH</h1>
+        <h1 className="text-3xl font-bold tracking-tight dark:text-white">Dashboard RRHH</h1>
         <p className="text-sm text-muted-foreground">
           Vista general de recursos humanos
         </p>
       </div>
 
-      <Card className="w-full sm:w-72 bg-white/50 backdrop-blur shadow-sm">
+      <Card className="w-full sm:w-72 bg-white/50 backdrop-blur shadow-sm dark:bg-gray-950">
         <CardContent className="pt-4">
-          <label className="block text-sm font-medium text-muted-foreground mb-2">
+          <label className="block text-sm font-medium text-muted-foreground mb-2 dark:text-white">
             Seleccionar Empresa
           </label>
           <Select value={selectedCompany} onValueChange={setSelectedCompany}>
@@ -133,8 +133,8 @@ export default function Dashboard() {
 
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card className="hover:shadow-lg transition-all">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Total Empleados</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
+          <CardTitle className="text-sm font-medium text-muted-foreground  ">Total Empleados</CardTitle>
           <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
             <Users className="h-4 w-4 text-blue-600" />
           </div>
@@ -142,7 +142,7 @@ export default function Dashboard() {
         <CardContent>
           <div className="space-y-1">
             <div className="text-2xl font-bold">{totalEmployees}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground ">
               Empleados activos
             </p>
           </div>
@@ -208,10 +208,10 @@ export default function Dashboard() {
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {salaryStats.map((stat: SalaryStat, index: number) => (
-            <div key={index} className="bg-white p-4 rounded-lg border">
+            <div key={index} className="bg-white p-4 rounded-lg border dark:bg-gray-950">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-medium text-sm text-muted-foreground">{stat.name}</h3>
-                <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center dark:bg-gray-950">
                   <DollarSign className="h-4 w-4 text-slate-600" />
                 </div>
               </div>
@@ -242,6 +242,7 @@ export default function Dashboard() {
           Proporción de empleados por género en la organización
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <div className="w-full h-[450px] flex items-center justify-center">
           <div className="w-full max-w-[500px]">

@@ -58,13 +58,13 @@ export default function Asistencia() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-3xl">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Registro de Asistencia</h1>
+    <div className="container mx-auto p-6 max-w-3xl dark:bg-gray-800 dark:border-gray-700 dark:text-white rounded-2xl">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6 justify-center text-center dark:bg-gray-800 dark:border-gray-700 dark:text-white rounded-2xl">Registro de Asistencia</h1>
 
       {/* Selector de empresa */}
-      <div className="mb-6 flex justify-center bg-white shadow-md rounded-lg p-6 max-w-60 ml-52">
+      <div className="mb-6 flex justify-center bg-white shadow-md rounded-lg p-6 max-w-60 ml-52 dark:bg-gray-950  dark:text-white ">
         <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-          <SelectTrigger className="w-72 text-gray-700">
+          <SelectTrigger className="w-72 text-gray-700 dark:text-white">
             <SelectValue placeholder="Selecciona una empresa" />
           </SelectTrigger>
           <SelectContent>
@@ -78,30 +78,30 @@ export default function Asistencia() {
       </div>
 
       {/* Tabla de asistencia */}
-      <div className="overflow-hidden bg-white shadow-lg rounded-lg">
+      <div className="overflow-hidden bg-white shadow-lg rounded-lg dark:bg-gray-950">
         <Table className="w-full">
           <TableHeader>
-            <TableRow className="bg-gray-50 border-b">
-              <TableCell className="font-semibold text-gray-600 text-center p-3 justify-center">ID</TableCell>
-              <TableCell className="font-semibold text-gray-600 text-center p-3">Nombre</TableCell>
-              <TableCell className="font-semibold text-gray-600 text-center p-3">DNI</TableCell>
-              <TableCell className="font-semibold text-gray-600 text-center p-3">Departamento</TableCell>
-              <TableCell className="font-semibold text-gray-600 text-center p-3">Asistencia</TableCell>
+            <TableRow className="bg-gray-50 border-b dark:bg-gray-950 ">
+              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">ID</TableCell>
+              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">Nombre</TableCell>
+              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">DNI</TableCell>
+              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">Departamento</TableCell>
+              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">Asistencia</TableCell>
             </TableRow>
           </TableHeader>
           <TableBody>
             {employees.length > 0 ? (
               employees.map((employee) => (
-                <TableRow key={employee.id} className="hover:bg-gray-100 border-b">
-                  <TableCell className="text-center text-gray-700 p-3">{employee.id}</TableCell>
-                  <TableCell className="text-center text-gray-700 p-3">
+                <TableRow key={employee.id} className="hover:bg-gray-100 border-b dark:hover:bg-gray-800">
+                  <TableCell className="text-center text-gray-700 p-3 dark:text-white">{employee.id}</TableCell>
+                  <TableCell className="text-center text-gray-700 p-3 dark:text-white">
                     {employee.nombre} {employee.apellido}
                   </TableCell>
-                  <TableCell className="text-center text-gray-700 p-3">{employee.dni}</TableCell>
-                  <TableCell className="text-center text-gray-700 p-3">{employee.departamento}</TableCell>
+                  <TableCell className="text-center text-gray-700 p-3 dark:text-white">{employee.dni}</TableCell>
+                  <TableCell className="text-center text-gray-700 p-3 dark:text-white">{employee.departamento}</TableCell>
                   <TableCell className="text-center p-3">
                     <Button
-                      className="bg-blue-500 text-white hover:bg-blue-600"
+                      className="bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-800 dark:hover:bg-blue-900 "
                       onClick={() => handleMarkAttendance(employee)}
                     >
                       Marcar Asistencia

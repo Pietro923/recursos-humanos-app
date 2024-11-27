@@ -52,10 +52,10 @@ export default function Graficotorta({ genderData }: GraficotortaProps) {
   };
 
   return (
-    <Card className="flex flex-col shadow-lg rounded-lg hover:shadow-xl transition-shadow duration-300">
+    <Card className="flex flex-col shadow-lg rounded-lg hover:shadow-xl transition-shadow duration-300 ">
       <CardHeader className="items-center pb-2">
-        <CardTitle className="text-xl font-semibold text-gray-800">Distribución de Empleados por Género</CardTitle>
-        <CardDescription className="text-sm text-gray-500">Total de empleados: {totalEmpleados}</CardDescription>
+        <CardTitle className="text-xl font-semibold text-gray-800 dark:text-white">Distribución de Empleados por Género</CardTitle>
+        <CardDescription className="text-sm text-gray-500 dark:text-gray-100">Total de empleados: {totalEmpleados}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -73,7 +73,7 @@ export default function Graficotorta({ genderData }: GraficotortaProps) {
                 boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',   // Sombra suave
               }}
             />
-            <Pie data={datosEmpleados} dataKey="cantidad" nameKey="genero" isAnimationActive={true}>
+            <Pie className="dark:text-black" data={datosEmpleados} dataKey="cantidad" nameKey="genero" isAnimationActive={true}>
               <LabelList
                 dataKey="cantidad"
                 position="inside"
@@ -86,23 +86,23 @@ export default function Graficotorta({ genderData }: GraficotortaProps) {
           </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex flex-col gap-4 text-sm bg-gray-100 p-4 rounded-b-lg shadow-md">
-        <div className="flex items-center gap-2 font-medium text-gray-800">
+      <CardFooter className="flex flex-col gap-4 text-sm bg-gray-100 p-4 rounded-b-lg shadow-md dark:bg-gray-800">
+        <div className="flex items-center gap-2 font-medium text-gray-800 dark:text-white ">
           <span>Total de empleados:</span>
           <span className="text-lg font-semibold">{totalEmpleados}</span>
-          <Users className="h-5 w-5 text-gray-600" />
+          <Users className="h-5 w-5 text-gray-600 dark:text-white" />
         </div>
-        <div className="text-sm text-gray-500 leading-none">
+        <div className="text-sm text-gray-500 leading-none dark:text-gray-100">
           La cantidad de empleados se divide entre hombres y mujeres
         </div>
         <div className="flex justify-between text-sm text-gray-700 space-x-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 dark:text-gray-100">
             {/* Cuadrado azul para hombres */}
             <div className="w-4 h-4 bg-[#1E40AF] rounded-sm"></div>
-            <span className="font-medium">Hombres:</span>
+            <span className="font-medium ">Hombres:</span>
             <span>{genderData.hombres}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 dark:text-gray-100">
             {/* Cuadrado rosa para mujeres */}
             <div className="w-4 h-4 bg-[#EC4899] rounded-sm"></div>
             <span className="font-medium">Mujeres:</span>
@@ -110,8 +110,6 @@ export default function Graficotorta({ genderData }: GraficotortaProps) {
           </div>
         </div>
       </CardFooter>
-      <div className="px-4 py-2 bg-gray-50 rounded-b-lg">
-      </div>
     </Card>
   );
 }

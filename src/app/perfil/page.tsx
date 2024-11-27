@@ -8,11 +8,28 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Camera, Mail, Phone, User, Building } from "lucide-react";
+import { getFirestore, doc,getDoc, updateDoc } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+interface CurrentUser {
+  uid: string;
+  email: string | null;
+}
+
+interface UserProfile {
+  nickname: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  department: string;
+  bio: string;
+}
 
 const ProfilePage = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [formData, setFormData] = useState<UserProfile>({
     nickname: "",
     fullName: "",
     email: "",
@@ -21,17 +38,48 @@ const ProfilePage = () => {
     bio: "",
   });
 
-  // Simulate loading initial data
   useEffect(() => {
-    setFormData({
-      nickname: "usuario123",
-      fullName: "Juan Pérez",
-      email: "juan@ejemplo.com",
-      phone: "+34 123 456 789",
-      department: "Recursos Humanos",
-      bio: "Profesional con experiencia en gestión de recursos humanos.",
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser({ uid: user.uid, email: user.email });
+      } else {
+        setCurrentUser(null);
+      }
     });
+    return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        if (currentUser) {
+          const db = getFirestore();
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+  
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            // Verificar que los datos cumplen con el tipo UserProfile
+            const userData: UserProfile = {
+              nickname: data.nickname || "",
+              fullName: data.fullName || "",
+              email: data.email || "",
+              phone: data.phone || "",
+              department: data.department || "",
+              bio: data.bio || "",
+            };
+            setFormData(userData);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+  
+    fetchUserData();
+  }, [currentUser]);
+
+  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -41,29 +89,40 @@ const ProfilePage = () => {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast({
-        title: "Perfil actualizado",
-        description: "Los cambios han sido guardados correctamente.",
-      });
+      const db = getFirestore();
+      if (currentUser) {
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+          nickname: formData.nickname,
+          fullName: formData.fullName,
+          phone: formData.phone,
+          department: formData.department,
+          bio: formData.bio,
+        });
+        toast({
+          title: 'Perfil actualizado',
+          description: 'Los cambios han sido guardados correctamente.',
+        });
+      } else {
+        throw new Error('No se pudo obtener el usuario actual');
+      }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "No se pudieron guardar los cambios.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'No se pudieron guardar los cambios.',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="container max-w-4xl mx-auto py-10">
       <Tabs defaultValue="personal" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="personal">Información Personal</TabsTrigger>
-          <TabsTrigger value="preferences">Preferencias</TabsTrigger>
+          <TabsTrigger value="actualizar">Actualizar Información Personal</TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal">
@@ -71,7 +130,113 @@ const ProfilePage = () => {
             <CardHeader>
               <CardTitle>Perfil Personal</CardTitle>
               <CardDescription>
-                Gestiona tu información personal y detalles de contacto
+                Observa tu información personal y detalles de contacto
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col items-center space-y-4">
+                <Avatar className="h-24 w-24">
+                  <AvatarImage src="" />
+                  <AvatarFallback className="bg-blue-600 text-white text-xl">
+                    {formData.fullName.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="nickname">
+                    <User className="inline-block w-4 h-4 mr-2" />
+                    Nickname
+                  </Label>
+                  <Input
+                    id="nickname"
+                    name="nickname"
+                    value={formData.nickname}
+                    disabled
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">
+                    <User className="inline-block w-4 h-4 mr-2" />
+                    Nombre completo
+                  </Label>
+                  <Input
+                    id="fullName"
+                    name="fullName"
+                    value={formData.fullName}
+                    disabled
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">
+                    <Mail className="inline-block w-4 h-4 mr-2" />
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    disabled
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">
+                    <Phone className="inline-block w-4 h-4 mr-2" />
+                    Teléfono
+                  </Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    disabled
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="department">
+                    <Building className="inline-block w-4 h-4 mr-2" />
+                    Departamento
+                  </Label>
+                  <Input
+                    id="department"
+                    name="department"
+                    value={formData.department}
+                    disabled
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="bio">Biografía</Label>
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    value={formData.bio}
+                    disabled
+                    className="w-full min-h-[100px] p-2 rounded-md border border-input bg-background"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+
+        <TabsContent value="actualizar">
+        <Card>
+            <CardHeader>
+              <CardTitle>Actualizar Perfil Personal</CardTitle>
+              <CardDescription>
+                Actualiza tu información personal y detalles de contacto
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -179,20 +344,6 @@ const ProfilePage = () => {
                   Guardar Cambios
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="preferences">
-          <Card>
-            <CardHeader>
-              <CardTitle>Preferencias</CardTitle>
-              <CardDescription>
-                Personaliza tu experiencia en la plataforma
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* Add preferences content here */}
             </CardContent>
           </Card>
         </TabsContent>

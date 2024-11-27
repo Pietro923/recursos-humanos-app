@@ -442,10 +442,10 @@ export default function TrainingPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <GraduationCap className="h-8 w-8 text-primary" />
-          <h1 className="text-4xl font-bold tracking-tight">Programas de Formación</h1>
+          <h1 className="text-4xl font-bold tracking-tight dark:text-white">Programas de Formación</h1>
         </div>
         <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-          <SelectTrigger className="w-[250px]">
+          <SelectTrigger className="w-[250px] dark:text-white dark:bg-gray-950">
             <SelectValue placeholder="Seleccionar empresa" />
           </SelectTrigger>
           <SelectContent>
@@ -459,20 +459,20 @@ export default function TrainingPage() {
       </div>
 
       <Tabs defaultValue="list" className="w-full">
-        <TabsList>
-          <TabsTrigger value="list" className="flex items-center gap-2">
+        <TabsList className="dark:text-white dark:bg-gray-950 ">
+          <TabsTrigger value="list" className="flex items-center gap-2 dark:hover:bg-gray-800">
             <List className="h-4 w-4" />
             Lista de Cursos
           </TabsTrigger>
-          <TabsTrigger value="calendar" className="flex items-center gap-2">
+          <TabsTrigger value="calendar" className="flex items-center gap-2 dark:hover:bg-gray-800">
             <Calendar className="h-4 w-4" />
             Calendario
           </TabsTrigger>
-          <TabsTrigger value="global" className="flex items-center gap-2">
+          <TabsTrigger value="global" className="flex items-center gap-2 dark:hover:bg-gray-800">
             <Users className="h-4 w-4" />
             Vista Global
           </TabsTrigger>
-          <TabsTrigger value="archived" className="flex items-center gap-2">
+          <TabsTrigger value="archived" className="flex items-center gap-2 dark:hover:bg-gray-800">
             <Archive className="h-4 w-4" />
             Cursos Archivados
           </TabsTrigger>
@@ -486,12 +486,12 @@ export default function TrainingPage() {
                   <Users className="h-5 w-5 text-muted-foreground" />
                   <CardTitle>Cursos Disponibles</CardTitle>
                 </div>
-                <Button 
+                <Button
                   onClick={() => setShowAddCourseModal(true)}
-                  className="gap-2"
+                  className="gap-2 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
                   disabled={!selectedCompany}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4 dark:text-white" />
                   Agregar Nuevo Curso
                 </Button>
               </div>
@@ -500,11 +500,11 @@ export default function TrainingPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nombre del Curso</TableHead>
-                    <TableHead>Departamento</TableHead>
-                    <TableHead>Duración</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
+                    <TableHead className="dark:text-white">Nombre del Curso</TableHead>
+                    <TableHead className="dark:text-white">Departamento</TableHead>
+                    <TableHead className="dark:text-white">Duración</TableHead>
+                    <TableHead className="dark:text-white">Estado</TableHead>
+                    <TableHead className="dark:text-white text-right">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -514,9 +514,9 @@ export default function TrainingPage() {
                       <TableCell>{course.department}</TableCell>
                       <TableCell>{course.duration}</TableCell>
                       <TableCell>
-                        <Badge className={getStatusStyle(course.status)}>
-                          {course.status}
-                        </Badge>
+                      <Badge className={`dark:text-white ${getStatusStyle(course.status)}`}>
+                        {course.status}
+                      </Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
@@ -603,7 +603,7 @@ export default function TrainingPage() {
 
       {/* Modal para agregar curso */}
       <Dialog open={showAddCourseModal} onOpenChange={setShowAddCourseModal}>
-        <DialogContent className="max-w-2xl bg-white">
+        <DialogContent className="max-w-2xl bg-white dark:bg-gray-900 dark:border-gray-700 dark:text-white">
           <DialogHeader>
             <DialogTitle>Agregar Nuevo Curso</DialogTitle>
           </DialogHeader>
@@ -612,6 +612,7 @@ export default function TrainingPage() {
               <div className="space-y-2">
                 <label>Nombre del Curso</label>
                 <Input
+                  className="dark:border-gray-500"
                   value={newCourse.name}
                   onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
                   placeholder="Nombre del curso"
@@ -620,6 +621,7 @@ export default function TrainingPage() {
               <div className="space-y-2">
                 <label>Departamento</label>
                 <Input
+                className="dark:border-gray-500"
                   value={newCourse.department}
                   onChange={(e) => setNewCourse({ ...newCourse, department: e.target.value })}
                   placeholder="Departamento"
@@ -630,6 +632,7 @@ export default function TrainingPage() {
               <div className="space-y-2">
                 <label>Fecha de Inicio</label>
                 <Input
+                className="dark:border-gray-500"
                   type="date"
                   value={newCourse.startDate}
                   onChange={(e) => setNewCourse({ ...newCourse, startDate: e.target.value })}
@@ -638,6 +641,7 @@ export default function TrainingPage() {
               <div className="space-y-2">
                 <label>Fecha de Fin</label>
                 <Input
+                className="dark:border-gray-500"
                   type="date"
                   value={newCourse.endDate}
                   onChange={(e) => setNewCourse({ ...newCourse, endDate: e.target.value })}
@@ -647,6 +651,7 @@ export default function TrainingPage() {
             <div className="space-y-2">
               <label>Duración</label>
               <Input
+              className="dark:border-gray-500"
                 value={newCourse.duration}
                 onChange={(e) => setNewCourse({ ...newCourse, duration: e.target.value })}
                 placeholder="Ej: 2 semanas"
@@ -655,16 +660,17 @@ export default function TrainingPage() {
             <div className="space-y-2">
               <label>Descripción</label>
               <Textarea
+              className="dark:border-gray-500"
                 value={newCourse.description}
                 onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
                 placeholder="Descripción del curso"
               />
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowAddCourseModal(false)}>
+              <Button className="dark:bg-gray-600 dark:hover:bg-gray-700" variant="outline" onClick={() => setShowAddCourseModal(false)}>
                 Cancelar
               </Button>
-              <Button onClick={handleAddCourse}>Guardar Curso</Button>
+              <Button className="dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white" onClick={handleAddCourse}>Guardar Curso</Button>
             </div>
           </div>
         </DialogContent>
@@ -672,7 +678,7 @@ export default function TrainingPage() {
 
       {/* Modal de detalles del curso */}
       <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
-  <DialogContent className="max-w-2xl bg-white">
+  <DialogContent className="max-w-2xl bg-white dark:bg-gray-900 dark:border-gray-700 dark:text-white">
     <DialogHeader>
       <DialogTitle>Detalles del Curso</DialogTitle>
     </DialogHeader>
@@ -744,7 +750,7 @@ export default function TrainingPage() {
 
       {/* Modal para asignar empleado */}
       <Dialog open={showAssignEmployeeModal} onOpenChange={setShowAssignEmployeeModal}>
-        <DialogContent className="bg-white">
+        <DialogContent className="bg-white dark:bg-gray-900 dark:border-gray-700 dark:text-white">
           <DialogHeader>
             <DialogTitle>Asignar Empleado al Curso</DialogTitle>
           </DialogHeader>
@@ -770,7 +776,7 @@ export default function TrainingPage() {
               <Button variant="outline" onClick={() => setShowAssignEmployeeModal(false)}>
                 Cancelar
               </Button>
-              <Button onClick={handleAssignEmployee}>Asignar</Button>
+              <Button className="dark:text-white dark:bg-gray-900 dark:border-gray-300 dark:hover:bg-gray-700" onClick={handleAssignEmployee}>Asignar</Button>
             </div>
           </div>
         </DialogContent>

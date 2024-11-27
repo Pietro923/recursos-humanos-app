@@ -29,10 +29,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Sidebar from '../components/Sidebar';
+import Sidebar from '@/components/Sidebar';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import NotificationBell from '@/components/notificaciones';
+import { AppSettingsProvider } from "@/components/appSettingsProvider" // Ajusta la ruta según tu estructura
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -127,8 +128,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="es">
-      <body className={inter.className}>
-        <div className="flex h-screen bg-gray-50">
+    <body className={`${inter.className} dark:bg-gray-900`}>
+      <AppSettingsProvider>
+        <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
           {/* Sidebar */}
           <AnimatePresence mode="wait">
             {isSidebarOpen && (
@@ -147,32 +149,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Main content */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Navbar */}
-            <header className="bg-white border-b border-gray-200 z-30">
-              <div className="px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
+            <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-30">
+            <div className="px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16">
                   {/* Left section */}
                   <div className="flex items-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                      className="mr-4"
-                    >
-                      {isSidebarOpen ? (
-                        <X className="h-6 w-6" />
-                      ) : (
-                        <Menu className="h-6 w-6" />
-                      )}
-                    </Button>
+                  <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  className="mr-4 dark:hover:bg-gray-700"
+                >
+                  {isSidebarOpen ? (
+                    <X className="h-6 w-6 dark:text-white" />
+                  ) : (
+                    <Menu className="h-6 w-6 dark:text-white" />
+                  )}
+                </Button>
                   </div>
 
                   {/* Right section */}
                   <div className="flex items-center space-x-4">
-                    <NotificationBell />
+                    <NotificationBell /> 
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center space-x-2">
+                        <Button variant="ghost" className="flex items-center space-x-2 dark:text-white">
                           <Avatar className="h-8 w-8">
                             <AvatarImage src="" />
                             <AvatarFallback className="bg-blue-600 text-white">
@@ -231,8 +233,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </header>
 
             {/* Main content area */}
-            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
-              <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-900">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -245,6 +247,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
           <Toaster />
         </div>
+        </AppSettingsProvider>
       </body>
     </html>
   );

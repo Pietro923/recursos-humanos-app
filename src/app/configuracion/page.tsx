@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useAppSettings } from "@/components/appSettingsProvider"; // Ajusta la ruta según tu estructura
 import { auth, db } from "@/lib/firebaseConfig";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import {
   Card,
@@ -22,74 +23,52 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import {
   Loader2, 
   Moon,
+  Save,
 } from "lucide-react";
 
+// Definimos el tipo de 'settings' para permitir claves dinámicas
+interface ThemeSettings {
+  mode: string;
+  fontSize: string;
+  animations: boolean;
+}
+
+interface LanguageSettings {
+  preferred: string;
+}
+
+interface AppSettings {
+  theme: ThemeSettings;
+  language: LanguageSettings;
+  // Agregar otras secciones según sea necesario
+}
+
 const SettingsPage = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [settings, setSettings] = useState({
-    theme: {
-      mode: "light",
-      fontSize: "normal",
-      colorScheme: "default",
-      animations: true,
-    },
-    notifications: {
-      email: true,
-      push: true,
-      sounds: true,
-      updates: true,
-      reminders: true,
-      marketing: false,
-    },
-    privacy: {
-      profileVisibility: "public",
-      activityStatus: true,
-      showEmail: false,
-      twoFactorAuth: false,
-    },
-    language: {
-      preferred: "es",
-      timezone: "UTC+1",
-      dateFormat: "DD/MM/YYYY",
-      timeFormat: "24h",
-    },
-    accessibility: {
-      highContrast: false,
-      reducedMotion: false,
-      screenReader: false,
-      keyboardShortcuts: true,
-    },
-  });
-
+  const { settings, updateSettings } = useAppSettings();
   const { toast } = useToast();
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [hasChanges, setHasChanges] = React.useState(false);
 
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const user = auth.currentUser;
-        if (!user) return;
-
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists() && userDoc.data().settings) {
-          setSettings(userDoc.data().settings);
-        }
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar las configuraciones",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
+  const handleSettingChange = (
+    section: keyof AppSettings, // Usamos 'keyof AppSettings' para asegurar que 'section' es una clave válida
+    key: string,
+    value: string | boolean
+  ) => {
+    const updatedSettings = {
+      ...settings,
+      [section]: {
+        ...settings[section],
+        [key]: value
       }
     };
-
-    loadSettings();
-  }, [toast]);
+    
+    updateSettings(updatedSettings);
+    setHasChanges(true);
+  };
 
   const handleSave = async () => {
     try {
@@ -103,9 +82,11 @@ const SettingsPage = () => {
       });
 
       toast({
+        variant: "default",
         title: "Configuración actualizada",
         description: "Los cambios han sido guardados exitosamente",
       });
+      setHasChanges(false);
     } catch (error) {
       toast({
         title: "Error",
@@ -117,29 +98,34 @@ const SettingsPage = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
   return (
-    <div className="container max-w-4xl mx-auto py-10 px-4">
+    <div className="container max-w-4xl mx-auto py-10 px-4 ">
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Configuración</h1>
-          <p className="text-gray-500">Gestiona tus preferencias y configuración de la aplicación</p>
+        <div className="flex justify-between items-center ">
+          <div>
+            <h1 className="text-3xl font-bold dark:text-white">Configuración</h1>
+            <p className="text-gray-500 dark:text-white">Gestiona tus preferencias y configuración de la aplicación</p>
+          </div>
+          <Button 
+            onClick={handleSave} 
+            disabled={!hasChanges || isSaving}
+            className="flex items-center gap-2 dark:text-white dark:bg-gray-700 dark:hover:gray-600"
+          >
+            {isSaving ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            Guardar Cambios
+          </Button>
         </div>
 
         <Tabs defaultValue="general" className="space-y-6">
-          <TabsList className="bg-white border">
+          <TabsList className="grid w-full grid-cols-1">
             <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="accessibility">Accesibilidad</TabsTrigger>
           </TabsList>
 
-          {/* Pestaña General */}
+          {/* General Tab */}
           <TabsContent value="general">
             <Card>
               <CardHeader>
@@ -154,14 +140,11 @@ const SettingsPage = () => {
               <CardContent className="space-y-6">
                 <div className="grid gap-4">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="theme">Tema</Label>
+                    <Label>Tema</Label>
                     <Select
                       value={settings.theme.mode}
-                      onValueChange={(value) =>
-                        setSettings({
-                          ...settings,
-                          theme: { ...settings.theme, mode: value },
-                        })
+                      onValueChange={(value) => 
+                        handleSettingChange('theme', 'mode', value)
                       }
                     >
                       <SelectTrigger className="w-[180px]">
@@ -174,16 +157,15 @@ const SettingsPage = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                    
+                  <Separator />
 
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="font-size">Tamaño de fuente</Label>
+                    <Label>Tamaño de fuente</Label>
                     <Select
                       value={settings.theme.fontSize}
-                      onValueChange={(value) =>
-                        setSettings({
-                          ...settings,
-                          theme: { ...settings.theme, fontSize: value },
-                        })
+                      onValueChange={(value) => 
+                        handleSettingChange('theme', 'fontSize', value)
                       }
                     >
                       <SelectTrigger className="w-[180px]">
@@ -197,80 +179,37 @@ const SettingsPage = () => {
                     </Select>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Animaciones</Label>
-                      <p className="text-sm text-gray-500">
-                        Activa o desactiva las animaciones de la interfaz
-                      </p>
+
+                  <Separator />
+
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Idioma</Label>
+                      <Select
+                        value={settings.language.preferred}
+                        onValueChange={(value) => 
+                          handleSettingChange('language', 'preferred', value)
+                        }
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Selecciona un idioma" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="es">Español</SelectItem>
+                          <SelectItem value="en">English</SelectItem>
+                          <SelectItem value="fr">Français</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <Switch
-                      checked={settings.theme.animations}
-                      onCheckedChange={(checked) =>
-                        setSettings({
-                          ...settings,
-                          theme: { ...settings.theme, animations: checked },
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="grid gap-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="language">Idioma</Label>
-                    <Select
-                      value={settings.language.preferred}
-                      onValueChange={(value) =>
-                        setSettings({
-                          ...settings,
-                          language: { ...settings.language, preferred: value },
-                        })
-                      }
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Selecciona un idioma" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="es">Español</SelectItem>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="fr">Français</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="date-format">Formato de fecha</Label>
-                    <Select
-                      value={settings.language.dateFormat}
-                      onValueChange={(value) =>
-                        setSettings({
-                          ...settings,
-                          language: { ...settings.language, dateFormat: value },
-                        })
-                      }
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Formato de fecha" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
-                        <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
-                        <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
 
-          
-              </Tabs>
-              </div>
-              </div>
-                  );
-                };
 export default SettingsPage;
