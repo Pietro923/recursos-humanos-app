@@ -14,8 +14,9 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "react-i18next";
 
-const RecordatoriosForm = () => {
+const recordatoriossForm = () => {
   const [selectedCompany, setSelectedCompany] = useState("");
   const [employees, setEmployees] = useState<any[]>([]); // Lista de empleados
   const [employee, setEmployee] = useState<string>(""); // Empleado seleccionado
@@ -25,7 +26,8 @@ const RecordatoriosForm = () => {
   const [description, setDescription] = useState<string>("");
   const companies = ["Pueble SA - CASE IH", "KIA"]; // Empresas disponibles
   const { toast } = useToast();
-
+  const { t } = useTranslation(); // Hook de traducción
+  
   // Cargar empleados de la empresa seleccionada
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -54,7 +56,7 @@ const RecordatoriosForm = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Por favor completa todos los campos",
+        description: t('recordatorios.toast.description1'),
       });
       return;
     }
@@ -63,7 +65,7 @@ const RecordatoriosForm = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "La fecha de fin no puede ser anterior a la fecha de inicio",
+        description: t('recordatorios.toast.description2'),
       });
       return;
     }
@@ -76,16 +78,16 @@ const RecordatoriosForm = () => {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Empleado seleccionado no encontrado",
+          description: t('recordatorios.toast.description3'),
         });
         return;
       }
   
-      // Definir la colección de recordatorios según la empresa seleccionada
-      const recordatoriosRef = collection(db, "Grupo_Pueble", selectedCompany, "recordatorios");
+      // Definir la colección de recordatorioss según la empresa seleccionada
+      const recordatoriossRef = collection(db, "Grupo_Pueble", selectedCompany, "recordatorioss");
   
-      // Guardar el recordatorio en la colección correspondiente
-      await addDoc(recordatoriosRef, {
+      // Guardar el recordatorios en la colección correspondiente
+      await addDoc(recordatoriossRef, {
         empleadoId: employee,
         nombre: selectedEmployee.nombre, // Guardar nombre del empleado
         apellido: selectedEmployee.apellido, // Guardar apellido del empleado
@@ -97,8 +99,8 @@ const RecordatoriosForm = () => {
       });
   
       toast({
-        title: "¡Éxito!",
-        description: "Recordatorio agregado correctamente",
+        title: t('recordatorios.toast.title4'),
+        description: t('recordatorios.toast.description4'),
       });
   
       // Limpiar campos después de enviar
@@ -111,25 +113,25 @@ const RecordatoriosForm = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Error al guardar el recordatorio",
+        description: t('recordatorios.toast.description5'),
       });
-      console.error("Error al agregar recordatorio:", error);
+      console.error("Error al agregar recordatorios:", error);
     }
   };
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">Nuevo Recordatorio</CardTitle>
+        <CardTitle className="text-2xl font-bold">{t('recordatorios.card.title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Selección de la empresa */}
           <div className="space-y-2">
-            <Label htmlFor="company">Empresa</Label>
+            <Label htmlFor="company">{t('recordatorios.card.label1')}</Label>
             <Select value={selectedCompany} onValueChange={setSelectedCompany}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar empresa" />
+                <SelectValue placeholder={t('recordatorios.card.label1PlaceHolder')} />
               </SelectTrigger>
               <SelectContent>
                 {companies.map((comp) => (
@@ -143,10 +145,10 @@ const RecordatoriosForm = () => {
 
           {/* Selección de empleado */}
           <div className="space-y-2">
-            <Label htmlFor="employee">Empleado</Label>
+            <Label htmlFor="employee">{t('recordatorios.card.label2')}</Label>
             <Select value={employee} onValueChange={setEmployee}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar empleado" />
+                <SelectValue placeholder={t('recordatorios.card.label2PlaceHolder')} />
               </SelectTrigger>
               <SelectContent>
                 {employees.map((emp) => (
@@ -160,15 +162,14 @@ const RecordatoriosForm = () => {
 
           {/* Campos restantes: Tipo, Fechas, Descripción */}
           <div className="space-y-2">
-            <Label htmlFor="type">Tipo de Recordatorio</Label>
+            <Label htmlFor="type">{t('recordatorios.card.label3')}</Label>
             <Select value={type} onValueChange={setType}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar tipo" />
+                <SelectValue placeholder={t('recordatorios.card.label3PlaceHolder1')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="vacaciones">Vacaciones</SelectItem>
-                <SelectItem value="licencia">Licencia</SelectItem>
-                <SelectItem value="cumpleaños">Cumpleaños</SelectItem>
+                <SelectItem value="vacaciones">{t('recordatorios.card.label3PlaceHolder2')}</SelectItem>
+                <SelectItem value="licencia">{t('recordatorios.card.label3PlaceHolder3')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -176,7 +177,7 @@ const RecordatoriosForm = () => {
           {/* Fechas */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Fecha de Inicio</Label>
+              <Label>{t('recordatorios.card.label4')}</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -184,7 +185,7 @@ const RecordatoriosForm = () => {
                     className="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
+                    {startDate ? format(startDate, "PPP", { locale: es }) : <span>{t('recordatorios.card.label4PlaceHolder')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -194,7 +195,7 @@ const RecordatoriosForm = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Fecha de Fin</Label>
+              <Label>{t('recordatorios.card.label5')}</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -202,7 +203,7 @@ const RecordatoriosForm = () => {
                     className="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
+                    {endDate ? format(endDate, "PPP", { locale: es }) : <span>{t('recordatorios.card.label5PlaceHolder')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -214,18 +215,18 @@ const RecordatoriosForm = () => {
 
           {/* Descripción */}
           <div className="space-y-2">
-            <Label htmlFor="description">Descripción</Label>
+            <Label htmlFor="description">{t('recordatorios.card.label6')}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Detalles adicionales"
+              placeholder={t('recordatorios.card.label6PlaceHolder')}
               className="h-32"
             />
           </div>
 
           <Button type="submit" className="w-full dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white">
-            Guardar Recordatorio
+          {t('recordatorios.button')}
           </Button>
         </form>
       </CardContent>
@@ -233,4 +234,4 @@ const RecordatoriosForm = () => {
   );
 };
 
-export default RecordatoriosForm;
+export default recordatoriossForm;

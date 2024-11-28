@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { auth, db } from "@/lib/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import i18n from '@/lib/i18n';
 
 type ThemeMode = 'light' | 'dark' | 'system';
 type FontSize = 'small' | 'normal' | 'large';
@@ -37,9 +38,14 @@ export const AppSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ c
       animations: true
     },
     language: {
-      preferred: 'es'
+      preferred: 'es' // Idioma por defecto
     }
   });
+
+  useEffect(() => {
+    // Cambiar idioma de i18n cuando cambia la configuración
+    i18n.changeLanguage(settings.language.preferred);
+  }, [settings.language.preferred]);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -81,7 +87,7 @@ export const AppSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
     root.style.fontSize = fontSizeMap[settings.theme.fontSize];
   };
-
+  
   useEffect(() => {
     applyTheme(settings.theme.mode);
   }, [settings.theme.mode, settings.theme.fontSize]);

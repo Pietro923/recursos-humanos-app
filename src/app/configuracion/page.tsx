@@ -13,7 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -29,6 +28,7 @@ import {
   Moon,
   Save,
 } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 // Definimos el tipo de 'settings' para permitir claves dinámicas
 interface ThemeSettings {
@@ -52,6 +52,8 @@ const SettingsPage = () => {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = React.useState(false);
   const [hasChanges, setHasChanges] = React.useState(false);
+  const { t } = useTranslation(); // Hook de traducción
+  
 
   const handleSettingChange = (
     section: keyof AppSettings, // Usamos 'keyof AppSettings' para asegurar que 'section' es una clave válida
@@ -83,14 +85,14 @@ const SettingsPage = () => {
 
       toast({
         variant: "default",
-        title: "Configuración actualizada",
-        description: "Los cambios han sido guardados exitosamente",
+        title: t('notifications.saveSuccess.title'),
+        description: t('notifications.saveSuccess.description'),
       });
       setHasChanges(false);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "No se pudo actualizar la configuración",
+        title: t('notifications.saveError.title'),
+        description: t('notifications.saveError.description'),
         variant: "destructive",
       });
     } finally {
@@ -103,8 +105,8 @@ const SettingsPage = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center ">
           <div>
-            <h1 className="text-3xl font-bold dark:text-white">Configuración</h1>
-            <p className="text-gray-500 dark:text-white">Gestiona tus preferencias y configuración de la aplicación</p>
+            <h1 className="text-3xl font-bold dark:text-white">{t('settings.title')}</h1>
+            <p className="text-gray-500 dark:text-white"> {t('settings.description')}</p>
           </div>
           <Button 
             onClick={handleSave} 
@@ -116,7 +118,7 @@ const SettingsPage = () => {
             ) : (
               <Save className="h-4 w-4" />
             )}
-            Guardar Cambios
+            {t('buttons.save')}
           </Button>
         </div>
 
@@ -131,16 +133,16 @@ const SettingsPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Moon className="h-5 w-5" />
-                  Apariencia y Regional
+                  {t('settings.appearance')}
                 </CardTitle>
                 <CardDescription>
-                  Personaliza la apariencia de la aplicación y tus preferencias regionales
+                {t('settings.appearanceDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid gap-4">
                   <div className="flex items-center justify-between">
-                    <Label>Tema</Label>
+                    <Label>{t('theme.label')}</Label>
                     <Select
                       value={settings.theme.mode}
                       onValueChange={(value) => 
@@ -148,12 +150,12 @@ const SettingsPage = () => {
                       }
                     >
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Selecciona un tema" />
+                      <SelectValue placeholder={t('theme.label')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="light">Claro</SelectItem>
-                        <SelectItem value="dark">Oscuro</SelectItem>
-                        <SelectItem value="system">Sistema</SelectItem>
+                      <SelectItem value="light">{t('theme.light')}</SelectItem>
+                    <SelectItem value="dark">{t('theme.dark')}</SelectItem>
+                    <SelectItem value="system">{t('theme.system')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -161,7 +163,7 @@ const SettingsPage = () => {
                   <Separator />
 
                   <div className="flex items-center justify-between">
-                    <Label>Tamaño de fuente</Label>
+                  <Label>{t('fontSize.label')}</Label>
                     <Select
                       value={settings.theme.fontSize}
                       onValueChange={(value) => 
@@ -169,12 +171,12 @@ const SettingsPage = () => {
                       }
                     >
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Tamaño de fuente" />
+                      <SelectValue placeholder={t('fontSize.label')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="small">Pequeño</SelectItem>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="large">Grande</SelectItem>
+                      <SelectItem value="small">{t('fontSize.small')}</SelectItem>
+                    <SelectItem value="normal">{t('fontSize.normal')}</SelectItem>
+                    <SelectItem value="large">{t('fontSize.large')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -184,20 +186,20 @@ const SettingsPage = () => {
 
                   <div className="grid gap-4">
                     <div className="flex items-center justify-between">
-                      <Label>Idioma</Label>
+                    <Label>{t('language.label')}</Label>
                       <Select
-                        value={settings.language.preferred}
-                        onValueChange={(value) => 
-                          handleSettingChange('language', 'preferred', value)
-                        }
-                      >
+                  value={settings.language.preferred}
+                  onValueChange={(value) => 
+                    handleSettingChange('language', 'preferred', value)
+                  }
+                >
                         <SelectTrigger className="w-[180px]">
                           <SelectValue placeholder="Selecciona un idioma" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="es">Español</SelectItem>
-                          <SelectItem value="en">English</SelectItem>
-                          <SelectItem value="fr">Français</SelectItem>
+                        <SelectItem value="es">{t('language.es')}</SelectItem>
+                    <SelectItem value="en">{t('language.en')}</SelectItem>
+                    <SelectItem value="fr">{t('language.fr')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

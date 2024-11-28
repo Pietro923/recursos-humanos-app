@@ -15,6 +15,7 @@ import {
 import { format, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 interface Recordatorio {
   id: string;
@@ -32,7 +33,8 @@ function Recordatorios() {
   const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string>("Pueble SA - CASE IH");
   const [selectedRecordatorio, setSelectedRecordatorio] = useState<Recordatorio | null>(null); // Estado para el recordatorio seleccionado
-
+  const { t } = useTranslation(); // Hook de traducción dentro del componente funcional
+  
   useEffect(() => {
     const fetchRecordatorios = async () => {
       try {
@@ -98,11 +100,11 @@ function Recordatorios() {
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <CardTitle className="flex items-center space-x-3">
         <ClockIcon className="w-6 h-6 text-primary" />
-        <span>Recordatorios</span>
+        <span>{t('notificationBell.title')}</span>
       </CardTitle>
       <Select value={selectedCompany} onValueChange={setSelectedCompany}>
         <SelectTrigger className="w-full md:w-[250px]">
-          <SelectValue placeholder="Seleccionar empresa" />
+          <SelectValue placeholder={t('selectCompany')} />
         </SelectTrigger>
         <SelectContent className="z-50 max-h-60 overflow-y-auto">
           <SelectItem value="Pueble SA - CASE IH">Pueble SA - CASE IH</SelectItem>
@@ -153,7 +155,7 @@ function Recordatorios() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <CalendarIcon className="w-4 h-4" />
-                        <span>Inicio:</span>
+                        <span>{t('startDate')}:</span>
                       </div>
                       <span>
                         {format(startDate, "PPP", { locale: es })}
@@ -162,7 +164,7 @@ function Recordatorios() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <CalendarIcon className="w-4 h-4" />
-                        <span>Fin:</span>
+                        <span>{t('endDate')}:</span>
                       </div>
                       <span>
                         {format(endDate, "PPP", { locale: es })}
@@ -173,10 +175,10 @@ function Recordatorios() {
                   <div className="flex justify-between items-center pt-2 border-t">
                     <span className="text-xs font-medium">
                       {daysRemaining > 0 
-                        ? `${daysRemaining} días restantes` 
+                        ? `${daysRemaining} ${t('remainingDays')}` 
                         : daysRemaining === 0 
-                          ? "Hoy" 
-                          : "Vencido"}
+                          ? t('today') 
+                          : t('expired')}
                     </span>
                     <Dialog>
                       <DialogTrigger asChild>
@@ -185,7 +187,7 @@ function Recordatorios() {
                           size="sm"
                           onClick={() => setSelectedRecordatorio(recordatorio)} // Establece el recordatorio seleccionado
                         >
-                          Detalles
+                          {t('details')}
                         </Button>
                       </DialogTrigger>
 
@@ -196,16 +198,16 @@ function Recordatorios() {
                     hover:scale-105 hover:shadow-xl
                   `}>
                         <DialogHeader>
-                          <DialogTitle>Detalles del Recordatorio</DialogTitle>
+                          <DialogTitle>{t('reminderDetails')}</DialogTitle>
                         </DialogHeader>
-                        <DialogDescription>
+                        <DialogDescription className="dark:text-white">
                           {selectedRecordatorio && (
                             <>
-                              <p><strong>Tipo:</strong> {selectedRecordatorio.tipo}</p>
-                              <p><strong>Descripción:</strong> {selectedRecordatorio.descripcion}</p>
-                              <p><strong>Empleado:</strong> {selectedRecordatorio.nombre} {selectedRecordatorio.apellido}</p>
-                              <p><strong>Fecha de Inicio:</strong> {format(selectedRecordatorio.fechaInicio.toDate(), "PPP", { locale: es })}</p>
-                              <p><strong>Fecha de Fin:</strong> {format(selectedRecordatorio.fechaFin.toDate(), "PPP", { locale: es })}</p>
+                              <p><strong>{t('type')}:</strong> {selectedRecordatorio.tipo}</p>
+                              <p><strong>{t('description')}:</strong> {selectedRecordatorio.descripcion}</p>
+                              <p><strong>{t('employee')}:</strong> {selectedRecordatorio.nombre} {selectedRecordatorio.apellido}</p>
+                              <p><strong>{t('startDate')}:</strong> {format(selectedRecordatorio.fechaInicio.toDate(), "PPP", { locale: es })}</p>
+                              <p><strong>{t('endDate')}:</strong> {format(selectedRecordatorio.fechaFin.toDate(), "PPP", { locale: es })}</p>
                             </>
                           )}
                         </DialogDescription>
@@ -217,12 +219,7 @@ function Recordatorios() {
             })}
           </div>
         ) : (
-          <div className="text-center py-10 space-y-4">
-            <ClockIcon className="mx-auto w-12 h-12 text-gray-300" />
-            <p className="text-base text-gray-500">
-              No hay recordatorios próximos.
-            </p>
-          </div>
+          <p className="text-center text-gray-500">{t('noReminders')}</p>
         )}
       </CardContent>
     </Card>

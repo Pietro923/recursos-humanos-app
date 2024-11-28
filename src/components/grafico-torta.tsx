@@ -15,6 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useTranslation } from "react-i18next";
 
 // Definir el tipo de genderData
 interface GenderData {
@@ -33,7 +34,8 @@ export default function Graficotorta({ genderData }: GraficotortaProps) {
   ];
 
   const totalEmpleados = datosEmpleados.reduce((sum, { cantidad }) => sum + cantidad, 0);
-
+  const { t } = useTranslation(); // Hook de traducción dentro del componente funcional
+  
   const configuracionGrafico = {
     cantidad: {
       label: "Cantidad",
@@ -54,8 +56,8 @@ export default function Graficotorta({ genderData }: GraficotortaProps) {
   return (
     <Card className="flex flex-col shadow-lg rounded-lg hover:shadow-xl transition-shadow duration-300 ">
       <CardHeader className="items-center pb-2">
-        <CardTitle className="text-xl font-semibold text-gray-800 dark:text-white">Distribución de Empleados por Género</CardTitle>
-        <CardDescription className="text-sm text-gray-500 dark:text-gray-100">Total de empleados: {totalEmpleados}</CardDescription>
+        <CardTitle className="text-xl font-semibold text-gray-800 dark:text-white">{t('graficotorta.card.title')}</CardTitle>
+        <CardDescription className="text-sm text-gray-500 dark:text-gray-100">{t('graficotorta.card.description')}{totalEmpleados}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -88,24 +90,24 @@ export default function Graficotorta({ genderData }: GraficotortaProps) {
       </CardContent>
       <CardFooter className="flex flex-col gap-4 text-sm bg-gray-100 p-4 rounded-b-lg shadow-md dark:bg-gray-800">
         <div className="flex items-center gap-2 font-medium text-gray-800 dark:text-white ">
-          <span>Total de empleados:</span>
+          <span>{t('graficotorta.card.description')}</span>
           <span className="text-lg font-semibold">{totalEmpleados}</span>
           <Users className="h-5 w-5 text-gray-600 dark:text-white" />
         </div>
         <div className="text-sm text-gray-500 leading-none dark:text-gray-100">
-          La cantidad de empleados se divide entre hombres y mujeres
+        {t('graficotorta.card.description2')}
         </div>
         <div className="flex justify-between text-sm text-gray-700 space-x-6">
           <div className="flex items-center gap-2 dark:text-gray-100">
             {/* Cuadrado azul para hombres */}
             <div className="w-4 h-4 bg-[#1E40AF] rounded-sm"></div>
-            <span className="font-medium ">Hombres:</span>
+            <span className="font-medium ">{t('graficotorta.card.genre')}</span>
             <span>{genderData.hombres}</span>
           </div>
           <div className="flex items-center gap-2 dark:text-gray-100">
             {/* Cuadrado rosa para mujeres */}
             <div className="w-4 h-4 bg-[#EC4899] rounded-sm"></div>
-            <span className="font-medium">Mujeres:</span>
+            <span className="font-medium">{t('graficotorta.card.genre2')}</span>
             <span>{genderData.mujeres}</span>
           </div>
         </div>

@@ -19,6 +19,7 @@ import {
   addDoc
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
+import { useTranslation } from "react-i18next";
 
 interface Recordatorio {
   id: string;
@@ -36,7 +37,7 @@ interface Recordatorio {
 const NotificationBell = () => {
   const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-
+  const { t } = useTranslation(); // Hook de traducción dentro del componente funcional
   useEffect(() => {
     const fetchRecordatorios = async () => {
       try {
@@ -123,7 +124,7 @@ const NotificationBell = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-96">
         <div className="flex justify-between items-center px-4 py-2 border-b">
-          <p className="font-semibold">Recordatorios</p>
+          <p className="font-semibold">{t('notificationBell.title')}</p>
         </div>
         <div className="max-h-[70vh] overflow-y-auto ">
           {recordatorios.length > 0 ? (
@@ -165,10 +166,9 @@ const NotificationBell = () => {
                     </span>
                     <span className={`text-xs font-medium ${getStatusColor(recordatorio.fechaFin)}`}>
                       {differenceInDays(recordatorio.fechaFin.toDate(), new Date()) === 0 ? (
-                        "Vence hoy"
+                        t('notificationBell.status.todayExpires')
                       ) : (
-                        `${Math.abs(differenceInDays(recordatorio.fechaFin.toDate(), new Date()))} días
-                        ${differenceInDays(recordatorio.fechaFin.toDate(), new Date()) > 0 ? "restantes" : "vencido"}`
+                        `${Math.abs(differenceInDays(recordatorio.fechaFin.toDate(), new Date()))} ${t('notificationBell.status.daysRemaining', { days: Math.abs(differenceInDays(recordatorio.fechaFin.toDate(), new Date())) })}`
                       )}
                     </span>
                   </div>
@@ -177,7 +177,7 @@ const NotificationBell = () => {
             ))
           ) : (
             <div className="px-4 py-3 text-center text-gray-500">
-              No hay recordatorios pendientes
+              {t('notificationBell.noReminders')}
             </div>
           )}
         </div>

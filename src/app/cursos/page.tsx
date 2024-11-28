@@ -45,6 +45,7 @@ import {
 } from "firebase/firestore";
 import { Archive } from "lucide-react";
 import { toast } from "@/hooks/use-toast"
+import { useTranslation } from "react-i18next";
 
 interface Course {
   fechaArchivado: string | number | Date;
@@ -74,6 +75,7 @@ export default function TrainingPage() {
   const [selectedCompany, setSelectedCompany] = useState<string>("");
   const [companies] = useState(["Pueble SA - CASE IH", "KIA"]);
   const [archivedCourses, setArchivedCourses] = useState<Course[]>([]);
+  const { t } = useTranslation(); // Hook de traducción
   
   // Estados para modales
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
@@ -270,8 +272,8 @@ export default function TrainingPage() {
       
       // 9. Mostrar notificación de éxito (opcional, necesitarías implementar un sistema de notificaciones)
       toast({
-        title: "Curso Finalizado",
-        description: "El curso ha sido finalizado, puede observar detalles en Cursos archivados",
+        title: t('cursos.toast.title_course_completed'),
+        description: t('cursos.toast.description_course_completed'),
         variant: "default"
       })
       
@@ -279,8 +281,8 @@ export default function TrainingPage() {
       console.error("Error archivando curso:", error);
       // Mostrar notificación de error (opcional)
       toast({
-        title: "Error - Curso no archivado",
-        description: "Por favor, reintenta, ha ocurrido un error",
+        title:  t('cursos.toast.title_error_archiving_course'),
+        description: t('cursos.toast.description_error_archiving_course'),
         variant: "destructive"
       })
     }
@@ -356,14 +358,14 @@ export default function TrainingPage() {
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>Vista Global de Cursos</CardTitle>
+            <CardTitle>{t('cursos.global_view.card_title')}</CardTitle>
             <div className="flex gap-2">
               <Select
                 value={selectedMonth.toString()}
                 onValueChange={(v) => setSelectedMonth(parseInt(v))}
               >
                 <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Seleccionar mes" />
+                  <SelectValue placeholder={t('cursos.global_view.select_month_placeholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {Array.from({ length: 12 }, (_, i) => (
@@ -378,7 +380,7 @@ export default function TrainingPage() {
                 onValueChange={(v) => setSelectedYear(parseInt(v))}
               >
                 <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder="Año" />
+                  <SelectValue placeholder={t('cursos.global_view.select_year_placeholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {[2024, 2025].map(year => (
@@ -395,9 +397,9 @@ export default function TrainingPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Empleado</TableHead>
-                <TableHead>Cursos Asignados</TableHead>
-                <TableHead>Progreso</TableHead>
+                <TableHead>{t('cursos.global_view.table_headers.employee')}</TableHead>
+                <TableHead>{t('cursos.global_view.table_headers.assigned_courses')}</TableHead>
+                <TableHead>{t('cursos.global_view.table_headers.progress')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -442,11 +444,11 @@ export default function TrainingPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <GraduationCap className="h-8 w-8 text-primary" />
-          <h1 className="text-4xl font-bold tracking-tight dark:text-white">Programas de Formación</h1>
+          <h1 className="text-4xl font-bold tracking-tight dark:text-white">{t('cursos.title')}</h1>
         </div>
         <Select value={selectedCompany} onValueChange={setSelectedCompany}>
           <SelectTrigger className="w-[250px] dark:text-white dark:bg-gray-950">
-            <SelectValue placeholder="Seleccionar empresa" />
+            <SelectValue placeholder={t('cursos.selectcompany')} />
           </SelectTrigger>
           <SelectContent>
             {companies.map((company) => (
@@ -462,19 +464,19 @@ export default function TrainingPage() {
         <TabsList className="dark:text-white dark:bg-gray-950 ">
           <TabsTrigger value="list" className="flex items-center gap-2 dark:hover:bg-gray-800">
             <List className="h-4 w-4" />
-            Lista de Cursos
+            {t('cursos.tabs.courses_list')}
           </TabsTrigger>
           <TabsTrigger value="calendar" className="flex items-center gap-2 dark:hover:bg-gray-800">
             <Calendar className="h-4 w-4" />
-            Calendario
+            {t('cursos.tabs.calendar')}
           </TabsTrigger>
           <TabsTrigger value="global" className="flex items-center gap-2 dark:hover:bg-gray-800">
             <Users className="h-4 w-4" />
-            Vista Global
+            {t('cursos.tabs.global_view')}
           </TabsTrigger>
           <TabsTrigger value="archived" className="flex items-center gap-2 dark:hover:bg-gray-800">
             <Archive className="h-4 w-4" />
-            Cursos Archivados
+            {t('cursos.tabs.archived_courses')}
           </TabsTrigger>
         </TabsList>
 
@@ -484,7 +486,7 @@ export default function TrainingPage() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-muted-foreground" />
-                  <CardTitle>Cursos Disponibles</CardTitle>
+                  <CardTitle> {t('cursos.courses_list.courses')}</CardTitle>
                 </div>
                 <Button
                   onClick={() => setShowAddCourseModal(true)}
@@ -492,7 +494,7 @@ export default function TrainingPage() {
                   disabled={!selectedCompany}
                 >
                   <Plus className="h-4 w-4 dark:text-white" />
-                  Agregar Nuevo Curso
+                  {t('cursos.courses_list.add_new_course')}
                 </Button>
               </div>
             </CardHeader>
@@ -500,11 +502,11 @@ export default function TrainingPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="dark:text-white">Nombre del Curso</TableHead>
-                    <TableHead className="dark:text-white">Departamento</TableHead>
-                    <TableHead className="dark:text-white">Duración</TableHead>
-                    <TableHead className="dark:text-white">Estado</TableHead>
-                    <TableHead className="dark:text-white text-right">Acciones</TableHead>
+                    <TableHead className="dark:text-white">{t('cursos.courses_list.table_headers.course_name')}</TableHead>
+                    <TableHead className="dark:text-white">{t('cursos.courses_list.table_headers.department')}</TableHead>
+                    <TableHead className="dark:text-white">{t('cursos.courses_list.table_headers.duration')}</TableHead>
+                    <TableHead className="dark:text-white">{t('cursos.courses_list.table_headers.status')}</TableHead>
+                    <TableHead className="dark:text-white text-right">{t('cursos.courses_list.table_headers.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -528,7 +530,7 @@ export default function TrainingPage() {
                               setShowDetailsModal(true);
                             }}
                           >
-                            Detalles
+                            {t('cursos.courses_list.buttons.details')}
                           </Button>
                           <Button
                             variant="outline"
@@ -538,7 +540,7 @@ export default function TrainingPage() {
                               setShowAssignEmployeeModal(true);
                             }}
                           >
-                            Asignar
+                            {t('cursos.courses_list.buttons.assign')}
                           </Button>
                         </div>
                       </TableCell>
@@ -553,7 +555,7 @@ export default function TrainingPage() {
         <TabsContent value="calendar">
           <Card>
             <CardHeader>
-              <CardTitle>Calendario de Cursos</CardTitle>
+              <CardTitle> {t('cursos.calendar.card_title')}</CardTitle>
             </CardHeader>
             <CardContent>
               <CalendarView />
@@ -570,17 +572,17 @@ export default function TrainingPage() {
             <CardHeader>
             <div className="flex items-center gap-2">
                   <Archive className="h-5 w-5 text-muted-foreground" />
-                  <CardTitle>Cursos Finalizados</CardTitle>
+                  <CardTitle>{t('cursos.archived_courses.card_title')}</CardTitle>
                 </div>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nombre del Curso</TableHead>
-                    <TableHead>Departamento</TableHead>
-                    <TableHead>Fecha de Archivo</TableHead>
-                    <TableHead>Estado Final</TableHead>
+                    <TableHead>{t('cursos.archived_courses.table_headers.course_name')}</TableHead>
+                    <TableHead>{t('cursos.archived_courses.table_headers.department')}</TableHead>
+                    <TableHead>{t('cursos.archived_courses.table_headers.archived_date')}</TableHead>
+                    <TableHead>{t('cursos.archived_courses.table_headers.final_status')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

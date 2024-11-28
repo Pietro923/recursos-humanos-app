@@ -8,6 +8,7 @@ import { Search, Briefcase, Archive, Trash2, Link, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "@/hooks/use-toast"
 import axios from "axios"
+import { useTranslation } from "react-i18next"
 
 interface JobPosting {
   id: number
@@ -28,7 +29,8 @@ export default function JobPostingsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [showEmployeeForm, setShowEmployeeForm] = useState(false)
   const [showConfirmArchive, setShowConfirmArchive] = useState(false)
-
+  const { t } = useTranslation(); // Hook de traducción
+  
   // Form states
   const [employeeForm, setEmployeeForm] = useState({
     name: "",
@@ -46,116 +48,112 @@ export default function JobPostingsPage() {
   const handleAddJob = async () => {
     if (!isValidLinkedInUrl(url)) {
       toast({
-        
-        title: "URL inválida",
-        description: "Por favor, ingresa una URL válida de LinkedIn Jobs",
-        variant: "destructive"
+        title: t("postulaciones.toast.title1"),
+        description: t("postulaciones.toast.description1"),
+        variant: "destructive",
       })
       return
     }
 
     setLoading(true)
     try {
-      const response = await axios.get("/api/extract-job-title", { params: { url } })
-      const { title, description, company } = response.data
+      const response = await axios.get("/api/extract-job-title", {
+        params: { url },
+      });
+      const { title, description, company } = response.data;
 
       const newPosting: JobPosting = {
         id: Date.now(),
         title,
         company,
         description,
-        status: 'active',
+        status: "active",
         url,
-        createdAt: new Date()
-      }
+        createdAt: new Date(),
+      };
 
-      setPostings(prev => [newPosting, ...prev])
-      setUrl("")
+      setPostings((prev) => [newPosting, ...prev]);
+      setUrl("");
       toast({
-        title: "Publicación agregada",
-        description: "La oferta de trabajo se ha agregado exitosamente"
-      })
+        title: t("postulaciones.toast.title2"),
+        description: t("postulaciones.toast.description2"),
+      });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "No se pudo extraer la información de la publicación",
-        variant: "destructive"
-      })
+        title: t("postulaciones.toast.title3"),
+        description: t("postulaciones.toast.description3"),
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleArchivePosting = async (posting: JobPosting) => {
     try {
-      // Here you would typically make an API call to update the status
-      const updatedPostings = postings.map(p => 
-        p.id === posting.id ? { ...p, status: 'archived' as const } : p
-      )
-      setPostings(updatedPostings)
-      setSelectedPosting(null)
-      setShowConfirmArchive(false)
+      const updatedPostings = postings.map((p) =>
+        p.id === posting.id ? { ...p, status: "archived" as const } : p
+      );
+      setPostings(updatedPostings);
+      setSelectedPosting(null);
+      setShowConfirmArchive(false);
       toast({
-        title: "Publicación archivada",
-        description: "La oferta se ha movido a archivados"
-      })
+        title: t("postulaciones.toast.title4"),
+        description: t("postulaciones.toast.description4"),
+      });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "No se pudo archivar la publicación",
-        variant: "destructive"
-      })
+        title: t("postulaciones.toast.title5"),
+        description: t("postulaciones.toast.description5"),
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const handleDeletePosting = async (postingId: number) => {
     try {
-      setPostings(prev => prev.filter(p => p.id !== postingId))
-      setSelectedPosting(null)
+      setPostings((prev) => prev.filter((p) => p.id !== postingId));
+      setSelectedPosting(null);
       toast({
-        title: "Publicación eliminada",
-        description: "La oferta se ha eliminado exitosamente"
-      })
+        title: t("postulaciones.toast.title6"),
+        description: t("postulaciones.toast.description6"),
+      });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "No se pudo eliminar la publicación",
-        variant: "destructive"
-      })
+        title: t("postulaciones.toast.title7"),
+        description: t("postulaciones.toast.description7"),
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const handleRegisterEmployee = async () => {
     try {
-      // Here you would typically make an API call to register the employee
-      await axios.post("/api/register-employee", employeeForm)
-      
-      // Update the posting status
+      await axios.post("/api/register-employee", employeeForm);
       if (selectedPosting) {
-        handleArchivePosting(selectedPosting)
+        handleArchivePosting(selectedPosting);
       }
-      
       setEmployeeForm({
         name: "",
         lastName: "",
         department: "",
         position: "",
         startDate: "",
-        salary: ""
-      })
-      setShowEmployeeForm(false)
+        salary: "",
+      });
+      setShowEmployeeForm(false);
       toast({
-        title: "Empleado registrado",
-        description: "El empleado se ha registrado exitosamente"
-      })
+        title: t("postulaciones.toast.title8"),
+        description: t("postulaciones.toast.description8"),
+      });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "No se pudo registrar al empleado",
-        variant: "destructive"
-      })
+        title: t("postulaciones.toast.title9"),
+        description: t("postulaciones.toast.description9"),
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const filteredPostings = postings.filter(posting =>
     posting.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -167,7 +165,7 @@ export default function JobPostingsPage() {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <Briefcase className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-bold tracking-tight">Postulaciones de trabajo</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('postulaciones.jobApplications.header.title')}</h1>
         </div>
         <Button
         className="dark:bg-gray-700 dark:hover:bg-gray-600"
@@ -175,7 +173,7 @@ export default function JobPostingsPage() {
           onClick={() => setSearchVisible(!searchVisible)}
         >
           <Search className="h-5 w-5 mr-2 dark:text-white" />
-          Buscar
+          {t('postulaciones.jobApplications.header.searchButton')}
         </Button>
       </div>
 
@@ -183,7 +181,7 @@ export default function JobPostingsPage() {
         <div className="mb-6">
           <Input
             type="text"
-            placeholder="Buscar por título o empresa..."
+            placeholder= {t('postulaciones.jobApplications.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-md"
@@ -195,7 +193,7 @@ export default function JobPostingsPage() {
         <div className="flex-1">
           <Input
             type="url"
-            placeholder="Pegar URL de LinkedIn Jobs"
+            placeholder={t('postulaciones.jobApplications.addJob.urlPlaceholder')}
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className="w-full"
@@ -209,12 +207,12 @@ export default function JobPostingsPage() {
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin dark:bg-gray-700" />
-              Cargando...
+              {t('postulaciones.jobApplications.addJob.loading')}
             </>
           ) : (
             <>
               <Link className="mr-2 h-4 w-4 dark:text-white " />
-              Agregar Publicación
+              {t('postulaciones.jobApplications.addJob.addButton')}
             </>
           )}
         </Button>
@@ -224,7 +222,7 @@ export default function JobPostingsPage() {
         {filteredPostings.length === 0 ? (
           <div className="col-span-full text-center py-12">
             <p className="text-lg text-gray-500">
-              No hay publicaciones que coincidan con la búsqueda.
+            {t('postulaciones.jobApplications.noResults')}
             </p>
           </div>
         ) : (
@@ -250,7 +248,7 @@ export default function JobPostingsPage() {
                   className="w-full dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
                   onClick={() => setSelectedPosting(posting)}
                 >
-                  Ver detalles
+                  {t('postulaciones.jobApplications.details.viewDetailsButton')}
                 </Button>
               </CardFooter>
             </Card>
@@ -284,7 +282,7 @@ export default function JobPostingsPage() {
                   className="gap-2 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
                 >
                   <Archive className="h-4 w-4" />
-                  Archivar
+                  {t('postulaciones.jobApplications.details.dialog.archiveButton')}
                 </Button>
               )}
               <Button
@@ -293,7 +291,7 @@ export default function JobPostingsPage() {
                 className="gap-2"
               >
                 <Trash2 className="h-4 w-4" />
-                Eliminar
+                {t('postulaciones.jobApplications.details.dialog.deleteButton')}
               </Button>
               <Button
                 variant="outline"
@@ -301,7 +299,7 @@ export default function JobPostingsPage() {
                 className="gap-2 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
               >
                 <Link className="h-4 w-4" />
-                Ver en LinkedIn
+                {t('postulaciones.jobApplications.details.dialog.viewOnLinkedIn')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -312,10 +310,10 @@ export default function JobPostingsPage() {
       <Dialog open={showConfirmArchive} onOpenChange={setShowConfirmArchive}>
         <DialogContent className="bg-white dark:bg-gray-800 dark:text-white">
           <DialogHeader>
-            <DialogTitle>¿Registrar nuevo empleado?</DialogTitle>
+            <DialogTitle>{t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.title')}</DialogTitle>
           </DialogHeader>
           <p className="text-muted-foreground">
-            ¿Deseas registrar al nuevo empleado antes de archivar la publicación?
+          {t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.description')}
           </p>
           <DialogFooter>
             <Button
@@ -326,7 +324,7 @@ export default function JobPostingsPage() {
                 if (selectedPosting) handleArchivePosting(selectedPosting)
               }}
             >
-              Solo archivar
+              {t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.archiveOnly')}
             </Button>
             <Button
             className="dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
@@ -335,7 +333,7 @@ export default function JobPostingsPage() {
                 setShowEmployeeForm(true)
               }}
             >
-              Registrar empleado
+              {t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.registerEmployee')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -345,45 +343,45 @@ export default function JobPostingsPage() {
       <Dialog open={showEmployeeForm} onOpenChange={setShowEmployeeForm}>
         <DialogContent className="max-w-md bg-white  dark:bg-gray-800 dark:text-white">
           <DialogHeader>
-            <DialogTitle>Registrar nuevo empleado</DialogTitle>
+            <DialogTitle> {t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.registerEmployeeForm.title')}</DialogTitle>
           </DialogHeader>
           
           <div className="grid gap-4 py-4">
             <Input
             className="dark:border-gray-500"
-              placeholder="Nombre"
+              placeholder={t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.registerEmployeeForm.fields.name')}
               value={employeeForm.name}
               onChange={(e) => setEmployeeForm(prev => ({...prev, name: e.target.value}))}
             />
             <Input
              className="dark:border-gray-500"
-              placeholder="Apellido"
+              placeholder={t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.registerEmployeeForm.fields.lastName')}
               value={employeeForm.lastName}
               onChange={(e) => setEmployeeForm(prev => ({...prev, lastName: e.target.value}))}
             />
             <Input
              className="dark:border-gray-500"
-              placeholder="Departamento"
+              placeholder={t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.registerEmployeeForm.fields.department')}
               value={employeeForm.department}
               onChange={(e) => setEmployeeForm(prev => ({...prev, department: e.target.value}))}
             />
             <Input
              className="dark:border-gray-500"
-              placeholder="Puesto"
+              placeholder={t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.registerEmployeeForm.fields.position')}
               value={employeeForm.position}
               onChange={(e) => setEmployeeForm(prev => ({...prev, position: e.target.value}))}
             />
             <Input
              className="dark:border-gray-500"
               type="date"
-              placeholder="Fecha de inicio"
+              placeholder={t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.registerEmployeeForm.fields.startDate')}
               value={employeeForm.startDate}
               onChange={(e) => setEmployeeForm(prev => ({...prev, startDate: e.target.value}))}
             />
             <Input
              className="dark:border-gray-500"
               type="number"
-              placeholder="Salario"
+              placeholder={t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.registerEmployeeForm.fields.salary')}
               value={employeeForm.salary}
               onChange={(e) => setEmployeeForm(prev => ({...prev, salary: e.target.value}))}
             />
@@ -391,10 +389,10 @@ export default function JobPostingsPage() {
 
           <DialogFooter>
             <Button className="dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white" variant="outline" onClick={() => setShowEmployeeForm(false)}>
-              Cancelar
+             {t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.registerEmployeeForm.cancel')}
             </Button>
             <Button className="dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white" onClick={handleRegisterEmployee}>
-              Registrar
+            {t('postulaciones.jobApplications.details.dialog.registerEmployeeDialog.registerEmployeeForm.register')}
             </Button>
           </DialogFooter>
         </DialogContent>

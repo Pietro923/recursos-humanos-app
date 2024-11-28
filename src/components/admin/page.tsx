@@ -9,6 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { UserPlus } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 export default function AdminPage() {
   const [email, setEmail] = useState("")
@@ -17,7 +18,8 @@ export default function AdminPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-
+  const { t } = useTranslation(); // Hook de traducción dentro del componente funcional
+  
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -84,21 +86,21 @@ export default function AdminPage() {
           <div className="flex items-center justify-center space-x-2">
             <UserPlus className="h-6 w-6 text-primary" />
             <CardTitle className="text-2xl font-bold text-center">
-              Panel de Administración
+              {t('adminPanel.title')}
             </CardTitle>
           </div>
           <p className="text-sm text-muted-foreground text-center">
-            Crear nuevo usuario en el sistema
+          {t('adminPanel.createUserDescription')}
           </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleCreateUser} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Correo Electrónico</Label>
+              <Label htmlFor="email">{t('adminPanel.emailLabel')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="correo@ejemplo.com"
+                placeholder={t('adminPanel.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -107,7 +109,7 @@ export default function AdminPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
+              <Label htmlFor="password">{t('adminPanel.passwordLabel')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -120,25 +122,25 @@ export default function AdminPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role">Rol del Usuario</Label>
+              <Label htmlFor="role">{t('adminPanel.roleLabel')}</Label>
               <Select value={role} onValueChange={setRole}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona un rol" />
+                  <SelectValue placeholder={t('adminPanel.selectRolePlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ADMIN">Administrador</SelectItem>
-                  <SelectItem value="rrhh">Recursos Humanos</SelectItem>
-                  <SelectItem value="nominas">Nóminas</SelectItem>
+                  <SelectItem value="ADMIN">{t('adminPanel.roleAdmin')}</SelectItem>
+                  <SelectItem value="rrhh">{t('adminPanel.roleRrhh')}</SelectItem>
+                  <SelectItem value="nominas">{t('adminPanel.roleNominas')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <Button 
               type="submit" 
-              className="w-full"
+              className="w-full dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
               disabled={isLoading}
             >
-              {isLoading ? "Creando usuario..." : "Crear Usuario"}
+              {isLoading ? t('adminPanel.loadingCreateUserButton') : t('adminPanel.createUserButton')}
             </Button>
           </form>
         </CardContent>

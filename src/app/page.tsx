@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LayoutDashboard, Users, Calculator, Shield } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 
 export default function Inicio() {
@@ -17,6 +18,7 @@ export default function Inicio() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { t } = useTranslation(); // Hook de traducción
 
   useEffect(() => {
     const auth = getAuth();
@@ -71,24 +73,24 @@ export default function Inicio() {
   const roleCards = [
     {
       role: 'ADMIN',
-      title: 'Administración',
-      description: 'Accede al panel de administración completo del sistema',
+      title: t('dashboard.roles.ADMIN.title'),
+      description: t('dashboard.roles.ADMIN.description'),
       icon: Shield,
       path: '/admin',
       color: 'bg-blue-500/10 text-blue-500',
     },
     {
       role: 'RRHH',
-      title: 'Recursos Humanos',
-      description: 'Gestiona el personal y procesos de RRHH',
+      title: t('dashboard.roles.RRHH.title'),
+      description:  t('dashboard.roles.RRHH.description'),
       icon: Users,
       path: '/rrhh',
       color: 'bg-purple-500/10 text-purple-500',
     },
     {
       role: 'NOMINAS',
-      title: 'Nóminas',
-      description: 'Administra las nóminas y pagos del personal',
+      title: t('dashboard.roles.NOMINAS.title'),
+      description: t('dashboard.roles.NOMINAS.description'),
       icon: Calculator,
       path: '/nominas',
       color: 'bg-yellow-500/10 text-yellow-500',
@@ -101,10 +103,10 @@ export default function Inicio() {
         <Card className="max-w-4xl mx-auto dark:bg-gray-800 dark:border-gray-700">
           <CardHeader className="text-center">
             <CardTitle className="text-4xl font-bold tracking-tight dark:text-white">
-              Bienvenido, {userRole || 'Usuario'}
+            {t('dashboard.welcomeMessage', { userRole: userRole || 'Usuario' })}
             </CardTitle>
             <CardDescription className="text-lg mt-2 dark:text-gray-300">
-              Selecciona una de las siguientes opciones para comenzar
+            {t('dashboard.selectOptionMessage')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -116,15 +118,15 @@ export default function Inicio() {
                     <LayoutDashboard className="h-6 w-6 text-blue-500 dark:text-blue-400" />
                   </div>
                   <div className="flex-grow">
-                    <h3 className="font-semibold text-lg mb-1 dark:text-white">Dashboard Principal</h3>
-                    <p className="text-muted-foreground dark:text-gray-300">Accede al panel principal del sistema</p>
+                    <h3 className="font-semibold text-lg mb-1 dark:text-white">{t('dashboard.mainDashboard')}</h3>
+                    <p className="text-muted-foreground dark:text-gray-300">{t('dashboard.mainDashboardDescription')}</p>
                   </div>
                   <Button
                     onClick={() => router.push('/dashboard')}
                     variant="default"
                     className="ml-4 dark:bg-blue-600 dark:hover:bg-blue-500"
                   >
-                    Acceder
+                    {t('dashboard.access')}
                   </Button>
                 </CardContent>
               </Card>
@@ -149,7 +151,7 @@ export default function Inicio() {
                         variant="default"
                         className="ml-4 dark:bg-blue-600 dark:hover:bg-blue-500"
                       >
-                        Acceder
+                        {t('dashboard.access')}
                       </Button>
                     </CardContent>
                   </Card>

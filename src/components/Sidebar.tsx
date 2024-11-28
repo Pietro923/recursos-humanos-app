@@ -11,34 +11,8 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-
+import { useTranslation } from 'react-i18next';
 type Role = "ADMIN" | "rrhh" | "nominas";
-
-const sidebarItems: Record<Role, { href: string; icon: React.ElementType; label: string }[]> = {
-  ADMIN: [
-    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/trabajadores", icon: Users, label: "Empleados" },
-    { href: "/asistencia", icon: Calendar, label: "Asistencia" },
-    { href: "/desempeno", icon: BarChart2, label: "Desempeño" },
-    { href: "/nominas", icon: DollarSign, label: "Nóminas" },
-    { href: "/beneficios", icon: Gift, label: "Beneficios" },
-    { href: "/cursos", icon: BookOpen, label: "Formación" },
-    { href: "/postulaciones", icon: Clipboard, label: "Postulaciones" },
-    { href: "/recordatorios", icon: AlarmClock, label: "Recordatorios" },
-  ],
-  rrhh: [
-    { href: "/asistencia", icon: Calendar, label: "Asistencia" },
-    { href: "/desempeno", icon: BarChart2, label: "Desempeño" },
-    { href: "/beneficios", icon: Gift, label: "Beneficios" },
-    { href: "/cursos", icon: BookOpen, label: "Formación" },
-    { href: "/recordatorios", icon: AlarmClock, label: "Recordatorios" },
-  ],
-  nominas: [
-    { href: "/trabajadores", icon: Users, label: "Empleados" },
-    { href: "/nominas", icon: DollarSign, label: "Nóminas" },
-    { href: "/recordatorios", icon: AlarmClock, label: "Recordatorios" },
-  ],
-};
 
 const NavLink = ({ href, icon: Icon, label, isActive, onClick }: {
   href: string;
@@ -95,9 +69,35 @@ const NavLink = ({ href, icon: Icon, label, isActive, onClick }: {
 export default function Sidebar({ role }: { role: Role | null }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation(); // Hook de traducción dentro del componente funcional
+
+  const sidebarItems: Record<Role, { href: string; icon: React.ElementType; label: string }[]> = {
+    ADMIN: [
+      { href: "/dashboard", icon: LayoutDashboard, label: t('menu.ADMIN.0.label') },
+      { href: "/trabajadores", icon: Users, label: t('menu.ADMIN.1.label') },
+      { href: "/asistencia", icon: Calendar, label: t('menu.ADMIN.2.label') },
+      { href: "/desempeno", icon: BarChart2, label: t('menu.ADMIN.3.label') },
+      { href: "/nominas", icon: DollarSign, label: t('menu.ADMIN.4.label') },
+      { href: "/beneficios", icon: Gift, label: t('menu.ADMIN.5.label') },
+      { href: "/cursos", icon: BookOpen, label: t('menu.ADMIN.6.label') },
+      { href: "/postulaciones", icon: Clipboard, label: t('menu.ADMIN.7.label') },
+      { href: "/recordatorios", icon: AlarmClock, label: t('menu.ADMIN.8.label') },
+    ],
+    rrhh: [
+      { href: "/asistencia", icon: Calendar, label: t('menu.RRHH.0.label') },
+      { href: "/desempeno", icon: BarChart2, label: t('menu.RRHH.1.label') },
+      { href: "/beneficios", icon: Gift, label: t('menu.RRHH.2.label') },
+      { href: "/cursos", icon: BookOpen, label: t('menu.RRHH.3.label') },
+      { href: "/recordatorios", icon: AlarmClock, label: t('menu.RRHH.4.label') },
+    ],
+    nominas: [
+      { href: "/trabajadores", icon: Users, label: t('menu.NOMINAS.0.label') },
+      { href: "/nominas", icon: DollarSign, label: t('menu.NOMINAS.1.label') },
+      { href: "/recordatorios", icon: AlarmClock, label: t('menu.NOMINAS.2.label') },
+    ],
+  };
 
   if (!role || !(role in sidebarItems)) return null;
-
 
   const SidebarContent = () => (
     <div className="flex h-full flex-col gap-4 bg-white dark:bg-gray-900"> 

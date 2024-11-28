@@ -34,6 +34,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import NotificationBell from '@/components/notificaciones';
 import { AppSettingsProvider } from "@/components/appSettingsProvider" // Ajusta la ruta según tu estructura
+import '@/lib/i18n'; // Importar configuración de i18n
+import { useTranslation } from 'react-i18next';
+
+
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -47,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [userName, setUserName] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { t } = useTranslation(); // Hook de traducción
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -104,7 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-50 to-gray-100">
             <div className="space-y-4 text-center">
               <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-gray-600">Cargando...</p>
+              <p className="text-gray-600"> {t('loading.label')} </p>
             </div>
           </div>
         </body>
@@ -188,11 +193,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
+                      <DropdownMenuLabel>{t('header.myAccount')}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <Link href="/perfil"><DropdownMenuItem>Perfil</DropdownMenuItem></Link>
-                        <Link href="/configuracion"><DropdownMenuItem>Configuración</DropdownMenuItem></Link>
-                        <Link href="/notificaciones"><DropdownMenuItem>Historial de Notificaciones</DropdownMenuItem></Link>
+                        <Link href="/perfil"><DropdownMenuItem>{t('header.profile')}</DropdownMenuItem></Link>
+                        <Link href="/configuracion"><DropdownMenuItem>{t('header.settings')}</DropdownMenuItem></Link>
+                        <Link href="/notificaciones"><DropdownMenuItem>{t('header.notificationsHistory')}</DropdownMenuItem></Link>
                         <DropdownMenuSeparator />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
@@ -201,26 +206,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                                 e.preventDefault();
                                 e.stopPropagation();
                               }} 
-                              className="text-red-600"
+                              className="text-red-600 dark:hover:text-red-600"
                             >
                               <LogOut className="mr-2 h-4 w-4" />
-                              Cerrar Sesión
+                              {t('header.logout')}
                             </DropdownMenuItem>
                           </AlertDialogTrigger>
-                          <AlertDialogContent className='bg-white'>
+                          <AlertDialogContent className='bg-white dark:bg-gray-900 dark:text-white'>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                              <AlertDialogTitle>{t('header.logoutConfirmation.title')}</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Esta acción cerrará tu sesión actual. Tendrás que volver a iniciar sesión para acceder a tu cuenta.
+                              {t('header.logoutConfirmation.description')}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogCancel className='dark:bg-gray-800 dark:hover:bg-gray-700'>{t('header.logoutConfirmation.cancel')}</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={handleLogout}
-                                className="bg-red-600 hover:bg-red-700"
+                                className="bg-red-600 hover:bg-red-700 dark:text-white"
                               >
-                                Cerrar Sesión
+                                {t('header.logoutConfirmation.confirm')}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
