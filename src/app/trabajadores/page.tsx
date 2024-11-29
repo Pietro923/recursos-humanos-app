@@ -7,10 +7,9 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebaseConfig";
 import { collection, doc, getDocs, getDoc, updateDoc, setDoc, addDoc } from "firebase/firestore";
-import { Trash2, Users, List, Search, Cake } from "lucide-react";
+import { Trash2, Users, List, Cake } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { format, differenceInYears, isSameDay } from "date-fns";
-import { es } from "date-fns/locale";
+import { differenceInYears, isSameDay } from "date-fns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTranslation } from "react-i18next";
 
@@ -48,38 +47,67 @@ export default function EmployeesPage() {
 
   const companies = ["Pueble SA - CASE IH", "KIA"];
 
-  /* Función para verificar cumpleaños
   const checkBirthdays = (employeesData: Employee[]) => {
     const today = new Date();
+  
+    // Filtrar empleados que cumplen años hoy
     const birthdays = employeesData.filter(employee => {
-      const birthDate = new Date(employee.fechaNacimiento);
+      const birthDate = new Date(employee.fechaNacimiento + 'T00:00:00');
       return isSameDay(
         new Date(today.getFullYear(), today.getMonth(), today.getDate()),
         new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate())
       );
     });
+    
     setBirthdayEmployees(birthdays);
-
-    // Crear notificaciones de cumpleaños
+  
+    // Crear notificaciones de cumpleaños si no existen ya
     birthdays.forEach(async (employee) => {
-      const birthDate = new Date(employee.fechaNacimiento);
+      const birthDate = new Date(employee.fechaNacimiento + 'T00:00:00');
       const age = differenceInYears(new Date(), birthDate);
-      
-      try {
-        await addDoc(collection(db, "Grupo_Pueble", selectedCompany, "recordatorios"), {
-          tipo: "Cumpleaños",
-          descripcion: `¡${employee.nombre} ${employee.apellido} cumple ${age} años hoy!`,
-          fechaInicio: new Date(),
-          fechaFin: new Date(new Date().setHours(23, 59, 59, 999)),
-          empleadoId: employee.id,
-          nombre: employee.nombre,
-          apellido: employee.apellido
-        });
-      } catch (error) {
-        console.error("Error al crear notificación de cumpleaños:", error);
+  
+      // Verificar si ya existe un recordatorio en la colección "notificaciones_archivadas"
+      const archivedNotificationsRef = collection(db, "Grupo_Pueble", selectedCompany, "notificaciones_archivadas");
+      const archivedQuery = await getDocs(archivedNotificationsRef);
+      const existingArchivedNotification = archivedQuery.docs.find(doc => {
+        const notification = doc.data();
+        return notification.empleadoId === employee.id && isSameDay(notification.fecha.toDate(), new Date());
+      });
+  
+      // Si existe una notificación archivada, no creamos un nuevo recordatorio
+      if (existingArchivedNotification) {
+        console.log(`Ya existe una notificación archivada para ${employee.nombre} ${employee.apellido} hoy.`);
+        return; // No hacemos nada más si ya existe en las notificaciones archivadas
+      }
+  
+      // Verificar si ya existe un recordatorio para este empleado en el día de hoy en la colección "recordatorios"
+      const remindersRef = collection(db, "Grupo_Pueble", selectedCompany, "recordatorios");
+      const q = await getDocs(remindersRef);
+      const existingReminder = q.docs.find(doc => {
+        const reminder = doc.data();
+        return reminder.empleadoId === employee.id && isSameDay(reminder.fechaInicio.toDate(), new Date());
+      });
+  
+      // Si no existe un recordatorio, crearlo
+      if (!existingReminder) {
+        try {
+          await addDoc(remindersRef, {
+            tipo: "Cumpleaños",
+            descripcion: `¡${employee.nombre} ${employee.apellido} cumple ${age} años hoy!`,
+            fechaInicio: new Date(),
+            fechaFin: new Date(new Date().setHours(23, 59, 59, 999)), // Se asegura que el recordatorio termine al final del día
+            empleadoId: employee.id,
+            nombre: employee.nombre,
+            apellido: employee.apellido
+          });
+        } catch (error) {
+          console.error("Error al crear notificación de cumpleaños:", error);
+        }
+      } else {
+        console.log(`Ya existe un recordatorio para ${employee.nombre} ${employee.apellido} hoy.`);
       }
     });
-  };*/
+  };
 
   // Obtener los empleados de Firebase
   useEffect(() => {
@@ -102,7 +130,7 @@ export default function EmployeesPage() {
         
         setEmployees(employeesData);
         setFilteredEmployees(employeesData);
-       // checkBirthdays(employeesData);
+       checkBirthdays(employeesData);
       } catch (error) {
         console.error("Error al obtener los empleados:", error);
       }
@@ -454,9 +482,26 @@ export default function EmployeesPage() {
                 <TableCell>${employee.sueldo}</TableCell>
                 <TableCell>{employee.genero}</TableCell>
                 <TableCell>
-                  {employee.fechaNacimiento
-                    ? format(new Date(employee.fechaNacimiento + 'T00:00:00'), t('empleados.addEmployee.form.fields.fechaNacimiento.placeholder'), { locale: es })
-                    : t('empleados.employeesList.noDate')}
+                  {employee.fechaNacimiento ? (
+                    <>
+                      {/* Verificar si la fecha es un valor válido antes de crear el objeto Date */}
+                      {console.log(employee.fechaNacimiento)} 
+                      {isNaN(new Date(employee.fechaNacimiento).getTime()) ? (
+                        // Si la fecha no es válida, mostrar un mensaje de error
+                        t('empleados.employeesList.invalidDate')
+                      ) : (
+                        // Si la fecha es válida, formatearla usando la zona horaria local
+                        new Date(employee.fechaNacimiento).toLocaleDateString('es-ES', {
+                          timeZone: 'UTC',  // Esto asegura que se use UTC para la fecha
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                        })
+                      )}
+                    </>
+                  ) : (
+                    t('empleados.employeesList.noDate')
+                  )}
                 </TableCell>
                 <TableCell>
                   <Button variant="destructive">

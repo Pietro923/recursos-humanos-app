@@ -84,16 +84,16 @@ export default function Sidebar({ role }: { role: Role | null }) {
       { href: "/recordatorios", icon: AlarmClock, label: t('menu.ADMIN.8.label') },
     ],
     rrhh: [
-      { href: "/asistencia", icon: Calendar, label: t('menu.RRHH.0.label') },
-      { href: "/desempeno", icon: BarChart2, label: t('menu.RRHH.1.label') },
-      { href: "/beneficios", icon: Gift, label: t('menu.RRHH.2.label') },
-      { href: "/cursos", icon: BookOpen, label: t('menu.RRHH.3.label') },
-      { href: "/recordatorios", icon: AlarmClock, label: t('menu.RRHH.4.label') },
+      { href: "/asistencia", icon: Calendar, label: t('menu.rrhh.0.label') },
+      { href: "/desempeno", icon: BarChart2, label: t('menu.rrhh.1.label') },
+      { href: "/beneficios", icon: Gift, label: t('menu.rrhh.2.label') },
+      { href: "/cursos", icon: BookOpen, label: t('menu.rrhh.3.label') },
+      { href: "/recordatorios", icon: AlarmClock, label: t('menu.rrhh.4.label') },
     ],
     nominas: [
-      { href: "/trabajadores", icon: Users, label: t('menu.NOMINAS.0.label') },
-      { href: "/nominas", icon: DollarSign, label: t('menu.NOMINAS.1.label') },
-      { href: "/recordatorios", icon: AlarmClock, label: t('menu.NOMINAS.2.label') },
+      { href: "/trabajadores", icon: Users, label: t('menu.nominas.0.label') },
+      { href: "/nominas", icon: DollarSign, label: t('menu.nominas.1.label') },
+      { href: "/recordatorios", icon: AlarmClock, label: t('menu.nominas.2.label') },
     ],
   };
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+// ESTE ES EL COMPONENTE QUE MUESTRA EN LA CAMPANITAAA
 import { Button } from "@/components/ui/button";
 import { Bell, Archive } from "lucide-react";
 import {
@@ -102,8 +103,14 @@ const NotificationBell = () => {
     }
   };
 
-  const getStatusColor = (fechaFin: Timestamp) => {
-    const daysRemaining = differenceInDays(fechaFin.toDate(), new Date());
+  const getStatusColor = (recordatorio: Recordatorio) => {
+    // Si la notificación es de tipo "Cumpleaños"
+    if (recordatorio.tipo === "Cumpleaños") {
+      return "text-blue-600"; // Color azul para "Cumpleaños"
+    }
+  
+    // Si no es "Cumpleaños", se aplica la lógica existente
+    const daysRemaining = differenceInDays(recordatorio.fechaFin.toDate(), new Date());
     
     if (daysRemaining > 5) return "text-green-600";
     if (daysRemaining > 0) return "text-yellow-600";
@@ -133,7 +140,7 @@ const NotificationBell = () => {
                 <div className="space-y-1 w-full ">
                   <div className="flex justify-between items-start ">
                     <div className="flex flex-col ">
-                      <span className={`font-medium  ${getStatusColor(recordatorio.fechaFin)}`}>
+                      <span className={`font-medium ${getStatusColor(recordatorio)}`}>
                         {recordatorio.tipo}
                       </span>
                       <span className="text-xs text-gray-500 dark:text-white">
@@ -164,7 +171,7 @@ const NotificationBell = () => {
                     <span className="text-xs text-gray-500 dark:text-white">
                       {recordatorio.nombre} {recordatorio.apellido}
                     </span>
-                    <span className={`text-xs font-medium ${getStatusColor(recordatorio.fechaFin)}`}>
+                    <span className={`font-medium ${getStatusColor(recordatorio)}`}>
                       {differenceInDays(recordatorio.fechaFin.toDate(), new Date()) === 0 ? (
                         t('notificationBell.status.todayExpires')
                       ) : (

@@ -1,4 +1,5 @@
 "use client"
+// PAGE DE HISTORIAL DE NOTIFICACIONES
 import { useEffect, useState } from "react";
 import { format, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
@@ -69,7 +70,9 @@ export default function ArchivedNotifications() {
     fetchArchivedNotifications();
   }, []);
 
-  const getStatusColor = (fechaFin: Timestamp) => {
+  const getStatusColor = (tipo: string, fechaFin: Timestamp) => {
+    if (tipo === "Cumpleaños") return "text-blue-600"; // Azul para cumpleaños
+    
     const daysRemaining = differenceInDays(fechaFin.toDate(), new Date());
     
     if (daysRemaining > 5) return "text-green-600";
@@ -106,7 +109,7 @@ export default function ArchivedNotifications() {
                   {/* Header */}
                   <div className="flex justify-between items-start">
                     <div className="flex flex-col">
-                      <span className={`font-semibold ${getStatusColor(notification.fechaFin)}`}>
+                      <span className={`font-semibold ${getStatusColor(notification.tipo, notification.fechaFin)}`}>
                         {notification.tipo}
                       </span>
                       <span className="text-sm text-gray-600 dark:text-gray-300">
@@ -135,7 +138,7 @@ export default function ArchivedNotifications() {
                     {/* Expiration Details */}
                     <div className="text-right">
                       <span 
-                        className={`text-sm font-medium block ${getStatusColor(notification.fechaFin)}`}
+                        className={`text-sm font-medium block ${getStatusColor(notification.tipo, notification.fechaFin)}`}
                       >
                         {differenceInDays(notification.fechaFin.toDate(), new Date()) === 0
                           ? "Vence hoy"
