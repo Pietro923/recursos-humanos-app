@@ -219,7 +219,7 @@ function Recordatorios() {
             })}
           </div>
         ) : (
-          <p className="text-center text-gray-500">{t('noReminders')}</p>
+          <p className="text-center text-gray-500">{t('notificationBell.noReminders')}</p>
         )}
       </CardContent>
     </Card>

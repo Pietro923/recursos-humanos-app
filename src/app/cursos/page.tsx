@@ -466,8 +466,8 @@ export default function TrainingPage() {
             <List className="h-4 w-4" />
             {t('cursos.tabs.courses_list')}
           </TabsTrigger>
-          <TabsTrigger value="calendar" className="flex items-center gap-2 dark:hover:bg-gray-800">
-            <Calendar className="h-4 w-4" />
+          <TabsTrigger value="calendar" className="flex items-center gap-2 dark:hover:bg-gray-800 ">
+            <Calendar className="h-4 w-4 " />
             {t('cursos.tabs.calendar')}
           </TabsTrigger>
           <TabsTrigger value="global" className="flex items-center gap-2 dark:hover:bg-gray-800">
@@ -592,7 +592,7 @@ export default function TrainingPage() {
                       <TableCell>{course.department}</TableCell>
                       <TableCell>{new Date(course.fechaArchivado).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Badge variant="secondary">Finalizado</Badge>
+                        <Badge variant="secondary">{t('cursos.archived_courses.badge')}</Badge>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -607,41 +607,41 @@ export default function TrainingPage() {
       <Dialog open={showAddCourseModal} onOpenChange={setShowAddCourseModal}>
         <DialogContent className="max-w-2xl bg-white dark:bg-gray-900 dark:border-gray-700 dark:text-white">
           <DialogHeader>
-            <DialogTitle>Agregar Nuevo Curso</DialogTitle>
+            <DialogTitle>{t('cursos.modal.add_course.title')}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label>Nombre del Curso</label>
+                <label>{t('cursos.modal.add_course.fields.course_name')}</label>
                 <Input
                   className="dark:border-gray-500"
                   value={newCourse.name}
                   onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
-                  placeholder="Nombre del curso"
+                  placeholder={t('cursos.modal.add_course.fields.course_nameplaceholder')}
                 />
               </div>
               <div className="space-y-2">
-                <label>Departamento</label>
+                <label>{t('cursos.modal.add_course.fields.department')}</label>
                 <Input
                 className="dark:border-gray-500"
                   value={newCourse.department}
                   onChange={(e) => setNewCourse({ ...newCourse, department: e.target.value })}
-                  placeholder="Departamento"
+                  placeholder={t('cursos.modal.add_course.fields.departmentplaceholder')}
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label>Fecha de Inicio</label>
+                <label>{t('cursos.modal.add_course.fields.dateStart')}</label>
                 <Input
-                className="dark:border-gray-500"
+                className="dark:border-gray-500 "
                   type="date"
                   value={newCourse.startDate}
                   onChange={(e) => setNewCourse({ ...newCourse, startDate: e.target.value })}
                 />
               </div>
-              <div className="space-y-2">
-                <label>Fecha de Fin</label>
+              <div className="space-y-2 ">
+                <label>{t('cursos.modal.add_course.fields.dateEnd')}</label>
                 <Input
                 className="dark:border-gray-500"
                   type="date"
@@ -651,7 +651,7 @@ export default function TrainingPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <label>Duración</label>
+              <label>{t('cursos.modal.add_course.fields.duration')}</label>
               <Input
               className="dark:border-gray-500"
                 value={newCourse.duration}
@@ -660,19 +660,19 @@ export default function TrainingPage() {
               />
             </div>
             <div className="space-y-2">
-              <label>Descripción</label>
+              <label>{t('cursos.modal.add_course.fields.description')}</label>
               <Textarea
               className="dark:border-gray-500"
                 value={newCourse.description}
                 onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
-                placeholder="Descripción del curso"
+                placeholder={t('cursos.modal.add_course.fields.descriptionplaceholder')}
               />
             </div>
             <div className="flex justify-end gap-2">
               <Button className="dark:bg-gray-600 dark:hover:bg-gray-700" variant="outline" onClick={() => setShowAddCourseModal(false)}>
-                Cancelar
+              {t('cursos.modal.add_course.fields.button1')}
               </Button>
-              <Button className="dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white" onClick={handleAddCourse}>Guardar Curso</Button>
+              <Button className="dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white" onClick={handleAddCourse}>{t('cursos.modal.add_course.fields.button2')}</Button>
             </div>
           </div>
         </DialogContent>
@@ -682,7 +682,7 @@ export default function TrainingPage() {
       <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
   <DialogContent className="max-w-2xl bg-white dark:bg-gray-900 dark:border-gray-700 dark:text-white">
     <DialogHeader>
-      <DialogTitle>Detalles del Curso</DialogTitle>
+      <DialogTitle>{t('cursos.details.title')}</DialogTitle>
     </DialogHeader>
     {selectedCourse && (
       <div className="flex flex-col h-full space-y-4">
@@ -690,40 +690,40 @@ export default function TrainingPage() {
         <div className="flex-grow space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h3 className="font-medium">Nombre del Curso</h3>
+              <h3 className="font-medium">{t('cursos.modal.add_course.fields.course_name')}</h3>
               <p>{selectedCourse.name}</p>
             </div>
             <div>
-              <h3 className="font-medium">Departamento</h3>
+              <h3 className="font-medium">{t('cursos.modal.add_course.fields.course_name')}</h3>
               <p>{selectedCourse.department}</p>
             </div>
           </div>
           <div>
-            <h3 className="font-medium">Descripción</h3>
+            <h3 className="font-medium">{t('cursos.modal.add_course.fields.description')}</h3>
             <p>{selectedCourse.description}</p>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <h3 className="font-medium">Duración</h3>
+              <h3 className="font-medium">{t('cursos.modal.add_course.fields.duration')}</h3>
               <p>{selectedCourse.duration}</p>
             </div>
             <div>
-              <h3 className="font-medium">Fecha de Inicio</h3>
+              <h3 className="font-medium">{t('cursos.modal.add_course.fields.dateStart')}</h3>
               <p>{selectedCourse.startDate}</p>
             </div>
             <div>
-              <h3 className="font-medium">Fecha de Fin</h3>
+              <h3 className="font-medium">{t('cursos.modal.add_course.fields.dateEnd')}</h3>
               <p>{selectedCourse.endDate}</p>
             </div>
           </div>
           <div>
-            <h3 className="font-medium">Empleados Asignados</h3>
+            <h3 className="font-medium">{t('cursos.details.employeeAssing')}</h3>
             <div className="mt-2 space-y-2">
               {selectedCourse.employees.map((employeeId) => {
                 const employee = employees.find((e) => e.id === employeeId);
                 return (
                   <Badge key={employeeId} variant="outline">
-                    {employee?.name || 'Empleado no encontrado'}
+                    {employee?.name || t('cursos.details.employeenofound')}
                   </Badge>
                 );
               })}
@@ -741,7 +741,7 @@ export default function TrainingPage() {
             className="flex items-center gap-2"
           >
             <Archive className="h-4 w-4" />
-            Archivar Curso
+            {t('cursos.details.archiveButton')}
           </Button>
         </div>
       </div>
@@ -754,14 +754,14 @@ export default function TrainingPage() {
       <Dialog open={showAssignEmployeeModal} onOpenChange={setShowAssignEmployeeModal}>
         <DialogContent className="bg-white dark:bg-gray-900 dark:border-gray-700 dark:text-white">
           <DialogHeader>
-            <DialogTitle>Asignar Empleado al Curso</DialogTitle>
+            <DialogTitle>{t('cursos.details.selectemployeetitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <label>Seleccionar Empleado</label>
+              <label>{t('cursos.details.selectemployee')}</label>
               <Select value={selectedEmployee} onValueChange={setSelectedEmployee}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar empleado" />
+                  <SelectValue placeholder={t('cursos.details.selectemployeeplaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {employees
@@ -776,9 +776,9 @@ export default function TrainingPage() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowAssignEmployeeModal(false)}>
-                Cancelar
+              {t('cursos.modal.add_course.fields.button1')}
               </Button>
-              <Button className="dark:text-white dark:bg-gray-900 dark:border-gray-300 dark:hover:bg-gray-700" onClick={handleAssignEmployee}>Asignar</Button>
+              <Button className="dark:text-white dark:bg-gray-900 dark:border-gray-300 dark:hover:bg-gray-700" onClick={handleAssignEmployee}>{t('cursos.details.selectbutton')}</Button>
             </div>
           </div>
         </DialogContent>

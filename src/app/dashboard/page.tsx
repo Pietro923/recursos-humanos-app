@@ -8,6 +8,7 @@ import { collection, getDocs } from "firebase/firestore";
 import Graficotorta from "@/components/grafico-torta";
 import useSalaryStats from "@/hooks/useSalaryStats"; // Importamos el hook
 import Recordatorios from "@/components/recordatorio";
+import { useTranslation } from "react-i18next";
 
 // Definimos la interfaz para los datos de salarios
 interface SalaryStat {
@@ -22,6 +23,7 @@ export default function Dashboard() {
   const [totalPayrollExpense, setTotalPayrollExpense] = useState(0);
   const [genderData, setGenderData] = useState({ hombres: 0, mujeres: 0 });
   const [departmentData, setDepartmentData] = useState<{ name: string; salaries: number[] }[]>([]);
+  const { t } = useTranslation();
   const companies = ["Todas", "Pueble SA - CASE IH", "KIA"]; // Empresas disponibles
 
   // Obtener datos de empleados y sueldos
@@ -104,20 +106,20 @@ export default function Dashboard() {
   <div className="space-y-8 p-6 bg-slate-50 dark:bg-gray-800 dark:border-gray-700 rounded-2xl  ">
     <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight dark:text-white">Dashboard RRHH</h1>
+        <h1 className="text-3xl font-bold tracking-tight dark:text-white">{t('pagedashboard.dashboardTitle')}</h1>
         <p className="text-sm text-muted-foreground">
-          Vista general de recursos humanos
+        {t('pagedashboard.dashboardDescription')}
         </p>
       </div>
 
       <Card className="w-full sm:w-72 bg-white/50 backdrop-blur shadow-sm dark:bg-gray-950">
         <CardContent className="pt-4">
           <label className="block text-sm font-medium text-muted-foreground mb-2 dark:text-white">
-            Seleccionar Empresa
+          {t('pagedashboard.selectCompanyLabel')}
           </label>
           <Select value={selectedCompany} onValueChange={setSelectedCompany}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Seleccionar empresa" />
+              <SelectValue placeholder={t('pagedashboard.selectCompanyPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
               {companies.map((company) => (
@@ -134,7 +136,7 @@ export default function Dashboard() {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card className="hover:shadow-lg transition-all">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
-          <CardTitle className="text-sm font-medium text-muted-foreground  ">Total Empleados</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground  ">{t('pagedashboard.totalEmployeesTitle')}</CardTitle>
           <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
             <Users className="h-4 w-4 text-blue-600" />
           </div>
@@ -143,7 +145,7 @@ export default function Dashboard() {
           <div className="space-y-1">
             <div className="text-2xl font-bold">{totalEmployees}</div>
             <p className="text-xs text-muted-foreground ">
-              Empleados activos
+            {t('pagedashboard.totalEmployeesDescription')}
             </p>
           </div>
         </CardContent>
@@ -151,7 +153,7 @@ export default function Dashboard() {
 
       <Card className="hover:shadow-lg transition-all">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Asistencia Promedio</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground"> {t('pagedashboard.averageAttendanceTitle')}</CardTitle>
           <div className="h-8 w-8 rounded-lg bg-green-100 flex items-center justify-center">
             <Calendar className="h-4 w-4 text-green-600" />
           </div>
@@ -160,7 +162,7 @@ export default function Dashboard() {
           <div className="space-y-1">
             <div className="text-2xl font-bold">95%</div>
             <p className="text-xs text-muted-foreground">
-              Último mes
+            {t('pagedashboard.averageAttendanceDescription')}
             </p>
           </div>
         </CardContent>
@@ -168,7 +170,7 @@ export default function Dashboard() {
 
       <Card className="hover:shadow-lg transition-all">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Gasto en Nómina</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">{t('pagedashboard.payrollExpenseTitle')}</CardTitle>
           <div className="h-8 w-8 rounded-lg bg-purple-100 flex items-center justify-center">
             <DollarSign className="h-4 w-4 text-purple-600" />
           </div>
@@ -177,7 +179,7 @@ export default function Dashboard() {
           <div className="space-y-1">
             <div className="text-2xl font-bold">${totalPayrollExpense.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              Total mensual
+            {t('pagedashboard.payrollExpenseDescription')}
             </p>
           </div>
         </CardContent>
@@ -185,7 +187,7 @@ export default function Dashboard() {
 
       <Card className="hover:shadow-lg transition-all">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Horas de Formación</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">{t('pagedashboard.trainingHoursTitle')}</CardTitle>
           <div className="h-8 w-8 rounded-lg bg-orange-100 flex items-center justify-center">
             <BookOpen className="h-4 w-4 text-orange-600" />
           </div>
@@ -194,7 +196,7 @@ export default function Dashboard() {
           <div className="space-y-1">
             <div className="text-2xl font-bold">450</div>
             <p className="text-xs text-muted-foreground">
-              Horas totales
+            {t('pagedashboard.trainingHoursDescription')}
             </p>
           </div>
         </CardContent>
@@ -203,7 +205,7 @@ export default function Dashboard() {
 
     <Card className="shadow-sm">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">Análisis Salarial por Departamento</CardTitle>
+        <CardTitle className="text-xl font-semibold">{t('pagedashboard.salaryAnalysisTitle')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -217,13 +219,13 @@ export default function Dashboard() {
               </div>
               <div className="space-y-2">
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Promedio</p>
+                  <p className="text-xs text-muted-foreground">{t('pagedashboard.averageLabel')}</p>
                   <p className="text-lg font-bold text-green-600">
                     ${stat.average.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Desvío Estándar</p>
+                  <p className="text-xs text-muted-foreground">{t('pagedashboard.standardDeviationLabel')}</p>
                   <p className="text-sm font-medium text-red-600">
                     ${stat.standardDeviation.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </p>
@@ -237,9 +239,9 @@ export default function Dashboard() {
 
     <Card className="shadow-sm overflow-hidden">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">Distribución por Género</CardTitle>
+        <CardTitle className="text-xl font-semibold">{t('pagedashboard.genderDistributionTitle')}</CardTitle>
         <CardDescription>
-          Proporción de empleados por género en la organización
+        {t('pagedashboard.genderDistributionDescription')}
         </CardDescription>
       </CardHeader>
 
@@ -254,7 +256,7 @@ export default function Dashboard() {
 
     <Card className="shadow-sm">
   <CardHeader>
-    <CardTitle className="text-xl font-semibold">Recordatorios</CardTitle>
+    <CardTitle className="text-xl font-semibold">{t('pagedashboard.remindersTitle')}</CardTitle>
   </CardHeader>
   <CardContent>
     <Recordatorios />

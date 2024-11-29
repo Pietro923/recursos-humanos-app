@@ -10,6 +10,8 @@ import {
   orderBy
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
+import { Archive, Clock, User, AlertTriangle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ArchivedNotification {
   id: string;
@@ -27,7 +29,8 @@ interface ArchivedNotification {
 export default function ArchivedNotifications() {
   const [archivedNotifications, setArchivedNotifications] = useState<ArchivedNotification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const { t } = useTranslation(); // Hook de traducción
+  
   useEffect(() => {
     const fetchArchivedNotifications = async () => {
       try {
@@ -77,68 +80,85 @@ export default function ArchivedNotifications() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6 dark:text-white">Notificaciones Archivadas</h1>
-      <div className="bg-white rounded-lg shadow dark:bg-gray-950">
+    <div className="container mx-auto py-8 px-4">
+      <h1 className="text-3xl font-bold mb-6 flex items-center dark:text-white">
+        <Archive className="mr-3 text-gray-600 dark:text-gray-300" size={32} />
+        {t('notificaciones.title')}
+      </h1>
+      
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden dark:bg-gray-950 ">
         {archivedNotifications.length > 0 ? (
-          <div className="divide-y">
+          <div className="divide-y divide-gray-100 dark:divide-gray-800 ">
             {archivedNotifications.map((notification) => (
-              <div key={notification.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl ">
-                <div className="space-y-2">
+              <div 
+                key={notification.id} 
+                className="p-5 transition-colors duration-200 
+                           hover:bg-gray-50 dark:hover:bg-gray-800 
+                           group relative"
+              >
+                <div className="space-y-3">
+                  {/* Header */}
                   <div className="flex justify-between items-start">
                     <div className="flex flex-col">
-                      <span className={`font-medium  ${getStatusColor(notification.fechaFin)}`}>
+                      <span className={`font-semibold ${getStatusColor(notification.fechaFin)}`}>
                         {notification.tipo}
                       </span>
-                      <span className="text-sm text-gray-500 dark:text-white">
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
                         {notification.empresa}
                       </span>
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-white">
-                      Archivado el {format(notification.archivedAt.toDate(), "dd MMM yyyy", { locale: es })}
+                    <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                      <Archive className="mr-1.5 opacity-50" size={14} />
+                      {format(notification.archivedAt.toDate(), "dd MMM yyyy", { locale: es })}
                     </div>
                   </div>
-                  <p className="text-gray-600 dark:text-white">
+
+                  {/* Description */}
+                  <p className="text-gray-700 dark:text-gray-200 text-sm">
                     {notification.descripcion}
                   </p>
-                  <div className="flex justify-between items-center dark:text-white">
-                {/* Nombre y apellido del empleado */}
-                <div className="text-sm text-gray-500 dark:text-white">
-                    {notification.nombre} {notification.apellido}
-                </div>
 
-                {/* Estado del recordatorio */}
-                    <div className="text-right">
-                        {/* Estado con días restantes o vencido */}
-                        <span className={`text-sm font-medium block  ${getStatusColor(notification.fechaFin)}`}>
-                        {differenceInDays(notification.fechaFin.toDate(), new Date()) === 0
-                            ? "Vence hoy"
-                            : `${Math.abs(differenceInDays(notification.fechaFin.toDate(), new Date()))} días 
-                            ${differenceInDays(notification.fechaFin.toDate(), new Date()) > 0 ? "restantes" : "vencido"}`}
-                        </span>
-
-                        {/* Fecha de vencimiento */}
-                        <time
-                        className="text-xs text-gray-500 dark:text-white"
-                        dateTime={notification.fechaFin.toDate().toISOString()}
-                        >
-                        Vence el {format(notification.fechaFin.toDate(), "dd MMM yyyy", { locale: es })}
-                        </time>
+                  {/* Footer */}
+                  <div className="flex justify-between items-center">
+                    {/* Employee Name */}
+                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                      <User className="mr-2 opacity-50" size={16} />
+                      {notification.nombre} {notification.apellido}
                     </div>
+
+                    {/* Expiration Details */}
+                    <div className="text-right">
+                      <span 
+                        className={`text-sm font-medium block ${getStatusColor(notification.fechaFin)}`}
+                      >
+                        {differenceInDays(notification.fechaFin.toDate(), new Date()) === 0
+                          ? "Vence hoy"
+                          : `${Math.abs(differenceInDays(notification.fechaFin.toDate(), new Date()))} días 
+                             ${differenceInDays(notification.fechaFin.toDate(), new Date()) > 0 ? "restantes" : "vencido"}`}
+                      </span>
+                      <time
+                        className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-end"
+                        dateTime={notification.fechaFin.toDate().toISOString()}
+                      >
+                        <Clock className="mr-1.5 opacity-50" size={12} />
+                        {t('notificaciones.vence')} {format(notification.fechaFin.toDate(), "dd MMM yyyy", { locale: es })}
+                      </time>
+                    </div>
+                  </div>
                 </div>
-            </div>
-        </div>
+              </div>
             ))}
           </div>
         ) : (
-          <div className="p-8 text-center text-gray-500 dark:text-white">
-            No hay notificaciones archivadas
+          <div className="p-8 text-center text-gray-500 dark:text-white flex flex-col items-center">
+            <AlertTriangle className="mb-4 text-gray-300" size={48} />
+            <p>{t('notificaciones.nonotis')}</p>
           </div>
         )}
       </div>

@@ -7,9 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Camera, Mail, Phone, User, Building } from "lucide-react";
+import { Loader2, Camera, Mail, Phone, User, Building, NotebookText } from "lucide-react";
 import { getFirestore, doc,getDoc, updateDoc } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useTranslation } from "react-i18next";
 
 interface CurrentUser {
   uid: string;
@@ -29,6 +30,8 @@ const ProfilePage = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const { t } = useTranslation(); // Hook de traducción
+  
   const [formData, setFormData] = useState<UserProfile>({
     nickname: "",
     fullName: "",
@@ -99,8 +102,8 @@ const ProfilePage = () => {
           bio: formData.bio,
         });
         toast({
-          title: 'Perfil actualizado',
-          description: 'Los cambios han sido guardados correctamente.',
+          title: t('perfil.perfil_actualizado'),
+          description: t('perfil.cambios_guardados'),
         });
       } else {
         throw new Error('No se pudo obtener el usuario actual');
@@ -108,7 +111,7 @@ const ProfilePage = () => {
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'No se pudieron guardar los cambios.',
+        description: t('perfil.guardar_error'),
         variant: 'destructive',
       });
     } finally {
@@ -121,20 +124,20 @@ const ProfilePage = () => {
     <div className="container max-w-4xl mx-auto py-10">
       <Tabs defaultValue="personal" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="personal">Información Personal</TabsTrigger>
-          <TabsTrigger value="actualizar">Actualizar Información Personal</TabsTrigger>
+          <TabsTrigger value="personal">{t('perfil.info_personal')}</TabsTrigger>
+          <TabsTrigger value="actualizar">{t('perfil.actualizar_info')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal">
           <Card>
             <CardHeader>
-              <CardTitle>Perfil Personal</CardTitle>
+              <CardTitle>{t('perfil.perfil_personal')}</CardTitle>
               <CardDescription>
-                Observa tu información personal y detalles de contacto
+              {t('perfil.descripcion_perfil')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex flex-col items-center space-y-4">
+              <div className="flex flex-col items-center space-y-4 ">
                 <Avatar className="h-24 w-24">
                   <AvatarImage src="" />
                   <AvatarFallback className="bg-blue-600 text-white text-xl">
@@ -147,7 +150,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="nickname">
                     <User className="inline-block w-4 h-4 mr-2" />
-                    Nickname
+                    {t('perfil.nickname')}
                   </Label>
                   <Input
                     id="nickname"
@@ -161,7 +164,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="fullName">
                     <User className="inline-block w-4 h-4 mr-2" />
-                    Nombre completo
+                    {t('perfil.nombre_completo')}
                   </Label>
                   <Input
                     id="fullName"
@@ -175,7 +178,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="email">
                     <Mail className="inline-block w-4 h-4 mr-2" />
-                    Email
+                    {t('perfil.email')}
                   </Label>
                   <Input
                     id="email"
@@ -190,7 +193,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="phone">
                     <Phone className="inline-block w-4 h-4 mr-2" />
-                    Teléfono
+                    {t('perfil.telefono')}
                   </Label>
                   <Input
                     id="phone"
@@ -204,7 +207,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="department">
                     <Building className="inline-block w-4 h-4 mr-2" />
-                    Departamento
+                    {t('perfil.departamento')}
                   </Label>
                   <Input
                     id="department"
@@ -216,7 +219,8 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="bio">Biografía</Label>
+                <NotebookText className="inline-block w-4 h-4 mr-2" />
+                  <Label htmlFor="bio">{t('perfil.biografia')}</Label>
                   <textarea
                     id="bio"
                     name="bio"
@@ -234,9 +238,9 @@ const ProfilePage = () => {
         <TabsContent value="actualizar">
         <Card>
             <CardHeader>
-              <CardTitle>Actualizar Perfil Personal</CardTitle>
+              <CardTitle>{t('perfil.actualizar_perfil')}</CardTitle>
               <CardDescription>
-                Actualiza tu información personal y detalles de contacto
+              {t('perfil.descripcion_actualizar')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -249,7 +253,7 @@ const ProfilePage = () => {
                 </Avatar>
                 <Button variant="outline" size="sm">
                   <Camera className="mr-2 h-4 w-4" />
-                  Cambiar foto
+                  {t('perfil.cambiar_foto')}
                 </Button>
               </div>
 
@@ -257,7 +261,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="nickname">
                     <User className="inline-block w-4 h-4 mr-2" />
-                    Nickname
+                    {t('perfil.nickname')}
                   </Label>
                   <Input
                     id="nickname"
@@ -271,7 +275,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="fullName">
                     <User className="inline-block w-4 h-4 mr-2" />
-                    Nombre completo
+                    {t('perfil.nombre_completo')}
                   </Label>
                   <Input
                     id="fullName"
@@ -285,7 +289,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="email">
                     <Mail className="inline-block w-4 h-4 mr-2" />
-                    Email
+                    {t('perfil.email')}
                   </Label>
                   <Input
                     id="email"
@@ -300,7 +304,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="phone">
                     <Phone className="inline-block w-4 h-4 mr-2" />
-                    Teléfono
+                    {t('perfil.telefono')}
                   </Label>
                   <Input
                     id="phone"
@@ -314,7 +318,7 @@ const ProfilePage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="department">
                     <Building className="inline-block w-4 h-4 mr-2" />
-                    Departamento
+                    {t('perfil.departamento')}
                   </Label>
                   <Input
                     id="department"
@@ -326,7 +330,9 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="bio">Biografía</Label>
+                <NotebookText className="inline-block w-4 h-4 mr-2" />
+                  <Label htmlFor="bio"> {t('perfil.biografia')}</Label>
+                  
                   <textarea
                     id="bio"
                     name="bio"
@@ -338,10 +344,10 @@ const ProfilePage = () => {
               </div>
 
               <div className="flex justify-end space-x-4">
-                <Button variant="outline">Cancelar</Button>
+                <Button variant="outline">{t('perfil.cancelar')}</Button>
                 <Button onClick={handleSave} disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Guardar Cambios
+                  {t('perfil.guardar_cambios')}
                 </Button>
               </div>
             </CardContent>

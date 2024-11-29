@@ -10,6 +10,8 @@ import { collection, getDocs, doc, setDoc, getDoc } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Building2, Save } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 
 interface Employee {
   id: string;
@@ -45,6 +47,7 @@ export default function PayrollPage() {
   const [companies] = useState<string[]>(["Pueble SA - CASE IH", "KIA"]);
   const [absences, setAbsences] = useState<AbsenceMap>({});
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation(); // Hook de traducción
   
   // Obtener el mes y año actual para el registro de inasistencias
   const currentDate = new Date();
@@ -97,7 +100,7 @@ export default function PayrollPage() {
           setSelectedDepartment("todos");
         } catch (error) {
           console.error("Error fetching data:", error);
-          toast.error("Error al cargar los datos");
+          toast.error(t('nominas.toast.error'));
         } finally {
           setIsLoading(false);
         }
@@ -157,108 +160,133 @@ export default function PayrollPage() {
         doc(db, "Grupo_Pueble", selectedCompany, "inasistencias", periodId),
         absencesToSave
       );
-      toast.success("Inasistencias guardadas correctamente");
+      toast.success(t('nominas.toast.success'));
     } catch (error) {
       console.error("Error saving absences:", error);
-      toast.error("Error al guardar las inasistencias");
+      toast.error(t('nominas.toast.errorasistencia'));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="max-w-screen-2xl container mx-auto py-8 space-y-6 ">
-      <div className="flex items-center gap-2 mb-8">
-        <Users className="h-8 w-8 text-primary" />
-        <h1 className="text-4xl font-bold text-gray-900 tracking-tight dark:text-white">Gestión de Nóminas</h1>
-      </div>
+    <div className="max-w-screen-2xl container mx-auto py-8 space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="flex items-center gap-4 mb-8"
+      >
+        <Users className="h-10 w-10 text-primary-500 transform transition-transform hover:scale-110" />
+        <h1 className="text-4xl font-bold text-gray-900 tracking-tight dark:text-white">
+          {t('nominas.header.title')}
+        </h1>
+      </motion.div>
   
-      <Card className="max-w-screen-2xl border-none shadow-lg rounded-lg overflow-hidden ">
-        <CardHeader className="bg-muted/50 dark:bg-gray-800">
+      <Card className="max-w-screen-2xl border-none shadow-2xl rounded-xl overflow-hidden transition-all duration-300 hover:shadow-3xl">
+        <CardHeader className="bg-gradient-to-r from-muted/50 to-muted/30 dark:from-gray-800 dark:to-gray-900">
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2 " >
-                <Building2 className="h-5 w-5 text-muted-foreground" />
-                <CardTitle className="text-lg font-semibold text-gray-700  dark:text-white">
-                  Nómina Mensual - Período {periodId}
+              <div className="flex items-center gap-3">
+                <Building2 className="h-6 w-6 text-primary-500" />
+                <CardTitle className="text-xl font-bold text-gray-800 dark:text-white">
+                  {t('nominas.header.sectionTitle')} {periodId}
                 </CardTitle>
               </div>
-    
-              <div className="flex items-center gap-4 ">
+      
+              <div className="flex items-center gap-4">
                 <Select value={selectedCompany || ""} onValueChange={setSelectedCompany}>
-                  <SelectTrigger className="w-[250px] bg-white rounded-md shadow-sm dark:bg-gray-950 dark:text-white">
-                    <SelectValue placeholder="Seleccionar empresa" />
+                  <SelectTrigger className="w-[250px] bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow dark:bg-gray-950 dark:text-white">
+                    <SelectValue placeholder={t('nominas.header.selectCompany')} />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-gray-900 dark:border-gray-700">
                     {companies.map((company) => (
-                      <SelectItem key={company} value={company}>
+                      <SelectItem 
+                        key={company} 
+                        value={company}
+                        className="hover:bg-primary-50 dark:hover:bg-gray-800 transition-colors"
+                      >
                         {company}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-
+  
                 <Button 
                   onClick={saveAbsences} 
                   disabled={isLoading || !selectedCompany}
-                  className="flex items-center gap-2 dark:bg-gray-950 dark:text-white"
+                  className="flex items-center gap-2 dark:bg-gray-950 dark:text-white hover:bg-primary-100 dark:hover:bg-gray-800 transition-colors group"
                 >
-                  <Save className="h-4 w-4 dark:text-white" />
-                  Guardar Inasistencias
+                  <Save className="h-5 w-5 dark:text-white group-hover:rotate-6 transition-transform" />
+                  {t('nominas.header.saveAbsences')}
                 </Button>
               </div>
             </div>
-
+  
             {selectedCompany && (
-              <div className="flex justify-end ">
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex justify-end"
+              >
                 <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                  <SelectTrigger className="w-[250px] bg-white rounded-md shadow-sm dark:bg-gray-950 dark:text-white">
-                    <SelectValue placeholder="Filtrar por departamento" />
+                  <SelectTrigger className="w-[250px] bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow dark:bg-gray-950 dark:text-white">
+                    <SelectValue placeholder={t('nominas.header.filterDepartment')} />
                   </SelectTrigger>
-                  <SelectContent className="">
-                    <SelectItem value="todos">Todos los departamentos</SelectItem>
+                  <SelectContent className="dark:bg-gray-900 dark:border-gray-700">
+                    <SelectItem 
+                      value="todos" 
+                      className="hover:bg-primary-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      {t('nominas.header.deptos')}
+                    </SelectItem>
                     {departments.map((dept) => (
-                      <SelectItem key={dept} value={dept}>
+                      <SelectItem 
+                        key={dept} 
+                        value={dept}
+                        className="hover:bg-primary-50 dark:hover:bg-gray-800 transition-colors"
+                      >
                         {dept}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </motion.div>
             )}
           </div>
         </CardHeader>
-  
+    
         <CardContent className="p-0">
-          <div className="rounded-b-lg overflow-hidden bg-white shadow-sm dark:bg-gray-950 dark:text-white">
+          <div className="rounded-b-xl overflow-hidden bg-white shadow-sm dark:bg-gray-950 dark:text-white">
             <div className="overflow-x-auto">
               <Table className="min-w-full table-auto">
                 <TableHeader>
-                  <TableRow className="bg-muted/50 text-sm text-gray-700 dark:bg-gray-800  ">
-                    <TableHead className="font-semibold text-center dark:text-white">Nombre</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Apellido</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">DNI</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Correo</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Departamento</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Sueldo Básico</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Incentivo Promedio</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Incentivo Mensual</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Días Inasistencia</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Descuento Inasistencias</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Total Básico + Incentivo</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Bono</TableHead>
-                    <TableHead className="font-semibold text-center dark:text-white">Total Final</TableHead>
+                  <TableRow className="bg-gradient-to-r from-muted/50 to-muted/30 text-sm dark:bg-gray-800">
+                    {[
+                      'name', 'surname', 'dni', 'email', 'department', 
+                      'basicSalary', 'averageIncentive', 'monthlyIncentive', 
+                      'absenceDays', 'absenceDiscount', 'totalBasicIncentive', 
+                      'bonus', 'finalTotal'
+                    ].map((col) => (
+                      <TableHead 
+                        key={col} 
+                        className="font-bold text-center dark:text-white hover:bg-primary-50 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        {t(`nominas.columns.${col}`)}
+                      </TableHead>
+                    ))}
                   </TableRow>
                 </TableHeader>
-  
+    
                 <TableBody>
                   {filteredEmployees.length === 0 ? (
                     <TableRow>
                       <TableCell
                         colSpan={13}
-                        className="text-center py-8 text-muted-foreground italic dark:text-white "
+                        className="text-center py-8 text-muted-foreground italic dark:text-white"
                       >
-                        {selectedCompany ? "No hay empleados para mostrar" : "Seleccione una empresa para ver los datos de nómina"}
+                        {selectedCompany ? t('nominas.header.noEmployees') : t('nominas.header.selectCompanyMessage')}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -273,41 +301,44 @@ export default function PayrollPage() {
                       const totalFinal = totalBasicoIncentivo + employee.bono;
                       
                       return (
-                        <TableRow key={employee.id} className="hover:bg-muted/50">
-                          <TableCell>{employee.nombre}</TableCell>
-                          <TableCell>{employee.apellido}</TableCell>
-                          <TableCell className="font-mono">{employee.dni}</TableCell>
-                          <TableCell>{employee.correo}</TableCell>
-                          <TableCell>{employee.departamento}</TableCell>
-                          <TableCell className="text-right font-medium">
+                        <TableRow 
+                          key={employee.id} 
+                          className="hover:bg-primary-50/30 dark:hover:bg-gray-800/50 transition-colors"
+                        >
+                          <TableCell className="text-center">{employee.nombre}</TableCell>
+                          <TableCell className="text-center">{employee.apellido}</TableCell>
+                          <TableCell className="text-center font-mono">{employee.dni}</TableCell>
+                          <TableCell className="text-center">{employee.correo}</TableCell>
+                          <TableCell className="text-center">{employee.departamento}</TableCell>
+                          <TableCell className="text-right font-medium text-gray-700 dark:text-gray-300">
                             {formatCurrency(employee.sueldo)}
                           </TableCell>
-                          <TableCell className="text-right font-medium">
+                          <TableCell className="text-right font-medium text-gray-700 dark:text-gray-300">
                             {formatCurrency(employee.incentivo)}
                           </TableCell>
-                          <TableCell className="text-right font-medium">
+                          <TableCell className="text-right font-medium text-gray-700 dark:text-gray-300">
                             {formatCurrency(employee.incentivoMensual)}
                           </TableCell>
-                          <TableCell className="text-center ">
+                          <TableCell className="text-center">
                             <Input
                               type="number"
                               min="0"
                               max="31"
                               value={diasInasistencia || ""}
                               onChange={(e) => handleAbsenceChange(employee, e.target.value)}
-                              className="w-20 text-center mx-auto text-red-600 "
+                              className="w-20 text-center mx-auto text-red-600 rounded-md focus:ring-2 focus:ring-primary-500 transition-all"
                             />
                           </TableCell>
                           <TableCell className="text-right font-medium text-red-600">
                             {formatCurrency(descuentoInasistencias)}
                           </TableCell>
-                          <TableCell className="text-right font-medium text-blue-700">
+                          <TableCell className="text-right font-medium text-blue-700 dark:text-blue-500">
                             {formatCurrency(totalBasicoIncentivo)}
                           </TableCell>
-                          <TableCell className="text-right font-medium">
+                          <TableCell className="text-right font-medium text-gray-700 dark:text-gray-300">
                             {formatCurrency(employee.bono)}
                           </TableCell>
-                          <TableCell className="text-right font-medium text-green-700">
+                          <TableCell className="text-right font-medium text-green-700 dark:text-green-500">
                             {formatCurrency(totalFinal)}
                           </TableCell>
                         </TableRow>

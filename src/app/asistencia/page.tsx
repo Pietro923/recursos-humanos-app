@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { db } from "@/lib/firebaseConfig" // Asegúrate de importar tu configuración de Firebase
 import { collection, getDocs } from "firebase/firestore"
+import { useTranslation } from "react-i18next"
 
 // Definición de los tipos
 interface Employee {
@@ -22,6 +23,7 @@ export default function Asistencia() {
   const [selectedCompany, setSelectedCompany] = useState("") // Empresa seleccionada
   const [companies] = useState(["Pueble SA - CASE IH", "KIA"]) // Lista de empresas
   const [employees, setEmployees] = useState<Employee[]>([]) // Lista de empleados filtrada por empresa
+  const { t } = useTranslation();
 
   // Obtener empleados de la empresa seleccionada desde la base de datos
   useEffect(() => {
@@ -59,13 +61,15 @@ export default function Asistencia() {
 
   return (
     <div className="container mx-auto p-6 max-w-3xl dark:bg-gray-800 dark:border-gray-700 dark:text-white rounded-2xl">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 justify-center text-center dark:bg-gray-800 dark:border-gray-700 dark:text-white rounded-2xl">Registro de Asistencia</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6 justify-center text-center dark:bg-gray-800 dark:border-gray-700 dark:text-white rounded-2xl">
+        {t("asistencia.page_title")}
+      </h1>
 
       {/* Selector de empresa */}
       <div className="mb-6 flex justify-center bg-white shadow-md rounded-lg p-6 max-w-60 ml-52 dark:bg-gray-950  dark:text-white ">
         <Select value={selectedCompany} onValueChange={setSelectedCompany}>
           <SelectTrigger className="w-72 text-gray-700 dark:text-white">
-            <SelectValue placeholder="Selecciona una empresa" />
+            <SelectValue placeholder={t("asistencia.select_company_placeholder")} />
           </SelectTrigger>
           <SelectContent>
             {companies.map((company) => (
@@ -82,11 +86,21 @@ export default function Asistencia() {
         <Table className="w-full">
           <TableHeader>
             <TableRow className="bg-gray-50 border-b dark:bg-gray-950 ">
-              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">ID</TableCell>
-              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">Nombre</TableCell>
-              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">DNI</TableCell>
-              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">Departamento</TableCell>
-              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">Asistencia</TableCell>
+              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">
+                {t("asistencia.table_headers.id")}
+              </TableCell>
+              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">
+                {t("asistencia.table_headers.name")}
+              </TableCell>
+              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">
+                {t("asistencia.table_headers.dni")}
+              </TableCell>
+              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">
+                {t("asistencia.table_headers.department")}
+              </TableCell>
+              <TableCell className="font-semibold text-gray-600 text-center p-3 dark:text-white">
+                {t("asistencia.table_headers.attendance")}
+              </TableCell>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -104,7 +118,7 @@ export default function Asistencia() {
                       className="bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-800 dark:hover:bg-blue-900 "
                       onClick={() => handleMarkAttendance(employee)}
                     >
-                      Marcar Asistencia
+                      {t("asistencia.mark_attendance_button")}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -112,13 +126,13 @@ export default function Asistencia() {
             ) : selectedCompany ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-gray-500 p-4">
-                  No hay empleados en esta empresa
+                  {t("asistencia.no_employees_in_company")}
                 </TableCell>
               </TableRow>
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-gray-500 p-4">
-                  Selecciona una empresa para ver los empleados
+                  {t("asistencia.select_company_message")}
                 </TableCell>
               </TableRow>
             )}
@@ -126,5 +140,5 @@ export default function Asistencia() {
         </Table>
       </div>
     </div>
-  )
+  );
 }

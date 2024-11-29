@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { db } from "@/lib/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useTranslation } from "react-i18next";
 
 interface Employee {
   id: string;
@@ -29,7 +30,7 @@ export default function PerformancePage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string>("");
   const [companies] = useState(["Pueble SA - CASE IH", "KIA"]);
-  
+  const { t } = useTranslation();
   
   // State for dialogs
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -151,9 +152,9 @@ export default function PerformancePage() {
     if (!selectedEmployee || dialogType !== 'legajo') return null;
   
     const legajoYears = [
-      { year: '2024', fileTypes: ['Contrato', 'Evaluaciones', 'Documentos Personales'] },
-      { year: '2023', fileTypes: ['Contrato', 'Evaluaciones', 'Documentos Personales'] },
-      { year: '2022', fileTypes: ['Contrato', 'Evaluaciones'] }
+      { year: '2024', fileTypes: [t('desempeño.legajosection.tipo1'), t('desempeño.legajosection.tipo2'),, t('desempeño.legajosection.tipo3'),] },
+      { year: '2023', fileTypes: [t('desempeño.legajosection.tipo1'), t('desempeño.legajosection.tipo2'),, t('desempeño.legajosection.tipo3'),] },
+      { year: '2022', fileTypes:[t('desempeño.legajosection.tipo1'), t('desempeño.legajosection.tipo2'),, t('desempeño.legajosection.tipo3'),] }
     ];
   
     return (
@@ -168,21 +169,26 @@ export default function PerformancePage() {
       >
         <DialogContent className="bg-white max-w-2xl dark:bg-gray-950 dark:text-white">
           <DialogHeader>
-            <DialogTitle>Legajos de {selectedEmployee.name}</DialogTitle>
-            <DialogDescription>Seleccione el año y tipo de documento</DialogDescription>
+            <DialogTitle>{t('desempeño.dialogs.legajo.title')} {selectedEmployee.name}</DialogTitle>
+            <DialogDescription>{t('desempeño.dialogs.legajo.description')}</DialogDescription>
           </DialogHeader>
           
           {legajoYears.map((yearData) => (
             <div key={yearData.year} className="mb-4 border-b pb-4">
-              <h3 className="text-lg font-semibold mb-2">Legajo {yearData.year}</h3>
+              <h3 className="text-lg font-semibold mb-2">{t('desempeño.legajosection.leg')} {yearData.year}</h3>
               <div className="grid grid-cols-3 gap-4">
                 {yearData.fileTypes.map((fileType) => (
                   <Button 
                     key={fileType} 
                     variant="outline"
                     onClick={() => {
-                      // Aquí podrías implementar la lógica para abrir/descargar el documento
-                      alert(`Abriendo ${fileType} para ${selectedEmployee.name} del año ${yearData.year}`);
+                      alert(
+                        t('desempeño.dialogs.legajo.fileButtonAlert', {
+                          fileType: fileType,
+                          employeeName: selectedEmployee.name,
+                          year: yearData.year
+                        })
+                      );
                     }}
                   >
                     {fileType}
@@ -193,7 +199,7 @@ export default function PerformancePage() {
           ))}
           
           <DialogFooter>
-            <Button variant="outline" onClick={closeDialog}>Cerrar</Button>
+            <Button variant="outline" onClick={closeDialog}>{t('desempeño.dialogs.legajo.closeButton')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -204,13 +210,13 @@ export default function PerformancePage() {
     if (!selectedEmployee || !dialogType) return null;
 
     const dialogTitles = {
-      'self': 'Autoevaluación',
-      'boss': 'Evaluación del Jefe',
-      'calibration': 'Calibración Final',
-      'asesor': 'Evaluacion del Asesor',
-      'capacitador': 'Evaluacion del Capacitador',
-      'calibrationTec': 'Calibración Final Tecnico',
-      'legajo': 'Legajos del Empleado',
+      'self': t('desempeño.dialogs.evaluation.titles.self'),
+      'boss':  t('desempeño.dialogs.evaluation.titles.boss'),
+      'calibration': t('desempeño.dialogs.evaluation.titles.calibration'),
+      'asesor': t('desempeño.dialogs.evaluation.titles.asesor'),
+      'capacitador': t('desempeño.dialogs.evaluation.titles.capacitador'),
+      'calibrationTec': t('desempeño.dialogs.evaluation.titles.calibrationTec'),
+      'legajo':t('desempeño.dialogs.evaluation.titles.legajo'),
     };
 
     if (dialogType === 'legajo') {
@@ -218,35 +224,36 @@ export default function PerformancePage() {
     }
 
     const dialogQuestions = {
+      
       'self': [
-        "¿Cuáles fueron tus principales logros en el último período?",
-        "¿Qué desafíos enfrentaste y cómo los superaste?",
-        "¿En qué áreas consideras que necesitas mejorar?"
+        t('desempeño.dialogs.evaluation.questions.self.0'),
+        t('desempeño.dialogs.evaluation.questions.self.1'),
+        t('desempeño.dialogs.evaluation.questions.self.2'),
       ],
       'boss': [
-        "Evaluación general del desempeño del empleado",
-        "Fortalezas observadas",
-        "Áreas de mejora identificadas"
+        t('desempeño.dialogs.evaluation.questions.boss.0'),
+        t('desempeño.dialogs.evaluation.questions.boss.1'),
+        t('desempeño.dialogs.evaluation.questions.boss.2'),
       ],
       'calibration': [
-        "Resultado final de la evaluación de desempeño",
-        "Puntuación global",
-        "Observaciones adicionales"
+        t('desempeño.dialogs.evaluation.questions.calibration.0'),
+        t('desempeño.dialogs.evaluation.questions.calibration.1'),
+        t('desempeño.dialogs.evaluation.questions.calibration.2'),
       ],
       'asesor': [
-        "¿Cómo evalúas el nivel de asistencia técnica proporcionada?",
-        "¿Qué tan claras fueron las instrucciones y expectativas establecidas?",
-        "¿Hubo algún proyecto o actividad donde sentiste que el apoyo técnico fue insuficiente?"
+        t('desempeño.dialogs.evaluation.questions.asesor.0'),
+        t('desempeño.dialogs.evaluation.questions.asesor.1'),
+        t('desempeño.dialogs.evaluation.questions.asesor.2'),
       ],
       'capacitador': [
-        "¿Qué tan efectivo consideras el contenido y la metodología de las capacitaciones?",
-        "¿Ha recibido suficiente práctica y retroalimentación para aplicar lo aprendido?",
-        "¿En qué áreas consideras que debería recibir más capacitación?"
+        t('desempeño.dialogs.evaluation.questions.capacitador.0'),
+        t('desempeño.dialogs.evaluation.questions.capacitador.1'),
+        t('desempeño.dialogs.evaluation.questions.capacitador.2'),
       ],
       'calibrationTec': [
-        "Resultado final de la evaluación de desempeño",
-        "Puntuación global",
-        "Observaciones adicionales"
+        t('desempeño.dialogs.evaluation.questions.calibrationTec.0'),
+        t('desempeño.dialogs.evaluation.questions.calibrationTec.1'),
+        t('desempeño.dialogs.evaluation.questions.calibrationTec.2'),
       ],
       'legajo': [
         
@@ -266,14 +273,14 @@ export default function PerformancePage() {
         <DialogContent className="bg-white dark:bg-gray-950 dark:text-white">
           <DialogHeader>
             <DialogTitle>{dialogTitles[dialogType]} - {selectedEmployee.name}</DialogTitle>
-            <DialogDescription>Por favor, complete el siguiente cuestionario</DialogDescription>
+            <DialogDescription>{t('desempeño.dialogs.evaluation.description')}</DialogDescription>
           </DialogHeader>
           
           {dialogQuestions[dialogType].map((question, index) => (
             <div key={index} className="space-y-2">
               <Label>{question}</Label>
               <Textarea 
-                placeholder="Escriba su respuesta aquí" 
+                placeholder={t('desempeño.dialogs.evaluation.questions.placeholder1')}
                 value={evaluationResponses[dialogType][index]}
                 onChange={(e) => handleResponseChange(index, e.target.value)}
               />
@@ -282,12 +289,12 @@ export default function PerformancePage() {
           
           {dialogType === 'calibration' && (
             <div className="space-y-2">
-              <Label>Puntuación Final</Label>
+              <Label>{t('desempeño.dialogs.evaluation.scoreInput.label')}</Label>
               <Input 
                 type="number" 
                 min="1" 
                 max="10" 
-                placeholder="Ingrese puntuación (1-10)"
+                placeholder={t('desempeño.dialogs.evaluation.scoreInput.placeholder')}
                 value={evaluationResponses.calibrationScore}
                 onChange={(e) => setEvaluationResponses(prev => ({
                   ...prev,
@@ -298,8 +305,8 @@ export default function PerformancePage() {
           )}
           
           <DialogFooter>
-          <Button variant="outline" onClick={closeDialog}>Cancelar</Button>
-            <Button onClick={handleSaveEvaluation}>Guardar</Button>
+          <Button variant="outline" onClick={closeDialog}>{t('desempeño.dialogs.evaluation.footerButtons.cancel')}</Button>
+            <Button onClick={handleSaveEvaluation}>{t('desempeño.dialogs.evaluation.footerButtons.save')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -312,37 +319,38 @@ export default function PerformancePage() {
     const results = evaluationResults[`${selectedEmployee.id}-${viewDialogType}`];
     const dialogQuestions = {
       'self': [
-        "¿Cuáles fueron tus principales logros en el último período?",
-        "¿Qué desafíos enfrentaste y cómo los superaste?",
-        "¿En qué áreas consideras que necesitas mejorar?"
+        t('desempeño.dialogs.evaluation.questions.self.0'),
+        t('desempeño.dialogs.evaluation.questions.self.1'),
+        t('desempeño.dialogs.evaluation.questions.self.2'),
       ],
       'boss': [
-        "Evaluación general del desempeño del empleado",
-        "Fortalezas observadas",
-        "Áreas de mejora identificadas"
+        t('desempeño.dialogs.evaluation.questions.boss.0'),
+        t('desempeño.dialogs.evaluation.questions.boss.1'),
+        t('desempeño.dialogs.evaluation.questions.boss.2'),
       ],
       'calibration': [
-        "Resultado final de la evaluación de desempeño",
-        "Puntuación global",
-        "Observaciones adicionales"
-      ], 
+        t('desempeño.dialogs.evaluation.questions.calibration.0'),
+        t('desempeño.dialogs.evaluation.questions.calibration.1'),
+        t('desempeño.dialogs.evaluation.questions.calibration.2'),
+      ],
       'asesor': [
-        "¿Cómo evalúas el nivel de asistencia técnica proporcionada?",
-        "¿Qué tan claras fueron las instrucciones y expectativas establecidas?",
-        "¿Hubo algún proyecto o actividad donde sentiste que el apoyo técnico fue insuficiente?"
+        t('desempeño.dialogs.evaluation.questions.asesor.0'),
+        t('desempeño.dialogs.evaluation.questions.asesor.1'),
+        t('desempeño.dialogs.evaluation.questions.asesor.2'),
       ],
       'capacitador': [
-        "¿Qué tan efectivo consideras el contenido y la metodología de las capacitaciones?",
-        "¿Ha recibido suficiente práctica y retroalimentación para aplicar lo aprendido?",
-        "¿En qué áreas consideras que debería recibir más capacitación?"
+        t('desempeño.dialogs.evaluation.questions.capacitador.0'),
+        t('desempeño.dialogs.evaluation.questions.capacitador.1'),
+        t('desempeño.dialogs.evaluation.questions.capacitador.2'),
       ],
       'calibrationTec': [
-        "Resultado final de la evaluación de desempeño",
-        "Puntuación global",
-        "Observaciones adicionales"
-      ],'legajo': [
-        
+        t('desempeño.dialogs.evaluation.questions.calibrationTec.0'),
+        t('desempeño.dialogs.evaluation.questions.calibrationTec.1'),
+        t('desempeño.dialogs.evaluation.questions.calibrationTec.2'),
       ],
+      'legajo': [
+        
+      ]
     };
   
     return (
@@ -358,7 +366,7 @@ export default function PerformancePage() {
       {selectedEmployee && viewDialogType && (
         <DialogContent className="bg-white dark:bg-gray-950 dark:text-white">
           <DialogHeader>
-            <DialogTitle>Resultados - {selectedEmployee.name}</DialogTitle>
+            <DialogTitle>{t('desempeño.dialogs.results.title')}{selectedEmployee.name}</DialogTitle>
           </DialogHeader>
           {results ? (
             viewDialogType === 'calibration' ? (
@@ -366,7 +374,7 @@ export default function PerformancePage() {
                 {results.slice(0, 3).map((response: string, index: number) => (
                   <p key={index}><b>{dialogQuestions[viewDialogType][index]}:</b> {response}</p>
                 ))}
-                <p><b>Puntuación Final:</b> {results[3]}</p>
+                <p><b>{t('desempeño.dialogs.evaluation.scoreInput.label2')}</b> {results[3]}</p>
               </>
             ) : (
               results.map((response: string, index: number) => (
@@ -374,10 +382,10 @@ export default function PerformancePage() {
               ))
             )
           ) : (
-            <p>No hay resultados disponibles.</p>
+            <p>{t('desempeño.dialogs.results.noResults')}</p>
           )}
           <DialogFooter>
-            <Button onClick={() => setSelectedEmployee(null)}>Cerrar</Button>
+            <Button onClick={() => setSelectedEmployee(null)}>{t('desempeño.dialogs.results.closeButton')}</Button>
           </DialogFooter>
         </DialogContent>
       )}
@@ -389,13 +397,13 @@ export default function PerformancePage() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Evaluación de Desempeño - Empleados</CardTitle>
+          <CardTitle>{t('desempeño.evaluationPage.general.employeeTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
             <Select onValueChange={(value) => setSelectedCompany(value)}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecciona una empresa" />
+                <SelectValue placeholder={t('desempeño.evaluationPage.general.selectCompany')} />
               </SelectTrigger>
               <SelectContent>
                 {companies.map((company) => (
@@ -409,13 +417,13 @@ export default function PerformancePage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Departamento</TableHead>
-                <TableHead>PDP</TableHead>
-                <TableHead>Autoevaluación</TableHead>
-                <TableHead>Evaluación Jefe</TableHead>
-                <TableHead>Calibración Final</TableHead>
-                <TableHead>Acciones</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.employee.0')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.employee.1')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.employee.2')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.employee.3')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.employee.4')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.employee.5')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.employee.6')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -432,7 +440,7 @@ export default function PerformancePage() {
                         onClick={() => document.getElementById(`upload-pdp-${employee.id}`)?.click()}
                       >
                         <Upload className="h-4 w-4 mr-1" />
-                        PDP
+                        {t('desempeño.evaluationPage.actions.uploadPDP')}
                       </Button>
                       <input
                         type="file"
@@ -444,13 +452,13 @@ export default function PerformancePage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Button variant="outline" onClick={() => openViewDialog(employee, 'self')}>Resultados Autoevaluacion</Button>
+                    <Button variant="outline" onClick={() => openViewDialog(employee, 'self')}>{t('desempeño.evaluationPage.actions.viewSelfResults')}</Button>
                     </TableCell>
                   <TableCell>
-                  <Button variant="outline" onClick={() => openViewDialog(employee, 'boss')}>Resultados Evaluación Jefe</Button>
+                  <Button variant="outline" onClick={() => openViewDialog(employee, 'boss')}>{t('desempeño.evaluationPage.actions.viewBossResults')}</Button>
                     </TableCell>
                   <TableCell>
-                  <Button variant="outline" onClick={() => openViewDialog(employee, 'calibration')}>Resultados Calibracion</Button>
+                  <Button variant="outline" onClick={() => openViewDialog(employee, 'calibration')}>{t('desempeño.evaluationPage.actions.viewCalibrationResults')}</Button>
                     </TableCell>
                     
                   <TableCell>
@@ -460,21 +468,21 @@ export default function PerformancePage() {
                         size="sm" 
                         onClick={() => openDialog(employee, 'self')}
                       >
-                        Autoevaluar
+                        {t('desempeño.evaluationPage.actions.evaluate.self')}
                       </Button>
                       <Button 
                         variant="outline" 
                         size="sm" 
                         onClick={() => openDialog(employee, 'boss')}
                       >
-                        Evaluación Jefe
+                         {t('desempeño.evaluationPage.actions.evaluate.boss')}
                       </Button>
                       <Button 
                         variant="outline" 
                         size="sm" 
                         onClick={() => openDialog(employee, 'calibration')}
                       >
-                        Calibrar
+                        {t('desempeño.evaluationPage.actions.evaluate.calibration')}
                       </Button>
                     </div>
                   </TableCell>
@@ -496,13 +504,13 @@ export default function PerformancePage() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Evaluación de Desempeño - Tecnicos</CardTitle>
+          <CardTitle>{t('desempeño.evaluationPage.general.techTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
             <Select onValueChange={(value) => setSelectedCompany(value)}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecciona una empresa" />
+                <SelectValue placeholder={t('desempeño.evaluationPage.general.selectCompany')} />
               </SelectTrigger>
               <SelectContent>
                 {companies.map((company) => (
@@ -519,13 +527,13 @@ export default function PerformancePage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Departamento</TableHead>
-                <TableHead>PDC</TableHead>
-                <TableHead>Evaluación Asesor</TableHead>
-                <TableHead>Evaluación Capacitador</TableHead>
-                <TableHead>Calibración Final</TableHead>
-                <TableHead>Acciones</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.tech.0')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.tech.1')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.tech.2')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.tech.3')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.tech.4')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.tech.5')}</TableHead>
+                <TableHead>{t('desempeño.evaluationPage.tableHeaders.tech.6')}</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -543,7 +551,7 @@ export default function PerformancePage() {
                         onClick={() => document.getElementById(`upload-pdc-${employee.id}`)?.click()}
                       >
                         <Upload className="h-4 w-4 mr-1" />
-                        PDC
+                        {t('desempeño.evaluationPage.actions.uploadPDC')}
                       </Button>
                       <input
                         type="file"
@@ -556,13 +564,13 @@ export default function PerformancePage() {
                   </TableCell>
 
                   <TableCell>
-                    <Button variant="outline" onClick={() => openViewDialog(employee, 'asesor')}>R. Evaluación Asesor</Button>
+                    <Button variant="outline" onClick={() => openViewDialog(employee, 'asesor')}>{t('desempeño.evaluationPage.actions.viewCalibrationAsesor')}</Button>
                     </TableCell>
                   <TableCell>
-                  <Button variant="outline" onClick={() => openViewDialog(employee, 'capacitador')}>R. Evaluación Capacitador</Button>
+                  <Button variant="outline" onClick={() => openViewDialog(employee, 'capacitador')}>{t('desempeño.evaluationPage.actions.viewCalibrationCapacitador')}</Button>
                     </TableCell>
                   <TableCell>
-                  <Button variant="outline" onClick={() => openViewDialog(employee, 'calibrationTec')}>R. Calibracion</Button>
+                  <Button variant="outline" onClick={() => openViewDialog(employee, 'calibrationTec')}>{t('desempeño.evaluationPage.actions.viewCalibrationTec')}</Button>
                     </TableCell>
                     
                   <TableCell>
@@ -572,28 +580,28 @@ export default function PerformancePage() {
                         size="sm" 
                         onClick={() => openDialog(employee, 'asesor')}
                       >
-                        Evaluación Asesor
+                         {t('desempeño.evaluationPage.actions.evaluate.asesor')}
                       </Button>
                       <Button 
                         variant="outline" 
                         size="sm" 
                         onClick={() => openDialog(employee, 'capacitador')}
                       >
-                        Evaluación Capacitador
+                        {t('desempeño.evaluationPage.actions.evaluate.capacitador')}
                       </Button>
                       <Button 
                         variant="outline" 
                         size="sm" 
                         onClick={() => openDialog(employee, 'calibrationTec')}
                       >
-                        Calibrar
+                        {t('desempeño.evaluationPage.actions.evaluate.calibrationTec')}
                       </Button>
                       <Button 
                         variant="outline" 
                         size="sm" 
                         onClick={() => openDialog(employee, 'legajo')}
                       >
-                        Legajo
+                       {t('desempeño.evaluationPage.actions.evaluate.Legajo')}
                       </Button>
                     </div>
                   </TableCell>
@@ -612,12 +620,12 @@ export default function PerformancePage() {
 
   return (
     <div className="space-y-6 p-6">
-      <h1 className="text-3xl font-bold dark:text-white">Sistema de Evaluación de Desempeño</h1>
+      <h1 className="text-3xl font-bold dark:text-white">{t('desempeño.title')}</h1>
 
       <Tabs defaultValue="employees" className="w-full">
         <TabsList className="grid w-[400px] grid-cols-2">
-          <TabsTrigger className="dark:text-white dark:hover:bg-gray-700" value="employees">Empleados</TabsTrigger>
-          <TabsTrigger className="dark:text-white dark:hover:bg-gray-700" value="technicians">Técnicos</TabsTrigger>
+          <TabsTrigger className="dark:text-white dark:hover:bg-gray-700" value="employees">{t('desempeño.tabs.employe')}</TabsTrigger>
+          <TabsTrigger className="dark:text-white dark:hover:bg-gray-700" value="technicians">{t('desempeño.tabs.employeTec')}</TabsTrigger>
         </TabsList>
         <TabsContent value="employees">{renderEmployeeEvaluation()}</TabsContent>
         <TabsContent value="technicians">{renderTechEvaluation()}</TabsContent>

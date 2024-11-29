@@ -105,10 +105,17 @@ export default function Sidebar({ role }: { role: Role | null }) {
         {/* Logo Section */}
         <div className="flex items-center justify-center py-4">
           <Link href="/" className="flex items-center justify-center group">
+          {/* Imagen en modo claro */}
             <img
               src="/pueble logo 2.png"
               alt="Pueble S.A Logo"
-              className="h-32 w-auto object-contain transition-all duration-500 ease-in-out transform group-hover:scale-110 group-hover:brightness-110 dark:brightness-75" // Ajuste para logo en modo oscuro
+              className="h-32 w-auto object-contain transition-all duration-500 ease-in-out transform group-hover:scale-110 group-hover:brightness-110 dark:brightness-75 dark:hidden" // Ajuste para logo en modo oscuro
+            />
+            {/* Imagen en modo oscuro */}
+            <img
+              src="/pueble logo.png" // Cambia a la imagen que quieres en modo oscuro
+              alt="Pueble S.A Logo"
+              className="h-32 w-auto object-contain transition-all duration-500 ease-in-out transform group-hover:scale-110 group-hover:brightness-110 hidden dark:block"
             />
           </Link>
         </div>

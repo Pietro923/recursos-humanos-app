@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { format, differenceInYears, isSameDay } from "date-fns";
 import { es } from "date-fns/locale";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useTranslation } from "react-i18next";
 
 interface Employee {
   id: string;
@@ -31,6 +32,7 @@ export default function EmployeesPage() {
   const [selectedDepartment, setSelectedDepartment] = useState("todos");
   const [departments, setDepartments] = useState<string[]>([]);
   const [birthdayEmployees, setBirthdayEmployees] = useState<Employee[]>([]);
+  const { t } = useTranslation();
   const [newEmployee, setNewEmployee] = useState({
     nombre: "",
     apellido: "",
@@ -193,9 +195,9 @@ export default function EmployeesPage() {
           {birthdayEmployees.map((employee) => (
             <Alert key={employee.id} className="bg-blue-50 border-blue-200">
               <Cake className="h-4 w-4 text-blue-600" />
-              <AlertTitle className="text-blue-800">¡Cumpleaños!</AlertTitle>
+              <AlertTitle className="text-blue-800">{t('empleados.birthday.title')}</AlertTitle>
               <AlertDescription className="text-blue-700">
-                Hoy es el cumpleaños de {employee.nombre} {employee.apellido}
+                {t('empleados.birthday.description')} {employee.nombre} {employee.apellido}
               </AlertDescription>
             </Alert>
           ))}
@@ -204,20 +206,20 @@ export default function EmployeesPage() {
 
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 ">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Gestión de Empleados</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('empleados.employeesManagement.title')}</h1>
           <p className="text-sm text-muted-foreground">
-            Administra la información del personal
+          {t('empleados.employeesManagement.description')}
           </p>
         </div>
   
         <Card className="w-full sm:w-72 bg-white/50 backdrop-blur shadow-sm dark:bg-gray-950 dark:border-gray-700 dark:text-white">
           <CardContent className="pt-4">
             <label className="block text-sm font-medium text-muted-foreground mb-2">
-              Seleccionar Empresa
+            {t('empleados.companySelection.label')}
             </label>
             <Select value={selectedCompany} onValueChange={setSelectedCompany}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Seleccionar empresa"  />
+                <SelectValue placeholder=  {t('empleados.companySelection.placeholder')}  />
               </SelectTrigger>
               <SelectContent>
                 {companies.map((company) => (
@@ -238,7 +240,7 @@ export default function EmployeesPage() {
             ? "bg-primary hover:bg-primary/80 text-white dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200" 
             : "bg-white text-primary hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-700 dark:text-white"}`}>
           <Users className="mr-2 h-4 w-4" />
-          Agregar Nuevo Empleado
+          {t('empleados.buttons.addEmployee')}
         </Button>
         <Button 
           onClick={() => setView("list")} 
@@ -246,7 +248,7 @@ export default function EmployeesPage() {
             ? "bg-primary hover:bg-primary/80 text-white dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200" 
             : "bg-white text-primary hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:border-gray-700 dark:text-white"}`}>
           <List className="mr-2 h-4 w-4" />
-          Ver Lista de Empleados
+          {t('empleados.buttons.viewEmployeesList')}
         </Button>
       </div>
 
@@ -256,14 +258,14 @@ export default function EmployeesPage() {
             <div className="flex flex-col sm:flex-row gap-4 ">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-muted-foreground mb-2">
-                  Filtrar por Departamento
+                {t('empleados.filters.departmentFilterLabel')}
                 </label>
                 <Select value={selectedDepartment} onValueChange={handleDepartmentChange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar departamento" />
+                    <SelectValue placeholder= {t('empleados.filters.departmentFilterPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todos">Todos los departamentos</SelectItem>
+                    <SelectItem value="todos">{t('empleados.filters.allDepartments')}</SelectItem>
                     {departments.map((dept) => (
                       <SelectItem key={dept} value={dept}>
                         {dept}
@@ -280,9 +282,9 @@ export default function EmployeesPage() {
       {view === "add" && (
         <Card className="shadow-sm">
           <CardHeader>
-            <CardTitle>Agregar Nuevo Empleado</CardTitle>
+            <CardTitle>{t('empleados.addEmployee.title')}</CardTitle>
             <CardDescription>
-              Ingresa los datos del nuevo empleado
+              {t('empleados.addEmployee.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -290,91 +292,91 @@ export default function EmployeesPage() {
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="nombre">
-                    Nombre
+                  {t('empleados.addEmployee.form.fields.nombre.label')}
                   </label>
                   <Input 
                     id="nombre" 
                     name="nombre" 
                     value={newEmployee.nombre} 
                     onChange={handleInputChange} 
-                    placeholder="Juan" 
+                    placeholder={t('empleados.addEmployee.form.fields.nombre.placeholder')}
                     className="focus:ring-2 focus:ring-primary/20"
                     required 
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="apellido">
-                    Apellido
+                  {t('empleados.addEmployee.form.fields.apellido.label')}
                   </label>
                   <Input 
                     id="apellido" 
                     name="apellido" 
                     value={newEmployee.apellido} 
                     onChange={handleInputChange} 
-                    placeholder="Pérez" 
+                    placeholder= {t('empleados.addEmployee.form.fields.apellido.placeholder')}
                     className="focus:ring-2 focus:ring-primary/20"
                     required 
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="dni">
-                    DNI
+                  {t('empleados.addEmployee.form.fields.dni.label')}
                   </label>
                   <Input 
                     id="dni" 
                     name="dni" 
                     value={newEmployee.dni} 
                     onChange={handleInputChange} 
-                    placeholder="12345678" 
+                    placeholder= {t('empleados.addEmployee.form.fields.dni.placeholder')}
                     className="focus:ring-2 focus:ring-primary/20"
                     required 
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="correo">
-                    Correo
+                  {t('empleados.addEmployee.form.fields.correo.label')}
                   </label>
                   <Input 
                     id="correo" 
                     name="correo" 
                     value={newEmployee.correo} 
                     onChange={handleInputChange} 
-                    placeholder="juan.perez@ejemplo.com" 
+                    placeholder= {t('empleados.addEmployee.form.fields.correo.placeholder')}
                     className="focus:ring-2 focus:ring-primary/20"
                     required 
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="departamento">
-                    Departamento
+                  {t('empleados.addEmployee.form.fields.departamento.label')}
                   </label>
                   <Input 
                     id="departamento" 
                     name="departamento" 
                     value={newEmployee.departamento} 
                     onChange={handleInputChange} 
-                    placeholder="Ventas" 
+                    placeholder={t('empleados.addEmployee.form.fields.departamento.placeholder')}
                     className="focus:ring-2 focus:ring-primary/20"
                     required 
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="sueldo">
-                    Sueldo
+                  {t('empleados.addEmployee.form.fields.sueldo.label')}
                   </label>
                   <Input 
                     id="sueldo" 
                     name="sueldo" 
                     value={newEmployee.sueldo} 
                     onChange={handleInputChange} 
-                    placeholder="30000" 
+                    placeholder= {t('empleados.addEmployee.form.fields.sueldo.placeholder')}
                     className="focus:ring-2 focus:ring-primary/20"
                     required 
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="genero">
-                    Género
+                  {t('empleados.addEmployee.form.fields.genero.label')}
                   </label>
                   <div className="flex items-center space-x-6">
                     <label htmlFor="male" className="flex items-center space-x-2">
@@ -386,7 +388,7 @@ export default function EmployeesPage() {
                         checked={newEmployee.genero === "Masculino"}
                         onChange={handleInputChange}
                       />
-                      <span>Masculino</span>
+                      <span>{t('empleados.addEmployee.form.fields.genero.options.male')}</span>
                     </label>
                     <label htmlFor="female" className="flex items-center space-x-2">
                       <input
@@ -397,13 +399,13 @@ export default function EmployeesPage() {
                         checked={newEmployee.genero === "Femenino"}
                         onChange={handleInputChange}
                       />
-                      <span>Femenino</span>
+                       <span>{t('empleados.addEmployee.form.fields.genero.options.female')}</span>
                     </label>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="fechaNacimiento">
-                    Fecha de Nacimiento
+                  {t('empleados.addEmployee.form.fields.fechaNacimiento.label')}
                   </label>
                   <Input 
                     id="fechaNacimiento" 
@@ -418,7 +420,7 @@ export default function EmployeesPage() {
               </div>
               <div className="flex justify-end">
                 <Button type="submit" className="w-full sm:w-auto">
-                  Guardar
+                {t('empleados.buttons.save')}
                 </Button>
               </div>
             </form>
@@ -430,15 +432,15 @@ export default function EmployeesPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Apellido</TableHead>
-              <TableHead>DNI</TableHead>
-              <TableHead>Correo</TableHead>
-              <TableHead>Departamento</TableHead>
-              <TableHead>Sueldo</TableHead>
-              <TableHead>Género</TableHead>
-              <TableHead>Fecha de Nacimiento</TableHead>
-              <TableHead>Acciones</TableHead>
+              <TableHead>{t('empleados.employeesList.headers.nombre')}</TableHead>
+              <TableHead>{t('empleados.employeesList.headers.apellido')}</TableHead>
+              <TableHead>{t('empleados.employeesList.headers.dni')}</TableHead>
+              <TableHead>{t('empleados.employeesList.headers.correo')}</TableHead>
+              <TableHead>{t('empleados.employeesList.headers.departamento')}</TableHead>
+              <TableHead>{t('empleados.employeesList.headers.sueldo')}</TableHead>
+              <TableHead>{t('empleados.employeesList.headers.genero')}</TableHead>
+              <TableHead>{t('empleados.employeesList.headers.fechaNacimiento')}</TableHead>
+              <TableHead>{t('empleados.employeesList.headers.acciones')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="dark:hover:backdrop-brightness-125 dark:hover:text-primary dark:hover:shadow-md dark:transition-all dark:duration-300 rounded-lg">
@@ -453,8 +455,8 @@ export default function EmployeesPage() {
                 <TableCell>{employee.genero}</TableCell>
                 <TableCell>
                   {employee.fechaNacimiento
-                    ? format(new Date(employee.fechaNacimiento + 'T00:00:00'), "dd/MM/yyyy", { locale: es })
-                    : "Fecha no disponible"}
+                    ? format(new Date(employee.fechaNacimiento + 'T00:00:00'), t('empleados.addEmployee.form.fields.fechaNacimiento.placeholder'), { locale: es })
+                    : t('empleados.employeesList.noDate')}
                 </TableCell>
                 <TableCell>
                   <Button variant="destructive">
