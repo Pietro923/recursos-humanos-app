@@ -134,8 +134,8 @@ const resources = {
                 noReminders: "No pending reminders",
                 status: {
                   todayExpires: "Expires today",
-                  daysRemaining: "{days} days remaining",
-                  expired: "{days} days expired"
+                  daysRemaining: "days remaining",
+                  expired: "days expired"
                 },
                 company: "Company",
                 description: "Description",
@@ -157,7 +157,7 @@ const resources = {
               end: "End",
               today: "Today",
               expired: "Expired",
-              remainingDays: "{days} days remaining",
+              remainingDays: "days remaining",
               description: "Description",
               reminderDetails: "Reminder details",
               type: "Type",
@@ -820,8 +820,8 @@ const resources = {
     noReminders: "No hay recordatorios pendientes",
     status: {
       todayExpires: "Vence hoy",
-      daysRemaining: "{days} días restantes",
-      expired: "{days} días vencidos"
+      daysRemaining: "días restantes",
+      expired: "días vencidos"
     },
     company: "Empresa",
     description: "Descripción",
@@ -843,7 +843,7 @@ const resources = {
   end: "Fin",
   today: "Hoy",
   expired: "Vencido",
-  remainingDays: "{days} días restantes",
+  remainingDays: "días restantes",
   description: "Descripcion",
   reminderDetails: "Detalles del Recordatorio",
   type: "Tipo",
@@ -892,8 +892,8 @@ const resources = {
       label5PlaceHolder:"Seleccionar fecha",
       label6:"Descripción",
       label6PlaceHolder:"Detalles adicionales",
+      button:"Guardar Recordatorio"
     },
-    button:"Guardar Recordatorio"
   },
   postulaciones:{
     toast:{
@@ -1279,7 +1279,7 @@ const resources = {
         viewBossResults: "Resultados Evaluación Jefe",
         viewCalibrationResults: "Resultados Calibracion",
         viewCalibrationAsesor: "R. Evaluación Asesor",
-        viewCalibrationCapacitador: "R. Evaluación Capacitadorn",
+        viewCalibrationCapacitador: "R. Evaluación Capacitador",
         viewCalibrationTec: "R. Calibracion",
         evaluate: {
           self: "Autoevaluar",
@@ -1514,8 +1514,8 @@ const resources = {
                 noReminders: "Aucun rappel en attente",
                 status: {
                   todayExpires: "Expire aujourd'hui",
-                  daysRemaining: "{days} jours restants",
-                  expired: "{days} jours expirés"
+                  daysRemaining: " jours restants",
+                  expired: " jours expirés"
                 },
                 company: "Entreprise",
                 description: "Description",
@@ -1537,7 +1537,7 @@ const resources = {
               end: "Fin",
               today: "Aujourd'hui",
               expired: "Expiré",
-              remainingDays: "{days} jours restants",
+              remainingDays: "jours restants",
               description: "Description",
               reminderDetails: "Détails du rappel",
               type: "Type",

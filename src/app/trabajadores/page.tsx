@@ -23,6 +23,7 @@ interface Employee {
   sueldo: number;
   genero: string;
   fechaNacimiento: string;
+  estado: 'activo' | 'inactivo';  // Campo para la baja lógica
 }
 
 export default function EmployeesPage() {
@@ -62,51 +63,62 @@ export default function EmployeesPage() {
     setBirthdayEmployees(birthdays);
   
     // Crear notificaciones de cumpleaños si no existen ya
-    birthdays.forEach(async (employee) => {
-      const birthDate = new Date(employee.fechaNacimiento + 'T00:00:00');
-      const age = differenceInYears(new Date(), birthDate);
-  
-      // Verificar si ya existe un recordatorio en la colección "notificaciones_archivadas"
-      const archivedNotificationsRef = collection(db, "Grupo_Pueble", selectedCompany, "notificaciones_archivadas");
-      const archivedQuery = await getDocs(archivedNotificationsRef);
-      const existingArchivedNotification = archivedQuery.docs.find(doc => {
-        const notification = doc.data();
-        return notification.empleadoId === employee.id && isSameDay(notification.fecha.toDate(), new Date());
-      });
-  
-      // Si existe una notificación archivada, no creamos un nuevo recordatorio
-      if (existingArchivedNotification) {
-        console.log(`Ya existe una notificación archivada para ${employee.nombre} ${employee.apellido} hoy.`);
-        return; // No hacemos nada más si ya existe en las notificaciones archivadas
-      }
-  
-      // Verificar si ya existe un recordatorio para este empleado en el día de hoy en la colección "recordatorios"
-      const remindersRef = collection(db, "Grupo_Pueble", selectedCompany, "recordatorios");
-      const q = await getDocs(remindersRef);
-      const existingReminder = q.docs.find(doc => {
-        const reminder = doc.data();
-        return reminder.empleadoId === employee.id && isSameDay(reminder.fechaInicio.toDate(), new Date());
-      });
-  
-      // Si no existe un recordatorio, crearlo
-      if (!existingReminder) {
-        try {
-          await addDoc(remindersRef, {
-            tipo: "Cumpleaños",
-            descripcion: `¡${employee.nombre} ${employee.apellido} cumple ${age} años hoy!`,
-            fechaInicio: new Date(),
-            fechaFin: new Date(new Date().setHours(23, 59, 59, 999)), // Se asegura que el recordatorio termine al final del día
-            empleadoId: employee.id,
-            nombre: employee.nombre,
-            apellido: employee.apellido
-          });
-        } catch (error) {
-          console.error("Error al crear notificación de cumpleaños:", error);
-        }
-      } else {
-        console.log(`Ya existe un recordatorio para ${employee.nombre} ${employee.apellido} hoy.`);
-      }
+birthdays.forEach(async (employee) => {
+  const birthDate = new Date(employee.fechaNacimiento + 'T00:00:00');
+  const age = differenceInYears(new Date(), birthDate);
+
+  // Verificar si ya existe un recordatorio en la colección "notificaciones_archivadas"
+  const archivedNotificationsRef = collection(db, "Grupo_Pueble", selectedCompany, "notificaciones_archivadas");
+  const archivedQuery = await getDocs(archivedNotificationsRef);
+  const existingArchivedNotification = archivedQuery.docs.find(doc => {
+    const notification = doc.data();
+    return (
+      notification.empleadoId === employee.id && // Verificar ID del empleado
+      isSameDay(notification.fecha.toDate(), new Date()) && // Mismo día
+      notification.tipo === "Cumpleaños" // Verificar que sea de cumpleaños
+    );
+  });
+
+  // Si ya existe un recordatorio de cumpleaños archivado, no creamos uno nuevo
+  if (existingArchivedNotification) {
+    console.log(`Ya existe un recordatorio de cumpleaños archivado para ${employee.nombre} ${employee.apellido} hoy.`);
+    return;
+  }
+
+  // Verificar si ya existe un recordatorio de cumpleaños en la colección "recordatorios"
+  const remindersRef = collection(db, "Grupo_Pueble", selectedCompany, "recordatorios");
+  const remindersQuery = await getDocs(remindersRef);
+  const existingBirthdayReminder = remindersQuery.docs.find(doc => {
+    const reminder = doc.data();
+    return (
+      reminder.empleadoId === employee.id && // Verificar ID del empleado
+      isSameDay(reminder.fechaInicio.toDate(), new Date()) && // Mismo día
+      reminder.tipo === "Cumpleaños" // Verificar que sea de cumpleaños
+    );
+  });
+
+  // Si ya existe un recordatorio de cumpleaños, no lo volvemos a crear
+  if (existingBirthdayReminder) {
+    console.log(`Ya existe un recordatorio de cumpleaños para ${employee.nombre} ${employee.apellido} hoy.`);
+    return;
+  }
+
+  // Crear un nuevo recordatorio de cumpleaños
+  try {
+    await addDoc(remindersRef, {
+      tipo: "Cumpleaños",
+      descripcion: `¡${employee.nombre} ${employee.apellido} cumple ${age} años hoy!`,
+      fechaInicio: new Date(),
+      fechaFin: new Date(new Date().setHours(23, 59, 59, 999)), // Finaliza al final del día
+      empleadoId: employee.id,
+      nombre: employee.nombre,
+      apellido: employee.apellido
     });
+    console.log(`Recordatorio de cumpleaños creado para ${employee.nombre} ${employee.apellido}.`);
+  } catch (error) {
+    console.error("Error al crear notificación de cumpleaños:", error);
+  }
+});
   };
 
   // Obtener los empleados de Firebase
@@ -219,17 +231,27 @@ export default function EmployeesPage() {
   return (
     <div className="space-y-6 p-6 bg-slate-50 dark:bg-gray-800 dark:border-gray-700 dark:text-white rounded-2xl">
       {birthdayEmployees.length > 0 && (
-        <div className="space-y-2">
-          {birthdayEmployees.map((employee) => (
-            <Alert key={employee.id} className="bg-blue-50 border-blue-200">
-              <Cake className="h-4 w-4 text-blue-600" />
-              <AlertTitle className="text-blue-800">{t('empleados.birthday.title')}</AlertTitle>
-              <AlertDescription className="text-blue-700">
-                {t('empleados.birthday.description')} {employee.nombre} {employee.apellido}
-              </AlertDescription>
-            </Alert>
-          ))}
-        </div>
+        <div className="space-y-4">
+        {birthdayEmployees.map((employee) => (
+          <Alert 
+            key={employee.id} 
+            className="bg-white dark:bg-gray-700 border-blue-200 dark:border-gray-600 shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1">
+            <div className="flex items-center space-x-4">
+              <div className="bg-blue-100 dark:bg-blue-800 p-3 rounded-full">
+                <Cake className="h-6 w-6 text-blue-600 dark:text-white animate-bounce" />
+              </div>
+              <div>
+                <AlertTitle className="text-blue-900 dark:text-white font-semibold text-lg">
+                  {t('empleados.birthday.title')}
+                </AlertTitle>
+                <AlertDescription className="text-blue-700 dark:text-blue-200 text-base">
+                  {t('empleados.birthday.description')} <span className="font-bold">{employee.nombre} {employee.apellido}</span>
+                </AlertDescription>
+              </div>
+            </div>
+          </Alert>
+        ))}
+      </div>
       )}
 
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 ">

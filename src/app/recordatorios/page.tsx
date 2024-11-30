@@ -16,9 +16,15 @@ import { es } from "date-fns/locale";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "react-i18next";
 
-const recordatoriossForm = () => {
+interface Employee {
+  id: string;
+  nombre: string;
+  apellido: string;
+}
+
+const RecordatoriossForm = () => {
   const [selectedCompany, setSelectedCompany] = useState("");
-  const [employees, setEmployees] = useState<any[]>([]); // Lista de empleados
+  const [employees, setEmployees] = useState<Employee[]>([]); // Lista de empleados con tipo Employee
   const [employee, setEmployee] = useState<string>(""); // Empleado seleccionado
   const [type, setType] = useState<string>("");
   const [startDate, setStartDate] = useState<Date | undefined>();
@@ -35,10 +41,14 @@ const recordatoriossForm = () => {
         // Acceder a la subcolección de empleados en la empresa seleccionada
         const employeesRef = collection(db, "Grupo_Pueble", selectedCompany, "empleados");
         const employeesSnapshot = await getDocs(employeesRef);
+        
+        // Asegurarse de que el mapeo incluye 'nombre' y 'apellido'
         const employeesData = employeesSnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          nombre: doc.data().nombre, // Asumimos que 'nombre' existe en el documento
+          apellido: doc.data().apellido, // Asumimos que 'apellido' existe en el documento
         }));
+    
         setEmployees(employeesData);
       } else {
         setEmployees([]);
@@ -83,10 +93,10 @@ const recordatoriossForm = () => {
         return;
       }
   
-      // Definir la colección de recordatorioss según la empresa seleccionada
-      const recordatoriossRef = collection(db, "Grupo_Pueble", selectedCompany, "recordatorioss");
+      // Definir la colección de recordatorios según la empresa seleccionada
+      const recordatoriossRef = collection(db, "Grupo_Pueble", selectedCompany, "recordatorios");
   
-      // Guardar el recordatorios en la colección correspondiente
+      // Guardar el recordatorio en la colección correspondiente
       await addDoc(recordatoriossRef, {
         empleadoId: employee,
         nombre: selectedEmployee.nombre, // Guardar nombre del empleado
@@ -115,7 +125,7 @@ const recordatoriossForm = () => {
         title: "Error",
         description: t('recordatorios.toast.description5'),
       });
-      console.error("Error al agregar recordatorios:", error);
+      console.error("Error al agregar recordatorio:", error);
     }
   };
 
@@ -215,23 +225,20 @@ const recordatoriossForm = () => {
 
           {/* Descripción */}
           <div className="space-y-2">
-            <Label htmlFor="description">{t('recordatorios.card.label6')}</Label>
+            <Label>{t('recordatorios.card.label6')}</Label>
             <Textarea
-              id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t('recordatorios.card.label6PlaceHolder')}
-              className="h-32"
             />
           </div>
 
-          <Button type="submit" className="w-full dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white">
-          {t('recordatorios.button')}
-          </Button>
+          {/* Botón de enviar */}
+          <Button type="submit">{t('recordatorios.card.button')}</Button>
         </form>
       </CardContent>
     </Card>
   );
 };
 
-export default recordatoriossForm;
+export default RecordatoriossForm;

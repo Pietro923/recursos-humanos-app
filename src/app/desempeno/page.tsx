@@ -45,7 +45,7 @@ export default function PerformancePage() {
     calibrationTec: ['', '', ''],
     legajo: ['', '', ''],
   });
-  const [evaluationResults, setEvaluationResults] = useState<Record<string, any>>({});
+  const [evaluationResults, setEvaluationResults] = useState<Record<string, string[]>>({});
   const [viewDialogType, setViewDialogType] = useState<'self' | 'boss' | 'calibration'| 'asesor' | 'capacitador' | 'calibrationTec' | 'legajo' | null>(null);
   
 

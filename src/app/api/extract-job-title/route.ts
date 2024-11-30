@@ -54,6 +54,18 @@ const SELECTORS = {
   jobType: [".job-type", ".decorated-job-posting__job-type"],
 };
 
+// Interfaz para los datos del trabajo
+interface JobData {
+  title: string;
+  company: string;
+  location: string;
+  description: string;
+  requirements: string | null;
+  jobType: string | null;
+  url: string;
+  extractedAt: string;
+}
+
 // Función para extraer texto con múltiples selectores
 const extractText = ($: cheerio.CheerioAPI, selectors: string[]): string => {
   for (const selector of selectors) {
@@ -63,20 +75,20 @@ const extractText = ($: cheerio.CheerioAPI, selectors: string[]): string => {
   return "";
 };
 
-// Cache en memoria
-class MemoryCache {
-  private cache = new Map<string, { data: any; timestamp: number }>();
+// Cache en memoria con tipo genérico
+class MemoryCache<T> {
+  private cache = new Map<string, { data: T; timestamp: number }>();
   private readonly TTL: number;
 
   constructor(ttlMinutes = 60) {
     this.TTL = ttlMinutes * 60 * 1000; // Convertir minutos a ms
   }
 
-  set(key: string, data: any): void {
+  set(key: string, data: T): void {
     this.cache.set(key, { data, timestamp: Date.now() });
   }
 
-  get(key: string): any | null {
+  get(key: string): T | null {
     const item = this.cache.get(key);
     if (!item) return null;
     if (Date.now() - item.timestamp > this.TTL) {
@@ -87,10 +99,10 @@ class MemoryCache {
   }
 }
 
-const cache = new MemoryCache(60); // TTL de 60 minutos
+const cache = new MemoryCache<JobData | null>(60); // Cache con tipo específico
 
 // Función principal de scraping
-async function scrapeLinkedIn(url: string) {
+async function scrapeLinkedIn(url: string): Promise<JobData> {
   const cachedData = cache.get(url);
   if (cachedData) return cachedData;
 
@@ -111,7 +123,7 @@ async function scrapeLinkedIn(url: string) {
   const html = response.data;
   const $ = cheerio.load(html);
 
-  const jobData = {
+  const jobData: JobData = {
     title: extractText($, SELECTORS.title),
     company: extractText($, SELECTORS.company),
     location: extractText($, SELECTORS.location),
@@ -151,7 +163,7 @@ export async function GET(req: Request) {
 
     const jobData = await scrapeLinkedIn(url);
     return NextResponse.json(jobData);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error al extraer datos de LinkedIn:", error);
 
     if (axios.isAxiosError(error)) {
@@ -171,11 +183,16 @@ export async function GET(req: Request) {
         { error: "Error al acceder a la página de LinkedIn" },
         { status: error.response?.status || 500 }
       );
+    } else if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Error al procesar la solicitud", details: error.message },
+        { status: 500 }
+      );
+    } else {
+      return NextResponse.json(
+        { error: "Error desconocido al procesar la solicitud" },
+        { status: 500 }
+      );
     }
-
-    return NextResponse.json(
-      { error: "Error al procesar la solicitud", details: error.message },
-      { status: 500 }
-    );
   }
 }

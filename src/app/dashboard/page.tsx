@@ -33,7 +33,7 @@ export default function Dashboard() {
       let payrollExpense = 0;
       let maleCount = 0;
       let femaleCount = 0;
-      let departments: { [key: string]: number[] } = {};
+      const departments: { [key: string]: number[] } = {};
 
       try {
         if (selectedCompany === "Todas") {

@@ -9,7 +9,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, Menu, X, ChevronDown, LogOut } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -182,22 +182,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         <Button variant="ghost" className="flex items-center space-x-2 dark:text-white">
                           <Avatar className="h-8 w-8">
                             <AvatarImage src="" />
-                            <AvatarFallback className="bg-blue-600 text-white">
+                            <AvatarFallback className="bg-blue-600 text-white dark:text-white">
                               {userName?.charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="hidden md:inline-block font-medium">
+                          <span className="hidden md:inline-block font-medium dark:text-white">
                             {userName}
                           </span>
                           <ChevronDown className="h-4 w-4 text-gray-500" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuLabel>{t('header.myAccount')}</DropdownMenuLabel>
+                      <DropdownMenuLabel className='dark:text-white'>{t('header.myAccount')}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <Link href="/perfil"><DropdownMenuItem>{t('header.profile')}</DropdownMenuItem></Link>
-                        <Link href="/configuracion"><DropdownMenuItem>{t('header.settings')}</DropdownMenuItem></Link>
-                        <Link href="/notificaciones"><DropdownMenuItem>{t('header.notificationsHistory')}</DropdownMenuItem></Link>
+                        <Link href="/perfil"><DropdownMenuItem className='dark:text-white'>{t('header.profile')}</DropdownMenuItem></Link>
+                        <Link href="/configuracion"><DropdownMenuItem className='dark:text-white'> {t('header.settings')}</DropdownMenuItem></Link>
+                        <Link href="/notificaciones"><DropdownMenuItem className='dark:text-white'>{t('header.notificationsHistory')}</DropdownMenuItem></Link>
                         <DropdownMenuSeparator />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
@@ -208,7 +208,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                               }} 
                               className="text-red-600 dark:hover:text-red-600"
                             >
-                              <LogOut className="mr-2 h-4 w-4" />
+                              <LogOut className="mr-2 h-4 w-4 " />
                               {t('header.logout')}
                             </DropdownMenuItem>
                           </AlertDialogTrigger>

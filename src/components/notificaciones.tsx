@@ -12,7 +12,6 @@ import { format, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
 import { 
   collection, 
-  query, 
   getDocs, 
   Timestamp,
   doc,

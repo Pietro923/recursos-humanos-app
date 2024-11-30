@@ -10,6 +10,8 @@ import { Loader2, Mail, Lock, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTranslation } from "react-i18next";
+import { FirebaseError } from "firebase/app";
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -31,17 +33,21 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
+  
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/");
-    } catch (err: any) {
-      if (err.code === "auth/user-not-found") {
-        setError(t('login.usuario_no_encontrado'));
-      } else if (err.code === "auth/wrong-password") {
-        setError(t('login.contraseña_incorrecta'));
+    } catch (err: unknown) {  // Usamos `unknown` en lugar de `any`
+      if (err instanceof FirebaseError) {  // Comprobamos si el error es una instancia de FirebaseError
+        if (err.code === "auth/user-not-found") {
+          setError(t('login.usuario_no_encontrado'));
+        } else if (err.code === "auth/wrong-password") {
+          setError(t('login.contraseña_incorrecta'));
+        } else {
+          setError(t('logim.error_autenticacion'));
+        }
       } else {
-        setError(t('logim.error_autenticacion'));
+        setError(t('logim.error_autenticacion'));  // Si no es un FirebaseError, mostramos un error genérico
       }
     } finally {
       setIsLoading(false);
