@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { differenceInYears, isSameDay } from "date-fns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTranslation } from "react-i18next";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface Employee {
   id: string;
@@ -44,6 +45,29 @@ export default function EmployeesPage() {
     fechaNacimiento: ""
   });
   const [selectedCompany, setSelectedCompany] = useState(""); // Aca podes colocar una empresa que sea la que va a cargar de entrada
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  // Función para cambiar el estado del empleado a inactivo
+  const handleDeactivate = async (employeeId: string) => {
+    if (!employeeId) return;
+
+    try {
+      const employeeRef = doc(db, "Grupo_Pueble", selectedCompany, "empleados", employeeId);
+      await updateDoc(employeeRef, {
+        estado: 'inactivo'
+      });
+
+      // Actualiza el estado local de los empleados
+      setEmployees(prevEmployees =>
+        prevEmployees.map(employee =>
+          employee.id === employeeId ? { ...employee, estado: 'inactivo' } : employee
+        )
+      );
+      setSelectedEmployee(null); // Cerrar el dialog después de actualizar
+    } catch (error) {
+      console.error("Error al desactivar el empleado:", error);
+    }
+  };
+
   const [view, setView] = useState("list");
 
   const companies = ["Pueble SA - CASE IH", "KIA"];
@@ -185,7 +209,7 @@ birthdays.forEach(async (employee) => {
     }
     return newId.toString();
   };
-
+  
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
@@ -195,6 +219,7 @@ birthdays.forEach(async (employee) => {
       ...newEmployee,
       dni: parseInt(newEmployee.dni, 10) || 0,
       sueldo: parseFloat(newEmployee.sueldo) || 0,
+      estado: 'activo', // Aquí estamos agregando el campo 'estado'
     };
 
     try {
@@ -226,7 +251,7 @@ birthdays.forEach(async (employee) => {
       console.error("Error al agregar el empleado:", error);
     }
   };
-
+  
 
   return (
     <div className="space-y-6 p-6 bg-slate-50 dark:bg-gray-800 dark:border-gray-700 dark:text-white rounded-2xl">
@@ -478,63 +503,86 @@ birthdays.forEach(async (employee) => {
         </Card>
       )}
 
-      {view === "list" && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t('empleados.employeesList.headers.nombre')}</TableHead>
-              <TableHead>{t('empleados.employeesList.headers.apellido')}</TableHead>
-              <TableHead>{t('empleados.employeesList.headers.dni')}</TableHead>
-              <TableHead>{t('empleados.employeesList.headers.correo')}</TableHead>
-              <TableHead>{t('empleados.employeesList.headers.departamento')}</TableHead>
-              <TableHead>{t('empleados.employeesList.headers.sueldo')}</TableHead>
-              <TableHead>{t('empleados.employeesList.headers.genero')}</TableHead>
-              <TableHead>{t('empleados.employeesList.headers.fechaNacimiento')}</TableHead>
-              <TableHead>{t('empleados.employeesList.headers.acciones')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="dark:hover:backdrop-brightness-125 dark:hover:text-primary dark:hover:shadow-md dark:transition-all dark:duration-300 rounded-lg">
-            {filteredEmployees.map((employee) => (
-              <TableRow key={employee.id}>
-                <TableCell>{employee.nombre}</TableCell>
-                <TableCell>{employee.apellido}</TableCell>
-                <TableCell>{employee.dni}</TableCell>
-                <TableCell>{employee.correo}</TableCell>
-                <TableCell>{employee.departamento}</TableCell>
-                <TableCell>${employee.sueldo}</TableCell>
-                <TableCell>{employee.genero}</TableCell>
-                <TableCell>
-                  {employee.fechaNacimiento ? (
-                    <>
-                      {/* Verificar si la fecha es un valor válido antes de crear el objeto Date */}
-                      {console.log(employee.fechaNacimiento)} 
-                      {isNaN(new Date(employee.fechaNacimiento).getTime()) ? (
-                        // Si la fecha no es válida, mostrar un mensaje de error
-                        t('empleados.employeesList.invalidDate')
-                      ) : (
-                        // Si la fecha es válida, formatearla usando la zona horaria local
-                        new Date(employee.fechaNacimiento).toLocaleDateString('es-ES', {
-                          timeZone: 'UTC',  // Esto asegura que se use UTC para la fecha
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                        })
-                      )}
-                    </>
+{view === "list" && (
+  <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead>{t('empleados.employeesList.headers.nombre')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.apellido')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.dni')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.correo')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.departamento')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.sueldo')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.genero')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.fechaNacimiento')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.acciones')}</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody className="dark:hover:backdrop-brightness-125 dark:hover:text-primary dark:hover:shadow-md dark:transition-all dark:duration-300 rounded-lg">
+      {filteredEmployees
+        .filter(employee => employee.estado === 'activo')  // Filtra solo empleados activos
+        .map((employee) => (
+          <TableRow key={employee.id}>
+            <TableCell>{employee.nombre}</TableCell>
+            <TableCell>{employee.apellido}</TableCell>
+            <TableCell>{employee.dni}</TableCell>
+            <TableCell>{employee.correo}</TableCell>
+            <TableCell>{employee.departamento}</TableCell>
+            <TableCell>${employee.sueldo}</TableCell>
+            <TableCell>{employee.genero}</TableCell>
+            <TableCell>
+              {employee.fechaNacimiento ? (
+                <>
+                  {/* Verificar si la fecha es un valor válido antes de crear el objeto Date */}
+                  {console.log(employee.fechaNacimiento)} 
+                  {isNaN(new Date(employee.fechaNacimiento).getTime()) ? (
+                    // Si la fecha no es válida, mostrar un mensaje de error
+                    t('empleados.employeesList.invalidDate')
                   ) : (
-                    t('empleados.employeesList.noDate')
+                    // Si la fecha es válida, formatearla usando la zona horaria local
+                    new Date(employee.fechaNacimiento).toLocaleDateString('es-ES', {
+                      timeZone: 'UTC',  // Esto asegura que se use UTC para la fecha
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                    })
                   )}
-                </TableCell>
-                <TableCell>
-                  <Button variant="destructive">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+                </>
+              ) : (
+                t('empleados.employeesList.noDate')
+              )}
+            </TableCell>
+            <TableCell>
+
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          onClick={() => setSelectedEmployee(employee)}  // Guardamos el empleado seleccionado
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-white dark:bg-gray-950 dark:text-white">
+                        <AlertDialogTitle>{`¿Seguro de dar de baja a ${employee.nombre}?`}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta acción cambiará el estado del empleado a "inactivo".
+                        </AlertDialogDescription>
+                        <div className="flex justify-end space-x-2">
+                          <AlertDialogCancel onClick={() => setSelectedEmployee(null)}>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeactivate(employee.id)}>Sí, dar de baja</AlertDialogAction>
+                        </div>
+                      </AlertDialogContent>
+                    </AlertDialog>
+
+                    
+                  </TableCell>
+          </TableRow>
+        ))}
+    </TableBody>
+  </Table>
+)}
     </div>
   );
 };
