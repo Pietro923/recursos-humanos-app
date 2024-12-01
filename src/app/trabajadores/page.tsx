@@ -45,28 +45,29 @@ export default function EmployeesPage() {
     fechaNacimiento: ""
   });
   const [selectedCompany, setSelectedCompany] = useState(""); // Aca podes colocar una empresa que sea la que va a cargar de entrada
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-  // Función para cambiar el estado del empleado a inactivo
-  const handleDeactivate = async (employeeId: string) => {
-    if (!employeeId) return;
+  const [, setSelectedEmployee] = useState<Employee | null>(null);
 
-    try {
-      const employeeRef = doc(db, "Grupo_Pueble", selectedCompany, "empleados", employeeId);
-      await updateDoc(employeeRef, {
-        estado: 'inactivo'
-      });
+// Función para cambiar el estado del empleado a inactivo
+const handleDeactivate = async (employeeId: string) => {
+  if (!employeeId) return;
 
-      // Actualiza el estado local de los empleados
-      setEmployees(prevEmployees =>
-        prevEmployees.map(employee =>
-          employee.id === employeeId ? { ...employee, estado: 'inactivo' } : employee
-        )
-      );
-      setSelectedEmployee(null); // Cerrar el dialog después de actualizar
-    } catch (error) {
-      console.error("Error al desactivar el empleado:", error);
-    }
-  };
+  try {
+    const employeeRef = doc(db, "Grupo_Pueble", selectedCompany, "empleados", employeeId);
+    await updateDoc(employeeRef, {
+      estado: 'inactivo'
+    });
+
+    // Actualiza el estado local de los empleados
+    setEmployees(prevEmployees =>
+      prevEmployees.map(employee =>
+        employee.id === employeeId ? { ...employee, estado: 'inactivo' } : employee
+      )
+    );
+    setSelectedEmployee(null); // Cerrar el dialog después de actualizar
+  } catch (error) {
+    console.error("Error al desactivar el empleado:", error);
+  }
+};
 
   const [view, setView] = useState("list");
 
@@ -92,16 +93,20 @@ birthdays.forEach(async (employee) => {
   const age = differenceInYears(new Date(), birthDate);
 
   // Verificar si ya existe un recordatorio en la colección "notificaciones_archivadas"
-  const archivedNotificationsRef = collection(db, "Grupo_Pueble", selectedCompany, "notificaciones_archivadas");
-  const archivedQuery = await getDocs(archivedNotificationsRef);
-  const existingArchivedNotification = archivedQuery.docs.find(doc => {
-    const notification = doc.data();
-    return (
-      notification.empleadoId === employee.id && // Verificar ID del empleado
-      isSameDay(notification.fecha.toDate(), new Date()) && // Mismo día
-      notification.tipo === "Cumpleaños" // Verificar que sea de cumpleaños
-    );
-  });
+const archivedNotificationsRef = collection(db, "Grupo_Pueble", selectedCompany, "notificaciones_archivadas");
+const archivedQuery = await getDocs(archivedNotificationsRef);
+const existingArchivedNotification = archivedQuery.docs.find(doc => {
+  const notification = doc.data();
+  
+  // Usar el campo 'fechaInicio' en lugar de 'fecha'
+  const fechaInicio = notification.fechaInicio;
+
+  return (
+    notification.empleadoId === employee.id && // Verificar ID del empleado
+    fechaInicio && isSameDay(fechaInicio.toDate(), new Date()) && // Verificar el mismo día con 'fechaInicio'
+    notification.tipo === "Cumpleaños" // Verificar que sea de cumpleaños
+  );
+});
 
   // Si ya existe un recordatorio de cumpleaños archivado, no creamos uno nuevo
   if (existingArchivedNotification) {
@@ -565,13 +570,13 @@ birthdays.forEach(async (employee) => {
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent className="bg-white dark:bg-gray-950 dark:text-white">
-                        <AlertDialogTitle>{`¿Seguro de dar de baja a ${employee.nombre}?`}</AlertDialogTitle>
+                      <AlertDialogTitle>{`${t('empleados.baja.title')} ${employee.nombre}?`}</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Esta acción cambiará el estado del empleado a "inactivo".
+                          {t('empleados.baja.description')}
                         </AlertDialogDescription>
                         <div className="flex justify-end space-x-2">
-                          <AlertDialogCancel onClick={() => setSelectedEmployee(null)}>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeactivate(employee.id)}>Sí, dar de baja</AlertDialogAction>
+                          <AlertDialogCancel onClick={() => setSelectedEmployee(null)}>{t('empleados.baja.button1')}</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeactivate(employee.id)}>{t('empleados.baja.button2')}</AlertDialogAction>
                         </div>
                       </AlertDialogContent>
                     </AlertDialog>

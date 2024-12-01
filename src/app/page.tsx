@@ -3,22 +3,117 @@
 import { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from 'next/navigation';
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LayoutDashboard, Users, Calculator, Shield } from "lucide-react";
+import { LayoutDashboard, Users, Calculator, Shield, Cake } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { differenceInYears, isSameDay } from 'date-fns';
 
+interface Employee {
+  id: string;
+  nombre: string;
+  apellido: string;
+  fechaNacimiento: string;
+  companyId?: string;
+}
 
 export default function Inicio() {
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [birthdayEmployees, setBirthdayEmployees] = useState<Employee[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { t } = useTranslation(); // Hook de traducción
+
+  const checkBirthdays = async () => {
+    try {
+      // Empresas y sus colecciones de empleados
+      const companies = [
+        { name: "Pueble SA - CASE IH", collectionPath: "Grupo_Pueble/Pueble SA - CASE IH/empleados" },
+        { name: "KIA", collectionPath: "Grupo_Pueble/KIA/empleados" },
+      ];
+  
+      const employeesData: { employee: Employee; companyName: string }[] = [];
+  
+      // Obtener empleados de cada empresa
+      for (const company of companies) {
+        const employeesRef = collection(db, company.collectionPath);
+        const employeesSnapshot = await getDocs(employeesRef);
+  
+        employeesSnapshot.docs.forEach((doc) => {
+          employeesData.push({
+            employee: {
+              id: doc.id,
+              ...doc.data(),
+            } as Employee,
+            companyName: company.name,
+          });
+        });
+      }
+  
+      const today = new Date();
+  
+      // Filtrar empleados que cumplen años hoy
+      const birthdays = employeesData.filter(({ employee }) => {
+        const birthDate = new Date(employee.fechaNacimiento + "T00:00:00");
+        return isSameDay(
+          new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+          new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate())
+        );
+      });
+  
+      setBirthdayEmployees(birthdays.map(({ employee }) => employee));
+  
+      // Crear notificaciones si es necesario
+      for (const { employee, companyName } of birthdays) {
+        const remindersRef = collection(db, "Grupo_Pueble", companyName, "recordatorios");
+        const archivedRef = collection(db, "Grupo_Pueble", companyName, "notificaciones_archivadas");
+  
+        // Verificar si ya existe el recordatorio en "recordatorios"
+        const remindersQuery = await getDocs(remindersRef);
+        const existingBirthdayReminder = remindersQuery.docs.find((doc) => {
+          const reminder = doc.data();
+          return (
+            reminder.empleadoId === employee.id &&
+            isSameDay(reminder.fechaInicio.toDate(), new Date()) &&
+            reminder.tipo === "Cumpleaños"
+          );
+        });
+  
+        // Verificar si ya existe el recordatorio en "notificaciones_archivadas"
+        const archivedQuery = await getDocs(archivedRef);
+        const archivedBirthdayReminder = archivedQuery.docs.find((doc) => {
+          const archived = doc.data();
+          return (
+            archived.empleadoId === employee.id &&
+            isSameDay(archived.fechaInicio.toDate(), new Date()) &&
+            archived.tipo === "Cumpleaños"
+          );
+        });
+  
+        // Crear el recordatorio solo si no existe en ninguna de las dos colecciones
+        if (!existingBirthdayReminder && !archivedBirthdayReminder) {
+          await addDoc(remindersRef, {
+            tipo: "Cumpleaños",
+            descripcion: `¡${employee.nombre} ${employee.apellido} cumple ${differenceInYears(new Date(), new Date(employee.fechaNacimiento))} años hoy!`,
+            fechaInicio: new Date(),
+            fechaFin: new Date(new Date().setHours(23, 59, 59, 999)),
+            empleadoId: employee.id,
+            nombre: employee.nombre,
+            apellido: employee.apellido,
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Error al verificar cumpleaños:", err);
+    }
+  };
+  
+
 
   useEffect(() => {
     const auth = getAuth();
@@ -28,6 +123,7 @@ export default function Inicio() {
           const userDoc = await getDoc(doc(db, "users", user.uid));
           if (userDoc.exists()) {
             setUserRole(userDoc.data().role);
+            await checkBirthdays(); // Llama a la función para verificar cumpleaños
           } else {
             setError("El documento del usuario no existe en Firestore. Verifica el UID.");
           }
@@ -84,7 +180,7 @@ export default function Inicio() {
       title: t('dashboard.roles.RRHH.title'),
       description:  t('dashboard.roles.RRHH.description'),
       icon: Users,
-      path: '/rrhh',
+      path: '/cursos',
       color: 'bg-purple-500/10 text-purple-500',
     },
     {
@@ -98,65 +194,118 @@ export default function Inicio() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900">
-      <div className="container mx-auto px-4 py-16">
-        <Card className="max-w-4xl mx-auto dark:bg-gray-800 dark:border-gray-700">
-          <CardHeader className="text-center">
-            <CardTitle className="text-4xl font-bold tracking-tight dark:text-white">
-            {t('dashboard.welcomeMessage', { userRole: userRole || 'Usuario' })}
+    <div className="min-h-screen bg-gradient-to-br py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        <Card className="shadow-2xl border-none rounded-2xl overflow-hidden dark:bg-gray-800/80 backdrop-blur-sm">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-6 border-b dark:border-gray-700">
+            <CardTitle className="text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+              {t('dashboard.welcomeMessage', { userRole: userRole || 'Usuario' })}
             </CardTitle>
-            <CardDescription className="text-lg mt-2 dark:text-gray-300">
-            {t('dashboard.selectOptionMessage')}
+            <CardDescription className="text-lg mt-2 text-gray-600 dark:text-gray-300 font-medium">
+              {t('dashboard.selectOptionMessage')}
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 mt-6">
-              {/* Dashboard Card - Available to all */}
-              <Card className="group hover:shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-300">
-                <CardContent className="flex items-center p-6">
-                  <div className="bg-blue-500/10 dark:bg-blue-500/20 p-3 rounded-lg mr-4 group-hover:bg-blue-500/20 dark:group-hover:bg-blue-500/30 transition-all duration-300">
-                    <LayoutDashboard className="h-6 w-6 text-blue-500 dark:text-blue-400" />
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className="font-semibold text-lg mb-1 dark:text-white">{t('dashboard.mainDashboard')}</h3>
-                    <p className="text-muted-foreground dark:text-gray-300">{t('dashboard.mainDashboardDescription')}</p>
-                  </div>
-                  <Button
-                    onClick={() => router.push('/dashboard')}
-                    variant="default"
-                    className="ml-4 dark:bg-blue-600 dark:hover:bg-blue-500"
-                  >
-                    {t('dashboard.access')}
-                  </Button>
-                </CardContent>
-              </Card>
+          
+          <CardContent className="p-6">
+            <div className="grid gap-6">
+              {/* Birthday Employees Section */}
+              {birthdayEmployees.length > 0 && (
+                <div className="space-y-4">
+                  {birthdayEmployees.map((employee) => (
+                    <Alert 
+                      key={employee.id} 
+                      className="border-transparent bg-blue-50/50 dark:bg-gray-700/50 
+                        transition-all duration-300 ease-in-out 
+                        hover:scale-[1.02] hover:shadow-lg"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-blue-100 dark:bg-blue-800/50 p-3 rounded-full">
+                          <Cake className="h-7 w-7 text-blue-600 dark:text-blue-300 animate-bounce" />
+                        </div>
+                        <div>
+                          <AlertTitle className="text-blue-900 dark:text-white font-bold text-lg">
+                            {t('empleados.birthday.title')}
+                          </AlertTitle>
+                          <AlertDescription className="text-blue-800 dark:text-blue-200 text-base">
+                            {t('empleados.birthday.description')} <span className="font-extrabold">{employee.nombre} {employee.apellido}</span>
+                          </AlertDescription>
+                        </div>
+                      </div>
+                    </Alert>
+                  ))}
+                </div>
+              )}
   
-              {/* Role-specific cards */}
-              {roleCards.map((card) => (
-                userRole?.toUpperCase() === card.role && (
-                  <Card 
-                    key={card.role} 
-                    className="group hover:shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-300"
-                  >
-                    <CardContent className="flex items-center p-6">
-                      <div className={`p-3 rounded-lg mr-4 group-hover:opacity-80 transition-all duration-300 ${card.color} dark:opacity-70`}>
-                        <card.icon className="h-6 w-6 dark:text-white" />
-                      </div>
-                      <div className="flex-grow">
-                        <h3 className="font-semibold text-lg mb-1 dark:text-white">{card.title}</h3>
-                        <p className="text-muted-foreground dark:text-gray-300">{card.description}</p>
-                      </div>
-                      <Button
-                        onClick={() => router.push(card.path)}
-                        variant="default"
-                        className="ml-4 dark:bg-blue-600 dark:hover:bg-blue-500"
-                      >
-                        {t('dashboard.access')}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )
-              ))}
+              {/* Dashboard Cards */}
+              <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Main Dashboard Card */}
+                <Card className="group overflow-hidden transition-all duration-300 
+                  hover:shadow-xl hover:scale-[1.02] 
+                  dark:bg-gray-700/50 dark:hover:bg-gray-600/60">
+                  <CardContent className="flex items-center p-6 space-x-4">
+                    <div className="bg-blue-500/10 dark:bg-blue-500/20 p-4 rounded-xl 
+                      transition-all group-hover:rotate-6 group-hover:scale-110">
+                      <LayoutDashboard className="h-7 w-7 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="font-bold text-xl text-gray-800 dark:text-white mb-1">
+                        {t('dashboard.mainDashboard')}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-300 text-base">
+                        {t('dashboard.mainDashboardDescription')}
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => router.push('/dashboard')}
+                      variant="default"
+                      className="bg-blue-600 hover:bg-blue-700 
+                        dark:bg-blue-700 dark:hover:bg-blue-600 
+                        transition-all duration-300 
+                        px-4 py-2 rounded-lg"
+                    >
+                      {t('dashboard.access')}
+                    </Button>
+                  </CardContent>
+                </Card>
+  
+                {/* Role-specific Cards */}
+                {roleCards.map((card) => (
+                  userRole?.toUpperCase() === card.role && (
+                    <Card 
+                      key={card.role} 
+                      className="group overflow-hidden transition-all duration-300 
+                        hover:shadow-xl hover:scale-[1.02] 
+                        dark:bg-gray-700/50 dark:hover:bg-gray-600/60"
+                    >
+                      <CardContent className="flex items-center p-6 space-x-4">
+                        <div className={`p-4 rounded-xl 
+                          transition-all group-hover:rotate-6 group-hover:scale-110 
+                          ${card.color} dark:opacity-80`}>
+                          <card.icon className="h-7 w-7 dark:text-white" />
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="font-bold text-xl text-gray-800 dark:text-white mb-1">
+                            {card.title}
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-300 text-base">
+                            {card.description}
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => router.push(card.path)}
+                          variant="default"
+                          className="bg-blue-600 hover:bg-blue-700 
+                            dark:bg-blue-700 dark:hover:bg-blue-600 
+                            transition-all duration-300 
+                            px-4 py-2 rounded-lg"
+                        >
+                          {t('dashboard.access')}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  )
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>

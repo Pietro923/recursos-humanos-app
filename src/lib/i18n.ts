@@ -205,9 +205,9 @@ const resources = {
                   label5: "End Date",
                   label5PlaceHolder: "Select date",
                   label6: "Description",
-                  label6PlaceHolder: "Additional details"
+                  label6PlaceHolder: "Additional details",
+                  button: "Save Reminder"
                 },
-                button: "Save Reminder"
               },
               postulaciones: {
                 toast: {
@@ -491,6 +491,16 @@ const resources = {
                 totalBasicIncentive: "Basic + Incentive Total",
                 bonus: "Bonus",
                 finalTotal: "Final Total"
+              },
+              dialog: {
+                button1: "Calculate Incentives, Bonuses, and Totals",
+                title: "Calculate Incentives, Bonuses, and Totals",
+                description: "Please enter the required data",
+                incentivoprom: "Average Incentive",
+                incentivomens: "Monthly Incentive",
+                inas: "Absence Days",
+                bono: "Bonus",
+                button2: "Save"
               }
             },
             desempeño: {
@@ -605,6 +615,12 @@ const resources = {
               }
             },
             empleados: {
+              baja: {
+                title: "Are you sure you want to deactivate",
+                description: "This action will change the employee's status to inactive.",
+                button1: "Cancel",
+                button2: "Yes, deactivate"
+              },
               birthday: {
                 title: "Birthdays!",
                 description: "Today is the birthday of "
@@ -753,22 +769,22 @@ const resources = {
           },
           dashboard: {
             welcomeMessage: "Bienvenido, {{userRole}}",
-            selectOptionMessage: "Selecciona una de las siguientes opciones para comenzar",
+            selectOptionMessage: "Selecciona una de las siguientes opciones para comenzar.",
             mainDashboard: "Dashboard Principal",
             mainDashboardDescription: "Accede al panel principal del sistema",
             access: "Acceder",
             roles: {
                 ADMIN: {
                   title: "Administración",
-                  description: "Accede al panel de administración completo del sistema"
+                  description: "Accede al panel de administración completo del sistema."
                 },
                 RRHH: {
                   title: "Recursos Humanos",
-                  description:  "Gestiona los procesos y personal de RRHH"
+                  description:  "Accede al listado de empleados y gestiona el personal."
                 },
                 NOMINAS: {
               title: "Nóminas",
-                  description:"Administra las nóminas y pagos del personal"
+                  description:"Administra las nóminas y pagos del personal."
                 }
               }
           }, 
@@ -1179,6 +1195,16 @@ const resources = {
     totalBasicIncentive: "Total Básico + Incentivo",
     bonus: "Bono",
     finalTotal: "Total Final"
+  },
+  dialog:{
+    button1:"Calcular Incentivos, Bonos, y Totales",
+    title:"Calcular Incentivos, Bonos, y Totales",
+    description:"Ingrese por favor los datos requeridos",
+    incentivoprom: "Incentivo Promedio",
+    incentivomens:"Incentivo Mensual",
+    inas:"Dias de Inasistencias",
+    bono:"Bono",
+    button2:"Guardar",
   }
   },
 
@@ -1294,6 +1320,12 @@ const resources = {
     }
   },
   empleados:{
+    baja:{
+    title:"¿Seguro de dar de baja a",
+    description:"Esta acción cambiará el estado del empleado a inactivo.",
+    button1:"Cancelar",
+    button2:"Sí, dar de baja",
+    },
     birthday: {
       title: "¡Cumpleaños!",
       description: "Hoy es el cumpleaños de "
@@ -1584,9 +1616,9 @@ const resources = {
                   label5: "Date de fin",
                   label5PlaceHolder: "Sélectionner la date",
                   label6: "Description",
-                  label6PlaceHolder: "Détails supplémentaires"
+                  label6PlaceHolder: "Détails supplémentaires",
+                  button: "Enregistrer le Rappel"
                 },
-                button: "Enregistrer le Rappel"
               },
               postulaciones: {
                 toast: {
@@ -1870,6 +1902,16 @@ const resources = {
                 totalBasicIncentive: "Total de base + incitation",
                 bonus: "Prime",
                 finalTotal: "Total final"
+              },
+              dialog: {
+                button1: "Calculer les Incitations, Primes et Totaux",
+                title: "Calculer les Incitations, Primes et Totaux",
+                description: "Veuillez entrer les données requises",
+                incentivoprom: "Incentive Moyenne",
+                incentivomens: "Incentive Mensuel",
+                inas: "Jours d'Absence",
+                bono: "Prime",
+                button2: "Sauvegarder"
               }
             },
             desempeño: {
@@ -1984,6 +2026,12 @@ const resources = {
               }
             },
             empleados: {
+              baja: {
+                title: "Êtes-vous sûr de désactiver",
+                description: "Cette action changera le statut de l'employé en inactif.",
+                button1: "Annuler",
+                button2: "Oui, désactiver"
+              },
               birthday: {
                 title: "Anniversaires!",
                 description: "Aujourd'hui c'est l'anniversaire de "

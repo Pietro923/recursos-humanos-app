@@ -592,7 +592,7 @@ export default function TrainingPage() {
                       <TableCell>{course.department}</TableCell>
                       <TableCell>{new Date(course.fechaArchivado).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{t('cursos.archived_courses.badge')}</Badge>
+                        <Badge variant="secondary">{t('cursos.archived_courses.table_headers.badge')}</Badge>
                       </TableCell>
                     </TableRow>
                   ))}

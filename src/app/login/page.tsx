@@ -44,10 +44,10 @@ export default function LoginPage() {
         } else if (err.code === "auth/wrong-password") {
           setError(t('login.contraseña_incorrecta'));
         } else {
-          setError(t('logim.error_autenticacion'));
+          setError(t('login.error_autenticacion'));
         }
       } else {
-        setError(t('logim.error_autenticacion'));  // Si no es un FirebaseError, mostramos un error genérico
+        setError(t('login.error_autenticacion'));  // Si no es un FirebaseError, mostramos un error genérico
       }
     } finally {
       setIsLoading(false);

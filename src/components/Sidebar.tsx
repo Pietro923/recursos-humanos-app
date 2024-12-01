@@ -84,6 +84,7 @@ export default function Sidebar({ role }: { role: Role | null }) {
       { href: "/recordatorios", icon: AlarmClock, label: t('menu.ADMIN.8.label') },
     ],
     rrhh: [
+      { href: "/dashboard", icon: LayoutDashboard, label: t('menu.ADMIN.0.label') },
       { href: "/asistencia", icon: Calendar, label: t('menu.rrhh.0.label') },
       { href: "/desempeno", icon: BarChart2, label: t('menu.rrhh.1.label') },
       { href: "/beneficios", icon: Gift, label: t('menu.rrhh.2.label') },
@@ -91,6 +92,7 @@ export default function Sidebar({ role }: { role: Role | null }) {
       { href: "/recordatorios", icon: AlarmClock, label: t('menu.rrhh.4.label') },
     ],
     nominas: [
+      { href: "/dashboard", icon: LayoutDashboard, label: t('menu.ADMIN.0.label') },
       { href: "/trabajadores", icon: Users, label: t('menu.nominas.0.label') },
       { href: "/nominas", icon: DollarSign, label: t('menu.nominas.1.label') },
       { href: "/recordatorios", icon: AlarmClock, label: t('menu.nominas.2.label') },
