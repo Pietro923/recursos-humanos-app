@@ -1054,7 +1054,7 @@ const resources = {
       selectemployeetitle:"Asignar Empleado al Curso",
       selectemployee:"Seleccionar Empleado",
       selectemployeeplaceholder:"Seleccionar Empleado",
-      selectbutton:"Assign"
+      selectbutton:"Asignar"
     }
   },
   perfil:{
