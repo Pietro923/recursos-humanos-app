@@ -1365,6 +1365,10 @@ const resources = {
             label: "DNI",
             placeholder: "12345678"
           },
+          titulo: {
+            label: "Título",
+            placeholder: "Título académico o especialización"
+          },
           correo: {
             label: "Correo",
             placeholder: "juan.perez@ejemplo.com"
@@ -1396,6 +1400,7 @@ const resources = {
         nombre: "Nombre",
         apellido: "Apellido",
         dni: "DNI",
+        titulo: "Título",
         correo: "Correo",
         departamento: "Departamento",
         sueldo: "Sueldo",

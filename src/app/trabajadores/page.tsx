@@ -24,6 +24,7 @@ interface Employee {
   sueldo: number;
   genero: string;
   fechaNacimiento: string;
+  titulo: string;
   estado: 'activo' | 'inactivo';  // Campo para la baja lógica
 }
 
@@ -38,6 +39,7 @@ export default function EmployeesPage() {
     nombre: "",
     apellido: "",
     dni: "",
+    titulo: "",
     correo: "",
     departamento: "",
     sueldo: "",
@@ -245,6 +247,7 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
         nombre: "",
         apellido: "",
         dni: "",
+        titulo: "",
         correo: "",
         departamento: "",
         sueldo: "",
@@ -413,6 +416,20 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
                   />
                 </div>
                 <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground" htmlFor="titulo">
+                  {t('empleados.addEmployee.form.fields.titulo.label')}
+                  </label>
+                  <Input 
+                    id="titulo" 
+                    name="titulo" 
+                    value={newEmployee.titulo} 
+                    onChange={handleInputChange} 
+                    placeholder= {t('empleados.addEmployee.form.fields.titulo.placeholder')}
+                    className="focus:ring-2 focus:ring-primary/20"
+                    required 
+                  />
+                </div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="correo">
                   {t('empleados.addEmployee.form.fields.correo.label')}
                   </label>
@@ -515,6 +532,7 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
         <TableHead>{t('empleados.employeesList.headers.nombre')}</TableHead>
         <TableHead>{t('empleados.employeesList.headers.apellido')}</TableHead>
         <TableHead>{t('empleados.employeesList.headers.dni')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.titulo')}</TableHead>
         <TableHead>{t('empleados.employeesList.headers.correo')}</TableHead>
         <TableHead>{t('empleados.employeesList.headers.departamento')}</TableHead>
         <TableHead>{t('empleados.employeesList.headers.sueldo')}</TableHead>
@@ -531,6 +549,7 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
             <TableCell>{employee.nombre}</TableCell>
             <TableCell>{employee.apellido}</TableCell>
             <TableCell>{employee.dni}</TableCell>
+            <TableCell>{employee.titulo}</TableCell>
             <TableCell>{employee.correo}</TableCell>
             <TableCell>{employee.departamento}</TableCell>
             <TableCell>${employee.sueldo}</TableCell>
