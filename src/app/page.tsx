@@ -180,7 +180,7 @@ export default function Inicio() {
       title: t('dashboard.roles.RRHH.title'),
       description:  t('dashboard.roles.RRHH.description'),
       icon: Users,
-      path: '/cursos',
+      path: '/trabajadores',
       color: 'bg-purple-500/10 text-purple-500',
     },
     {
