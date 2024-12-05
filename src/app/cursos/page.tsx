@@ -443,7 +443,7 @@ export default function TrainingPage() {
 
   return (
     <div className="container mx-auto py-8 space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between dark:text-white">
         <div className="flex items-center gap-3">
           <GraduationCap className="h-8 w-8 text-primary" />
           <h1 className="text-4xl font-bold tracking-tight dark:text-white">{t('cursos.title')}</h1>

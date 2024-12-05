@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { db } from "@/lib/firebaseConfig" // Asegúrate de importar tu configuración de Firebase
 import { collection, getDocs } from "firebase/firestore"
 import { useTranslation } from "react-i18next"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 // Definición de los tipos
 interface Employee {
   id: string
