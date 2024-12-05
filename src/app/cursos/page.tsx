@@ -311,13 +311,18 @@ export default function TrainingPage() {
     return (
       <div className="grid grid-cols-7 gap-1">
         {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map(day => (
-          <div key={day} className="p-2 text-center font-medium bg-muted">
+          <div
+            key={day}
+            className="p-2 text-center font-medium bg-muted dark:bg-gray-800 dark:text-gray-200"
+          >
             {day}
           </div>
         ))}
-        {Array(firstDay).fill(null).map((_, i) => (
-          <div key={`empty-${i}`} className="p-2" />
-        ))}
+        {Array(firstDay)
+          .fill(null)
+          .map((_, i) => (
+            <div key={`empty-${i}`} className="p-2" />
+          ))}
         {days.map(day => {
           const date = new Date(selectedYear, selectedMonth, day);
           const coursesOnDay = courses.filter(course => {
@@ -325,19 +330,21 @@ export default function TrainingPage() {
             const end = new Date(course.endDate);
             return date >= start && date <= end;
           });
-
+    
           return (
             <div
               key={day}
               className={`p-2 min-h-[80px] border rounded-lg ${
-                coursesOnDay.length > 0 ? "bg-blue-50" : ""
+                coursesOnDay.length > 0
+                  ? "bg-blue-50 dark:bg-blue-900"
+                  : "dark:bg-gray-700"
               }`}
             >
-              <div className="font-medium">{day}</div>
+              <div className="font-medium dark:text-gray-200">{day}</div>
               {coursesOnDay.map(course => (
                 <div
                   key={course.id}
-                  className="text-xs p-1 bg-blue-100 rounded mt-1 cursor-pointer"
+                  className="text-xs p-1 bg-blue-100 rounded mt-1 cursor-pointer dark:bg-blue-800 dark:text-gray-200"
                   title={course.name}
                   onClick={() => {
                     setSelectedCourse(course);
@@ -417,7 +424,7 @@ export default function TrainingPage() {
                         {employeeCourses.map(course => (
                           <Badge 
                             key={course.id} 
-                            className={getStatusStyle(course.status)}
+                            className={`${getStatusStyle(course.status)} dark:text-white`}
                             onClick={() => {
                               setSelectedCourse(course);
                               setShowDetailsModal(true);
