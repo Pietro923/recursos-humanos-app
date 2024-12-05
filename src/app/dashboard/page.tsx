@@ -27,48 +27,34 @@ export default function Dashboard() {
   const companies = ["Todas", "Pueble SA - CASE IH", "KIA"]; // Empresas disponibles
 
   // Obtener datos de empleados y sueldos
-  useEffect(() => {
-    const fetchData = async () => {
-      let employeeCount = 0;
-      let payrollExpense = 0;
-      let maleCount = 0;
-      let femaleCount = 0;
-      const departments: { [key: string]: number[] } = {};
+ useEffect(() => {
+  const fetchData = async () => {
+    let employeeCount = 0;
+    let payrollExpense = 0;
+    let maleCount = 0;
+    let femaleCount = 0;
+    const departments: { [key: string]: number[] } = {};
 
-      try {
-        if (selectedCompany === "Todas") {
-          // Obtener datos de todas las empresas
-          for (const company of companies.slice(1)) { // Ignora "Todas"
-            const employeesSnapshot = await getDocs(
-              collection(db, "Grupo_Pueble", company, "empleados")
-            );
-            employeeCount += employeesSnapshot.size;
-            payrollExpense += employeesSnapshot.docs.reduce(
-              (sum, doc) => sum + (doc.data().sueldo || 0),
-              0
-            );
-            employeesSnapshot.docs.forEach((doc) => {
-              const gender = doc.data().genero;
-              if (gender === "masculino") maleCount++;
-              if (gender === "femenino") femaleCount++;
-
-              // Almacenar los sueldos por departamento
-              const department = doc.data().departamento;
-              if (!departments[department]) departments[department] = [];
-              departments[department].push(doc.data().sueldo);
-            });
-          }
-        } else {
-          // Obtener datos de la empresa seleccionada
+    try {
+      if (selectedCompany === "Todas") {
+        // Obtener datos de todas las empresas
+        for (const company of companies.slice(1)) { // Ignora "Todas"
           const employeesSnapshot = await getDocs(
-            collection(db, "Grupo_Pueble", selectedCompany, "empleados")
+            collection(db, "Grupo_Pueble", company, "empleados")
           );
-          employeeCount = employeesSnapshot.size;
-          payrollExpense = employeesSnapshot.docs.reduce(
+          
+          // Filtrar solo empleados activos
+          const activeEmployees = employeesSnapshot.docs.filter(
+            doc => doc.data().estado === "activo"
+          );
+          
+          employeeCount += activeEmployees.length;
+          payrollExpense += activeEmployees.reduce(
             (sum, doc) => sum + (doc.data().sueldo || 0),
             0
           );
-          employeesSnapshot.docs.forEach((doc) => {
+          
+          activeEmployees.forEach((doc) => {
             const gender = doc.data().genero;
             if (gender === "masculino") maleCount++;
             if (gender === "femenino") femaleCount++;
@@ -79,25 +65,53 @@ export default function Dashboard() {
             departments[department].push(doc.data().sueldo);
           });
         }
+      } else {
+        // Obtener datos de la empresa seleccionada
+        const employeesSnapshot = await getDocs(
+          collection(db, "Grupo_Pueble", selectedCompany, "empleados")
+        );
+        
+        // Filtrar solo empleados activos
+        const activeEmployees = employeesSnapshot.docs.filter(
+          doc => doc.data().estado === "activo"
+        );
+        
+        employeeCount = activeEmployees.length;
+        payrollExpense = activeEmployees.reduce(
+          (sum, doc) => sum + (doc.data().sueldo || 0),
+          0
+        );
+        
+        activeEmployees.forEach((doc) => {
+          const gender = doc.data().genero;
+          if (gender === "masculino") maleCount++;
+          if (gender === "femenino") femaleCount++;
 
-        setTotalEmployees(employeeCount);
-        setTotalPayrollExpense(payrollExpense);
-        setGenderData({ hombres: maleCount, mujeres: femaleCount });
-
-        // Formatear los datos para el hook
-        const formattedDepartments = Object.keys(departments).map((name) => ({
-          name,
-          salaries: departments[name],
-        }));
-
-        setDepartmentData(formattedDepartments);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
+          // Almacenar los sueldos por departamento
+          const department = doc.data().departamento;
+          if (!departments[department]) departments[department] = [];
+          departments[department].push(doc.data().sueldo);
+        });
       }
-    };
 
-    fetchData();
-  }, [selectedCompany]);
+      setTotalEmployees(employeeCount);
+      setTotalPayrollExpense(payrollExpense);
+      setGenderData({ hombres: maleCount, mujeres: femaleCount });
+
+      // Formatear los datos para el hook
+      const formattedDepartments = Object.keys(departments).map((name) => ({
+        name,
+        salaries: departments[name],
+      }));
+
+      setDepartmentData(formattedDepartments);
+    } catch (error) {
+      console.error("Error al obtener los datos:", error);
+    }
+  };
+
+  fetchData();
+}, [selectedCompany]);
 
   // Usamos el hook para calcular los sueldos promedio y desviación estándar
   const salaryStats: SalaryStat[] = useSalaryStats(departmentData); // Especificamos el tipo de salaryStats
@@ -111,26 +125,36 @@ export default function Dashboard() {
         {t('pagedashboard.dashboardDescription')}
         </p>
       </div>
-
-      <Card className="w-full sm:w-72 bg-white/50 backdrop-blur shadow-sm dark:bg-gray-950">
-        <CardContent className="pt-4">
-          <label className="block text-sm font-medium text-muted-foreground mb-2 dark:text-white">
+      <Card className="w-full sm:w-72 bg-white/50 backdrop-blur shadow-sm dark:bg-gray-950"></Card>
+      <Card className="w-full sm:w-72 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
+      <CardContent className="pt-4 space-y-2 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-950 rounded-lg shadow-lg">
+        <label className="block text-md font-semibold text-blue-700 dark:text-blue-300 mb-2 transition-colors">
           {t('pagedashboard.selectCompanyLabel')}
-          </label>
-          <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={t('pagedashboard.selectCompanyPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              {companies.map((company) => (
-                <SelectItem key={company} value={company}>
-                  {company}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
+        </label>
+        <Select 
+          value={selectedCompany} 
+          onValueChange={setSelectedCompany}
+        >
+          <SelectTrigger className="w-full bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+            <SelectValue 
+              placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
+              className="text-blue-600 dark:text-blue-200"
+            />
+          </SelectTrigger>
+          <SelectContent className="bg-white dark:bg-blue-900 border-blue-200 dark:border-blue-700 shadow-xl">
+            {companies.map((company) => (
+              <SelectItem 
+                key={company} 
+                value={company} 
+                className="hover:bg-blue-100 dark:hover:bg-blue-800 focus:bg-blue-200 dark:focus:bg-blue-700 transition-colors"
+              >
+                {company}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </CardContent>
+    </Card>
     </div>
 
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -205,28 +229,33 @@ export default function Dashboard() {
 
     <Card className="shadow-sm">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">{t('pagedashboard.salaryAnalysisTitle')}</CardTitle>
+        <CardTitle className="text-2xl font-bold text-black dark:text-blue-300">
+          {t('pagedashboard.salaryAnalysisTitle')}
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {salaryStats.map((stat: SalaryStat, index: number) => (
-            <div key={index} className="bg-white p-4 rounded-lg border dark:bg-gray-950">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-sm text-muted-foreground">{stat.name}</h3>
-                <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center dark:bg-gray-950">
-                  <DollarSign className="h-4 w-4 text-slate-600" />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {salaryStats.map((stat, index) => (
+            <div 
+              key={index} 
+              className="bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-blue-950 p-5 rounded-xl border-2 border-blue-100 dark:border-blue-900 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-md text-blue-700 dark:text-blue-300">{stat.name}</h3>
+                <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-900 flex items-center justify-center shadow-md">
+                  <DollarSign className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{t('pagedashboard.averageLabel')}</p>
-                  <p className="text-lg font-bold text-green-600">
+                  <p className="text-xs text-blue-500 dark:text-blue-300">{t('pagedashboard.averageLabel')}</p>
+                  <p className="text-xl font-bold text-green-600 dark:text-green-400">
                     ${stat.average.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{t('pagedashboard.standardDeviationLabel')}</p>
-                  <p className="text-sm font-medium text-red-600">
+                  <p className="text-xs text-blue-500 dark:text-blue-300">{t('pagedashboard.standardDeviationLabel')}</p>
+                  <p className="text-md font-semibold text-red-600 dark:text-red-400">
                     ${stat.standardDeviation.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </p>
                 </div>

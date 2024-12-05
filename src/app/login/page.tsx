@@ -66,7 +66,7 @@ export default function LoginPage() {
             className="flex items-center justify-center mb-8"
           >
             <img
-              src="/pueble logo grande.jpg"
+               src="/logos sin fondo_Mesa de trabajo 1 copia 4.png"
               alt="Logo"
               className="h-40 w-auto drop-shadow-lg hover:scale-105 transition-transform duration-300"
             />

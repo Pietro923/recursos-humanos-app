@@ -38,7 +38,6 @@ import '@/lib/i18n'; // Importar configuración de i18n
 import { useTranslation } from 'react-i18next';
 
 
-
 const inter = Inter({ subsets: ['latin'] });
 
 type Role = "ADMIN" | "rrhh" | "nominas";

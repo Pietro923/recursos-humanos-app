@@ -133,7 +133,9 @@ export default function TrainingPage() {
       try {
         const employeesRef = collection(db, "Grupo_Pueble", selectedCompany, "empleados");
         const employeesSnapshot = await getDocs(employeesRef);
-        const employeesData = employeesSnapshot.docs.map(doc => ({
+        const employeesData = employeesSnapshot.docs
+        .filter(doc => doc.data().estado === "activo") // Filter for active employees
+        .map(doc => ({
           id: doc.id,
           name: doc.data().nombre,
           company: selectedCompany
@@ -446,13 +448,24 @@ export default function TrainingPage() {
           <GraduationCap className="h-8 w-8 text-primary" />
           <h1 className="text-4xl font-bold tracking-tight dark:text-white">{t('cursos.title')}</h1>
         </div>
-        <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-          <SelectTrigger className="w-[250px] dark:text-white dark:bg-gray-950">
-            <SelectValue placeholder={t('cursos.selectcompany')} />
+          
+        <Select 
+          value={selectedCompany} 
+          onValueChange={setSelectedCompany}
+        >
+          <SelectTrigger className="w-[250px] bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+            <SelectValue 
+              placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
+              className="text-blue-600 dark:text-blue-200"
+            />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white dark:bg-blue-900 border-blue-200 dark:border-blue-700 shadow-xl">
             {companies.map((company) => (
-              <SelectItem key={company} value={company}>
+              <SelectItem 
+                key={company} 
+                value={company} 
+                className="hover:bg-blue-100 dark:hover:bg-blue-800 focus:bg-blue-200 dark:focus:bg-blue-700 transition-colors"
+              >
                 {company}
               </SelectItem>
             ))}

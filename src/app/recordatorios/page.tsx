@@ -43,7 +43,9 @@ const RecordatoriossForm = () => {
         const employeesSnapshot = await getDocs(employeesRef);
         
         // Asegurarse de que el mapeo incluye 'nombre' y 'apellido'
-        const employeesData = employeesSnapshot.docs.map((doc) => ({
+        const employeesData = employeesSnapshot.docs
+        .filter(doc => doc.data().estado === "activo") // Filter for active employees
+        .map((doc) => ({
           id: doc.id,
           nombre: doc.data().nombre, // Asumimos que 'nombre' existe en el documento
           apellido: doc.data().apellido, // Asumimos que 'apellido' existe en el documento

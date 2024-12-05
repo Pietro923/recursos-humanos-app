@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { db } from "@/lib/firebaseConfig" // Asegúrate de importar tu configuración de Firebase
 import { collection, getDocs } from "firebase/firestore"
 import { useTranslation } from "react-i18next"
-
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 // Definición de los tipos
 interface Employee {
   id: string
@@ -29,27 +29,29 @@ export default function Asistencia() {
   useEffect(() => {
     const fetchEmployees = async () => {
       if (!selectedCompany) return
-
+  
       try {
         const employeesRef = collection(db, "Grupo_Pueble", selectedCompany, "empleados")
         const employeesSnapshot = await getDocs(employeesRef)
-        const employeesData: Employee[] = employeesSnapshot.docs.map(doc => {
-          const data = doc.data()
-          return {
-            id: doc.id,
-            nombre: data.nombre || "Nombre desconocido",
-            apellido: data.apellido || "Apellido desconocido",
-            dni: data.dni || 0,
-            correo: data.correo || "Correo desconocido",
-            departamento: data.departamento || "Departamento desconocido"
-          }
-        })
+        const employeesData: Employee[] = employeesSnapshot.docs
+          .filter(doc => doc.data().estado === "activo") // Only fetch active employees
+          .map(doc => {
+            const data = doc.data()
+            return {
+              id: doc.id,
+              nombre: data.nombre || "Nombre desconocido",
+              apellido: data.apellido || "Apellido desconocido",
+              dni: data.dni || 0,
+              correo: data.correo || "Correo desconocido",
+              departamento: data.departamento || "Departamento desconocido"
+            }
+          })
         setEmployees(employeesData)
       } catch (error) {
         console.error("Error fetching employees:", error)
       }
     }
-
+  
     fetchEmployees()
   }, [selectedCompany])
 
@@ -66,19 +68,36 @@ export default function Asistencia() {
       </h1>
 
       {/* Selector de empresa */}
-      <div className="mb-6 flex justify-center bg-white shadow-md rounded-lg p-6 max-w-60 ml-52 dark:bg-gray-950  dark:text-white ">
-        <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-          <SelectTrigger className="w-72 text-gray-700 dark:text-white">
-            <SelectValue placeholder={t("asistencia.select_company_placeholder")} />
+      <div className="mb-6 flex justify-center p-6 ">
+      <Card className="w-full sm:w-72 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
+      <CardContent className="pt-4 space-y-2 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-950 rounded-lg shadow-lg">
+        <label className="block text-md font-semibold text-blue-700 dark:text-blue-300 mb-2 transition-colors">
+          {t('pagedashboard.selectCompanyLabel')}
+        </label>
+        <Select 
+          value={selectedCompany} 
+          onValueChange={setSelectedCompany}
+        >
+          <SelectTrigger className="w-full bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+            <SelectValue 
+              placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
+              className="text-blue-600 dark:text-blue-200"
+            />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white dark:bg-blue-900 border-blue-200 dark:border-blue-700 shadow-xl">
             {companies.map((company) => (
-              <SelectItem key={company} value={company}>
+              <SelectItem 
+                key={company} 
+                value={company} 
+                className="hover:bg-blue-100 dark:hover:bg-blue-800 focus:bg-blue-200 dark:focus:bg-blue-700 transition-colors"
+              >
                 {company}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+      </CardContent>
+    </Card>
       </div>
 
       {/* Tabla de asistencia */}

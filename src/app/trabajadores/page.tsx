@@ -295,25 +295,35 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
           </p>
         </div>
   
-        <Card className="w-full sm:w-72 bg-white/50 backdrop-blur shadow-sm dark:bg-gray-950 dark:border-gray-700 dark:text-white">
-          <CardContent className="pt-4">
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-            {t('empleados.companySelection.label')}
-            </label>
-            <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder=  {t('empleados.companySelection.placeholder')}  />
-              </SelectTrigger>
-              <SelectContent>
-                {companies.map((company) => (
-                  <SelectItem key={company} value={company}>
-                    {company}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </CardContent>
-        </Card>
+        <Card className="w-full sm:w-72 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
+      <CardContent className="pt-4 space-y-2 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-950 rounded-lg shadow-lg">
+        <label className="block text-md font-semibold text-blue-700 dark:text-blue-300 mb-2 transition-colors">
+          {t('pagedashboard.selectCompanyLabel')}
+        </label>
+        <Select 
+          value={selectedCompany} 
+          onValueChange={setSelectedCompany}
+        >
+          <SelectTrigger className="w-full bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+            <SelectValue 
+              placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
+              className="text-blue-600 dark:text-blue-200"
+            />
+          </SelectTrigger>
+          <SelectContent className="bg-white dark:bg-blue-900 border-blue-200 dark:border-blue-700 shadow-xl">
+            {companies.map((company) => (
+              <SelectItem 
+                key={company} 
+                value={company} 
+                className="hover:bg-blue-100 dark:hover:bg-blue-800 focus:bg-blue-200 dark:focus:bg-blue-700 transition-colors"
+              >
+                {company}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </CardContent>
+    </Card>
       </div>
   
       <div className="flex flex-col sm:flex-row gap-4 mb-6  ">
@@ -481,8 +491,8 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
                         id="male"
                         type="radio"
                         name="genero"
-                        value="Masculino"
-                        checked={newEmployee.genero === "Masculino"}
+                        value="masculino"
+                        checked={newEmployee.genero === "masculino"}
                         onChange={handleInputChange}
                       />
                       <span>{t('empleados.addEmployee.form.fields.genero.options.male')}</span>
@@ -492,8 +502,8 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
                         id="female"
                         type="radio"
                         name="genero"
-                        value="Femenino"
-                        checked={newEmployee.genero === "Femenino"}
+                        value="femenino"
+                        checked={newEmployee.genero === "femenino"}
                         onChange={handleInputChange}
                       />
                        <span>{t('empleados.addEmployee.form.fields.genero.options.female')}</span>

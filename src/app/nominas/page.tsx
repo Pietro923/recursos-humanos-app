@@ -79,7 +79,9 @@ export default function PayrollPage() {
           setIsLoading(true);
           // Obtener empleados
           const employeesSnapshot = await getDocs(collection(db, "Grupo_Pueble", selectedCompany, "empleados"));
-          const employeeData: Employee[] = employeesSnapshot.docs.map((doc) => ({
+          const employeeData: Employee[] = employeesSnapshot.docs
+          .filter(doc => doc.data().estado === "activo") // Filter for active employees
+          .map((doc) => ({
             id: doc.id,
             ...doc.data()
           })) as Employee[];
@@ -228,9 +230,13 @@ export default function PayrollPage() {
       
               <div className="flex items-center gap-4">
                 <Select value={selectedCompany || ""} onValueChange={setSelectedCompany}>
-                  <SelectTrigger className="w-[250px] bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow dark:bg-gray-950 dark:text-white">
                     <SelectValue placeholder={t('nominas.header.selectCompany')} />
-                  </SelectTrigger>
+                    <SelectTrigger className="w-[250px] bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+            <SelectValue 
+              placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
+              className="text-blue-600 dark:text-blue-200"
+            />
+          </SelectTrigger>
                   <SelectContent className="dark:bg-gray-900 dark:border-gray-700">
                     {companies.map((company) => (
                       <SelectItem 
@@ -360,8 +366,10 @@ export default function PayrollPage() {
                 transition={{ duration: 0.3 }}
                 className="flex justify-end"
               >
+
+                
                 <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                  <SelectTrigger className="w-[250px] bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow dark:bg-gray-950 dark:text-white">
+                <SelectTrigger className="w-[250px] bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
                     <SelectValue placeholder={t('nominas.header.filterDepartment')} />
                   </SelectTrigger>
                   <SelectContent className="dark:bg-gray-900 dark:border-gray-700">
