@@ -48,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
+  const [userAvatarUrl, setUserAvatarUrl] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { t } = useTranslation(); // Hook de traducción
@@ -59,8 +60,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         try {
           const userDoc = await getDoc(doc(db, "users", user.uid));
           if (userDoc.exists()) {
+            const userData = userDoc.data();
             setUserRole(userDoc.data().role);
             setUserName(userDoc.data().name || user.email);
+            setUserAvatarUrl(userData.avatarUrl || null);
           } else {
             setUserRole(null);
             setIsAuthenticated(false);
@@ -180,7 +183,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="flex items-center space-x-2 dark:text-white">
                           <Avatar className="h-8 w-8">
-                            <AvatarImage src="" />
+                            <AvatarImage 
+                              src={userAvatarUrl || ""} 
+                              alt={`Avatar de ${userName}`}
+                            />
                             <AvatarFallback className="bg-blue-600 text-white dark:text-white">
                               {userName?.charAt(0).toUpperCase()}
                             </AvatarFallback>

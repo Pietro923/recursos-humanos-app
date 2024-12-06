@@ -373,7 +373,8 @@ const resources = {
               perfil_actualizado: "Profile Updated",
               cambios_guardados: "Changes have been saved successfully.",
               error: "Error",
-              guardar_error: "Could not save the changes."
+              guardar_error: "Could not save the changes.",
+              url_avatar: "Profile Picture"
             },
             notificaciones:{
               title:"Archived Notifications",
@@ -1076,7 +1077,8 @@ const resources = {
       perfil_actualizado: "Perfil actualizado",
       cambios_guardados: "Los cambios han sido guardados correctamente.",
       error: "Error",
-      guardar_error: "No se pudieron guardar los cambios."
+      guardar_error: "No se pudieron guardar los cambios.",
+      url_avatar: "Imagen de Perfil"
     },
     notificaciones:{
       title:"Notificaciones Archivadas",
@@ -1789,7 +1791,8 @@ const resources = {
               perfil_actualizado: "Profil mis à jour",
               cambios_guardados: "Les modifications ont été enregistrées avec succès.",
               error: "Erreur",
-              guardar_error: "Impossible d'enregistrer les modifications."
+              guardar_error: "Impossible d'enregistrer les modifications.",
+              url_avatar: "Photo de Profil"
             },
             notificaciones:{
               title: "Notifications archivées",

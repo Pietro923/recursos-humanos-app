@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Camera, Mail, Phone, User, Building, NotebookText } from "lucide-react";
+import { Loader2, Camera, Mail, Phone, User, Building, NotebookText, LinkIcon } from "lucide-react";
 import { getFirestore, doc,getDoc, updateDoc } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useTranslation } from "react-i18next";
@@ -24,6 +24,7 @@ interface UserProfile {
   phone: string;
   department: string;
   bio: string;
+  avatarUrl: string; // Nuevo campo para la URL del avatar
 }
 
 const ProfilePage = () => {
@@ -39,6 +40,7 @@ const ProfilePage = () => {
     phone: "",
     department: "",
     bio: "",
+    avatarUrl: "", // Inicializar con cadena vacía
   });
 
   useEffect(() => {
@@ -70,6 +72,7 @@ const ProfilePage = () => {
               phone: data.phone || "",
               department: data.department || "",
               bio: data.bio || "",
+              avatarUrl: data.avatarUrl || "", // Obtener URL del avatar
             };
             setFormData(userData);
           }
@@ -100,6 +103,7 @@ const ProfilePage = () => {
           phone: formData.phone,
           department: formData.department,
           bio: formData.bio,
+          avatarUrl: formData.avatarUrl, // Guardar URL del avatar
         });
         toast({
           title: t('perfil.perfil_actualizado'),
@@ -139,7 +143,7 @@ const ProfilePage = () => {
             <CardContent className="space-y-6">
               <div className="flex flex-col items-center space-y-4 ">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src="" />
+                <AvatarImage src={formData.avatarUrl || ""} />
                   <AvatarFallback className="bg-blue-600 text-white text-xl">
                     {formData.fullName.charAt(0)}
                   </AvatarFallback>
@@ -244,17 +248,28 @@ const ProfilePage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col items-center space-y-4">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src="" />
+                  <AvatarImage src={formData.avatarUrl || ""} />
                   <AvatarFallback className="bg-blue-600 text-white text-xl">
                     {formData.fullName.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
-                <Button variant="outline" size="sm">
-                  <Camera className="mr-2 h-4 w-4" />
-                  {t('perfil.cambiar_foto')}
-                </Button>
+                {/* Nuevo campo para URL del avatar */}
+                <div className="space-y-2 w-full max-w-md">
+                  <Label htmlFor="avatarUrl">
+                    <LinkIcon className="inline-block w-4 h-4 mr-2" />
+                    {t('perfil.url_avatar')}
+                  </Label>
+                  <Input
+                    id="avatarUrl"
+                    name="avatarUrl"
+                    value={formData.avatarUrl}
+                    onChange={handleInputChange}
+                    placeholder="https://ejemplo.com/mi-avatar.jpg"
+                    className="mt-1"
+                  />
+                </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
