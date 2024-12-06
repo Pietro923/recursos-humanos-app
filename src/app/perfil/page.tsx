@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Camera, Mail, Phone, User, Building, NotebookText, LinkIcon } from "lucide-react";
+import { Loader2, Mail, Phone, User, Building, NotebookText, LinkIcon } from "lucide-react";
 import { getFirestore, doc,getDoc, updateDoc } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useTranslation } from "react-i18next";
