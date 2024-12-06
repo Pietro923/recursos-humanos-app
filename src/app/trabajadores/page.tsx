@@ -428,6 +428,7 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="titulo">
                   {t('empleados.addEmployee.form.fields.titulo.label')}
+                  
                   </label>
                   <Input 
                     id="titulo" 
@@ -506,7 +507,7 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
                         checked={newEmployee.genero === "femenino"}
                         onChange={handleInputChange}
                       />
-                       <span>{t('empleados.addEmployee.form.fields.genero.options.female')}</span>
+                      <span>{t('empleados.addEmployee.form.fields.genero.options.female')}</span>
                     </label>
                   </div>
                 </div>
