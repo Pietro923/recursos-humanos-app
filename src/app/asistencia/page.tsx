@@ -21,9 +21,31 @@ interface Employee {
 
 export default function Asistencia() {
   const [selectedCompany, setSelectedCompany] = useState("") // Empresa seleccionada
-  const [companies] = useState(["Pueble SA - CASE IH", "KIA"]) // Lista de empresas
+  const [companies, setCompanies] = useState<string[]>([]); // Empresas dinámicas
   const [employees, setEmployees] = useState<Employee[]>([]) // Lista de empleados filtrada por empresa
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        // Obtén referencia a la colección "Grupo_Pueble"
+        const collectionRef = collection(db, "Grupo_Pueble");
+        
+        // Obtén los documentos dentro de la colección
+        const snapshot = await getDocs(collectionRef);
+        
+        // Extrae los nombres de los documentos
+        const companyNames = snapshot.docs.map(doc => doc.id);
+        
+        
+        setCompanies([...companyNames]);
+      } catch (error) {
+        console.error("Error al obtener las compañías:", error);
+      }
+    };
+  
+    fetchCompanies();
+  }, []);
 
   // Obtener empleados de la empresa seleccionada desde la base de datos
   useEffect(() => {

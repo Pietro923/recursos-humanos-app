@@ -1,7 +1,14 @@
 "use client";
 // ESTE COMPONENTE ES PARA EL COMPONENTE DEL DASHBOARD
 import { useEffect, useState } from "react";
-import { collection, getDocs, Timestamp } from "firebase/firestore";
+import { 
+  collection, 
+  getDocs, 
+  Timestamp,
+  doc,
+  deleteDoc,
+  addDoc
+} from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig"; // Tu configuración de Firebase
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,7 +20,7 @@ import {
   UserIcon, 
   InfoIcon 
 } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
+import { format, differenceInDays, differenceInHours  } from "date-fns";
 import { es } from "date-fns/locale";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
@@ -33,9 +40,74 @@ interface Recordatorio {
 function Recordatorios() {
   const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string>("Pueble SA - CASE IH");
+  const [companies, setCompanies] = useState<string[]>([]); // Empresas dinámicas
   const [selectedRecordatorio, setSelectedRecordatorio] = useState<Recordatorio | null>(null); // Estado para el recordatorio seleccionado
   const { t } = useTranslation(); // Hook de traducción dentro del componente funcional
   
+  // Función para archivar recordatorios de cumpleaños
+  const archiveBirthdayReminders = async () => {
+    try {
+      const q = collection(db, "Grupo_Pueble", selectedCompany, "recordatorios");
+      const snapshot = await getDocs(q);
+      
+      const birthdayRecordatorios = snapshot.docs
+        .filter(doc => {
+          const recordatorio = doc.data() as Recordatorio;
+          // Filtrar solo recordatorios de tipo "Cumpleaños"
+          if (recordatorio.tipo === "Cumpleaños") {
+            const endDate = recordatorio.fechaFin.toDate();
+            const hoursSinceEnd = differenceInHours(new Date(), endDate);
+            
+            // Si han pasado más de 24 horas desde la fecha de fin
+            return hoursSinceEnd > 24;
+          }
+          return false;
+        });
+
+      // Archivar cada recordatorio de cumpleaños
+      for (const birthdayDoc of birthdayRecordatorios) {
+        const recordatorio = birthdayDoc.data() as Recordatorio;
+        
+        // Eliminar de la colección original
+        const recordatorioRef = doc(db, "Grupo_Pueble", selectedCompany, "recordatorios", birthdayDoc.id);
+        await deleteDoc(recordatorioRef);
+
+        // Agregar a la colección de archivados
+        const archivedRef = collection(db, "Grupo_Pueble", selectedCompany, "notificaciones_archivadas");
+        await addDoc(archivedRef, {
+          ...recordatorio,
+          archivedAt: Timestamp.now()
+        });
+
+        console.log(`Cumpleaños de ${recordatorio.nombre} ${recordatorio.apellido} archivado automáticamente`);
+      }
+    } catch (error) {
+      console.error("Error al archivar recordatorios de cumpleaños:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        // Obtén referencia a la colección "Grupo_Pueble"
+        const collectionRef = collection(db, "Grupo_Pueble");
+        
+        // Obtén los documentos dentro de la colección
+        const snapshot = await getDocs(collectionRef);
+        
+        // Extrae los nombres de los documentos
+        const companyNames = snapshot.docs.map(doc => doc.id);
+        
+        // Agrega "Todas" al inicio de la lista
+        setCompanies([...companyNames]);
+      } catch (error) {
+        console.error("Error al obtener las compañías:", error);
+      }
+    };
+  
+    fetchCompanies();
+  }, []);
+
   useEffect(() => {
     const fetchRecordatorios = async () => {
       try {
@@ -71,7 +143,14 @@ function Recordatorios() {
     };
   
     fetchRecordatorios();
-  }, [selectedCompany]);
+  // Configurar un intervalo para verificar y archivar cada 24 horas
+  const archiveInterval = setInterval(archiveBirthdayReminders, 24 * 60 * 60 * 1000);
+
+  // Limpiar el intervalo cuando el componente se desmonte
+  return () => {
+    clearInterval(archiveInterval);
+  };
+}, [selectedCompany]);
 
   const getStatusColor = (recordatorio: Recordatorio) => {
     const today = new Date();
@@ -106,14 +185,27 @@ function Recordatorios() {
             <ClockIcon className="w-6 h-6 text-primary" />
             <span>{t('notificationBell.title')}</span>
           </CardTitle>
-          <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-            <SelectTrigger className="w-full md:w-[250px]">
-              <SelectValue placeholder={t('selectCompany')} />
+          <Select 
+          value={selectedCompany} 
+          onValueChange={setSelectedCompany}
+        >
+            <SelectTrigger className="w-full md:w-[250px] bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+            <SelectValue 
+              placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
+              className="text-blue-600 dark:text-blue-200"
+            />
             </SelectTrigger>
-            <SelectContent className="z-50 max-h-60 overflow-y-auto">
-              <SelectItem value="Pueble SA - CASE IH">Pueble SA - CASE IH</SelectItem>
-              <SelectItem value="KIA">KIA</SelectItem>
-            </SelectContent>
+            <SelectContent className="bg-white dark:bg-blue-900 border-blue-200 dark:border-blue-700 shadow-xl">
+            {companies.map((company) => (
+              <SelectItem 
+                key={company} 
+                value={company} 
+                className="hover:bg-blue-100 dark:hover:bg-blue-800 focus:bg-blue-200 dark:focus:bg-blue-700 transition-colors"
+              >
+                {company}
+              </SelectItem>
+            ))}
+          </SelectContent>
           </Select>
         </div>
       </CardHeader>

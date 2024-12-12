@@ -24,27 +24,12 @@ interface Employee {
   departamento: string;
   sueldo: number;
   incentivo: number;
-  diasInasistencia: number;
   
   // New fields for dialog input
   incentivoPromedio?: number;
-  diasAusencia?: number;
-  descuentoInasistencia?: number;
   totalBasicoIncentivo?: number;
   totalFinal?: number;
-  incentivoMensual?: number;
   bono?: number;
-}
-
-interface AbsenceRecord {
-  nombre: string;
-  apellido: string;
-  employeeId: string;
-  dias: number;
-}
-
-interface AbsenceMap {
-  [key: string]: AbsenceRecord;
 }
 
 export default function PayrollPage() {
@@ -53,14 +38,11 @@ export default function PayrollPage() {
   const [employees, setEmployees] = useState<Employee[]>([]); // Lista de empleados con tipo Employee
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
-  const [companies] = useState<string[]>(["Pueble SA - CASE IH", "KIA"]);
-  const [absences, setAbsences] = useState<AbsenceMap>({});
+  const [companies, setCompanies] = useState<string[]>([]); // Empresas dinámicas
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation(); // Hook de traducción
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [incentivoPromedio, setIncentivoPromedio] = useState<string>("0");
-  const [incentivoMensual, setIncentivoMensual] = useState<string>("0");
-  const [diasAusencia, setDiasAusencia] = useState<string>("0");
   const [bono, setBono] = useState<string>("0");
   
   
@@ -70,6 +52,29 @@ export default function PayrollPage() {
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
   const periodId = `${currentYear}-${currentMonth.toString().padStart(2, '0')}`;
+
+  
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        // Obtén referencia a la colección "Grupo_Pueble"
+        const collectionRef = collection(db, "Grupo_Pueble");
+        
+        // Obtén los documentos dentro de la colección
+        const snapshot = await getDocs(collectionRef);
+        
+        // Extrae los nombres de los documentos
+        const companyNames = snapshot.docs.map(doc => doc.id);
+        
+        // Agrega "Todas" al inicio de la lista
+        setCompanies([...companyNames]);
+      } catch (error) {
+        console.error("Error al obtener las compañías:", error);
+      }
+    };
+  
+    fetchCompanies();
+  }, []);
 
   useEffect(() => {
     if (selectedCompany) {
@@ -87,24 +92,6 @@ export default function PayrollPage() {
           })) as Employee[];
           setEmployees(employeeData);
           
-          // Obtener inasistencias del período actual
-          const absencesDoc = doc(db, "Grupo_Pueble", selectedCompany, "inasistencias", periodId);
-          const absencesSnapshot = await getDoc(absencesDoc);
-          if (absencesSnapshot.exists()) {
-            setAbsences(absencesSnapshot.data() as AbsenceMap);
-          } else {
-            // Inicializar con registros vacíos para todos los empleados
-            const initialAbsences: AbsenceMap = {};
-            employeeData.forEach(emp => {
-              initialAbsences[emp.id] = {
-                nombre: emp.nombre,
-                apellido: emp.apellido,
-                employeeId: emp.id,
-                dias: 0
-              };
-            });
-            setAbsences(initialAbsences);
-          }
           
           const departmentMap: { [key: string]: boolean } = {};
           employeeData.forEach(emp => {
@@ -142,42 +129,32 @@ export default function PayrollPage() {
   return `$ ${Math.floor(amount).toLocaleString('es-AR')}`;
 };
 
-  const calcularDescuentoPorInasistencias = (sueldo: number, diasInasistencia: number) => {
-    const valorDiario = sueldo / 30; // Asumiendo mes de 30 días
-    return valorDiario * diasInasistencia;
+
+const calculateDialogValues = (employee: Employee) => {
+  const totalBasicoIncentivo = employee.sueldo + parseFloat(incentivoPromedio);
+  const totalFinal = totalBasicoIncentivo + parseFloat(bono);
+
+  return {
+    incentivoPromedio: parseFloat(incentivoPromedio),
+    totalBasicoIncentivo,
+    bono: parseFloat(bono),
+    totalFinal
   };
+};
 
-
-  const calculateDialogValues = (employee: Employee) => {
-    const diasInasistencia = parseInt(diasAusencia) || 0;
-    const descuentoInasistencia = (employee.sueldo / 30) * diasInasistencia;
-    const totalBasicoIncentivo = employee.sueldo + parseFloat(incentivoMensual) - descuentoInasistencia;
-    const totalFinal = totalBasicoIncentivo + parseFloat(bono);
-
-    return {
-      incentivoPromedio: parseFloat(incentivoPromedio),
-      incentivoMensual: parseFloat(incentivoMensual),
-      diasAusencia: diasInasistencia,
-      descuentoInasistencia,
-      totalBasicoIncentivo,
-      bono: parseFloat(bono),
-      totalFinal
-    };
-  };
-
-  const saveDialogData = async () => {
-    if (!selectedCompany || !selectedEmployee) return;
+const saveDialogData = async () => {
+  if (!selectedCompany || !selectedEmployee) return;
     
-    try {
-      setIsLoading(true);
+  try {
+    setIsLoading(true);
       
       // Calculate additional values
       const additionalData = calculateDialogValues(selectedEmployee);
       
       // Update the specific employee document
       const employeeDocRef = doc(db, "Grupo_Pueble", selectedCompany, "empleados", selectedEmployee.id);
-      
-      await updateDoc(employeeDocRef, additionalData);
+    
+    await updateDoc(employeeDocRef, additionalData);
       
       // Refresh employees to reflect new data
       const employeesSnapshot = await getDocs(collection(db, "Grupo_Pueble", selectedCompany, "empleados"));
@@ -189,19 +166,17 @@ export default function PayrollPage() {
       
       toast.success(t('nominas.toast.success'));
       
-      // Reset dialog inputs
+       // Reseteamos solo el input de incentivo promedio
       setIncentivoPromedio("");
-      setIncentivoMensual("");
-      setDiasAusencia("");
-      setBono("");
-      setSelectedEmployee(null);
-    } catch (error) {
-      console.error("Error saving dialog data:", error);
-      toast.error(t('nominas.toast.errorasistencia'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    setBono("");
+    setSelectedEmployee(null);
+  } catch (error) {
+    console.error("Error saving dialog data:", error);
+    toast.error(t('nominas.toast.errorasistencia'));
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="max-w-screen-2xl container mx-auto py-8 space-y-6">
@@ -307,30 +282,6 @@ export default function PayrollPage() {
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="Incentivo Mensual" className="text-right">
-            {t('nominas.dialog.incentivomens')}
-            </Label>
-            <Input
-              id="Incentivo Mensual"
-              value={incentivoMensual}
-              onChange={(e) => setIncentivoMensual(e.target.value)}
-              className="col-span-3 border-black dark:border-white"
-            />
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="Dias de Inasistencias" className="text-right">
-            {t('nominas.dialog.inas')}
-            </Label>
-            <Input
-              id="Dias de Inasistencias"
-              value={diasAusencia}
-              onChange={(e) => setDiasAusencia(e.target.value)}
-              className="col-span-3 border-black dark:border-white"
-            />
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="Bono" className="text-right">
             {t('nominas.dialog.bono')}
             </Label>
@@ -401,19 +352,19 @@ export default function PayrollPage() {
               <Table className="min-w-full table-auto">
                 <TableHeader>
                   <TableRow className="bg-gradient-to-r from-muted/50 to-muted/30 text-sm dark:bg-gray-800">
-                    {[
-                      'name', 'surname', 'department', 
-                      'basicSalary', 'averageIncentive', 'monthlyIncentive', 
-                      'absenceDays', 'absenceDiscount', 'totalBasicIncentive', 
-                      'bonus', 'finalTotal'
-                    ].map((col) => (
-                      <TableHead 
-                        key={col} 
-                        className="font-bold text-center dark:text-white hover:bg-primary-50 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        {t(`nominas.columns.${col}`)}
-                      </TableHead>
-                    ))}
+                  {[
+                    'name', 'surname', 'department', 
+                    'basicSalary', 'averageIncentive', // Eliminamos 'monthlyIncentive'
+                    'totalBasicIncentive', 
+                    'bonus', 'finalTotal'
+                  ].map((col) => (
+                    <TableHead 
+                      key={col} 
+                      className="font-bold text-center dark:text-white hover:bg-primary-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      {t(`nominas.columns.${col}`)}
+                    </TableHead>
+                  ))}
                   </TableRow>
                 </TableHeader>
     
@@ -430,14 +381,8 @@ export default function PayrollPage() {
                   ):(
                       filteredEmployees.map((employee) => {
                         console.log(employee); // Verifica los valores de incentivoMensual y bono
-                      const absenceRecord = absences[employee.id];
-                      const diasInasistencia = employee.diasAusencia || absenceRecord?.dias || 0;
-                      const descuentoInasistencias = employee.descuentoInasistencia || calcularDescuentoPorInasistencias(
-                        employee.sueldo, 
-                        diasInasistencia
-                      );
-                      const totalBasicoIncentivo = employee.totalBasicoIncentivo || 
-                        (employee.sueldo + (employee.incentivoMensual || 0) - descuentoInasistencias);
+                        const totalBasicoIncentivo = employee.totalBasicoIncentivo || 
+                        (employee.sueldo + (employee.incentivoPromedio || 0));
                       const totalFinal = employee.totalFinal || 
                         (totalBasicoIncentivo + (employee.bono || 0));
                       
@@ -454,15 +399,6 @@ export default function PayrollPage() {
                           </TableCell>
                           <TableCell className="text-right font-medium text-gray-700 dark:text-gray-300">
                             {formatCurrency(employee.incentivoPromedio || employee.incentivo)}
-                          </TableCell>
-                          <TableCell className="text-right font-medium text-gray-700 dark:text-gray-300">
-                            {formatCurrency(employee.incentivoMensual)}
-                          </TableCell>
-                          <TableCell className="text-right font-medium text-red-600">
-                            {(diasInasistencia)}
-                          </TableCell>
-                          <TableCell className="text-right font-medium text-red-600">
-                            {formatCurrency(descuentoInasistencias)}
                           </TableCell>
                           <TableCell className="text-right font-medium text-blue-700 dark:text-blue-500">
                             {formatCurrency(totalBasicoIncentivo)}

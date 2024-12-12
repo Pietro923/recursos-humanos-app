@@ -24,94 +24,114 @@ export default function Dashboard() {
   const [genderData, setGenderData] = useState({ hombres: 0, mujeres: 0 });
   const [departmentData, setDepartmentData] = useState<{ name: string; salaries: number[] }[]>([]);
   const { t } = useTranslation();
-  const companies = ["Todas", "Pueble SA - CASE IH", "KIA"]; // Empresas disponibles
+  const [companies, setCompanies] = useState<string[]>([]); // Empresas dinámicas
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        // Obtén referencia a la colección "Grupo_Pueble"
+        const collectionRef = collection(db, "Grupo_Pueble");
+        
+        // Obtén los documentos dentro de la colección
+        const snapshot = await getDocs(collectionRef);
+        
+        // Extrae los nombres de los documentos
+        const companyNames = snapshot.docs.map(doc => doc.id);
+        
+        // Agrega "Todas" al inicio de la lista
+        setCompanies(["Todas", ...companyNames]);
+      } catch (error) {
+        console.error("Error al obtener las compañías:", error);
+      }
+    };
+  
+    fetchCompanies();
+  }, []);
+
 
   // Obtener datos de empleados y sueldos
- useEffect(() => {
-  const fetchData = async () => {
-    let employeeCount = 0;
-    let payrollExpense = 0;
-    let maleCount = 0;
-    let femaleCount = 0;
-    const departments: { [key: string]: number[] } = {};
-
-    try {
-      if (selectedCompany === "Todas") {
-        // Obtener datos de todas las empresas
-        for (const company of companies.slice(1)) { // Ignora "Todas"
+  useEffect(() => {
+    const fetchData = async () => {
+      if (companies.length === 0 || !selectedCompany) return; // Espera hasta que las empresas estén listas
+  
+      let employeeCount = 0;
+      let payrollExpense = 0;
+      let maleCount = 0;
+      let femaleCount = 0;
+      const departments: { [key: string]: number[] } = {};
+  
+      try {
+        if (selectedCompany === "Todas") {
+          // Obtener datos de todas las empresas
+          for (const company of companies.slice(1)) { // Ignora "Todas"
+            const employeesSnapshot = await getDocs(
+              collection(db, "Grupo_Pueble", company, "empleados")
+            );
+  
+            const activeEmployees = employeesSnapshot.docs.filter(
+              doc => doc.data().estado === "activo"
+            );
+  
+            employeeCount += activeEmployees.length;
+            payrollExpense += activeEmployees.reduce(
+              (sum, doc) => sum + (doc.data().sueldo || 0),
+              0
+            );
+  
+            activeEmployees.forEach((doc) => {
+              const gender = doc.data().genero;
+              if (gender === "masculino") maleCount++;
+              if (gender === "femenino") femaleCount++;
+  
+              const department = doc.data().departamento;
+              if (!departments[department]) departments[department] = [];
+              departments[department].push(doc.data().sueldo);
+            });
+          }
+        } else {
+          // Obtener datos de la empresa seleccionada
           const employeesSnapshot = await getDocs(
-            collection(db, "Grupo_Pueble", company, "empleados")
+            collection(db, "Grupo_Pueble", selectedCompany, "empleados")
           );
-          
-          // Filtrar solo empleados activos
+  
           const activeEmployees = employeesSnapshot.docs.filter(
             doc => doc.data().estado === "activo"
           );
-          
-          employeeCount += activeEmployees.length;
-          payrollExpense += activeEmployees.reduce(
+  
+          employeeCount = activeEmployees.length;
+          payrollExpense = activeEmployees.reduce(
             (sum, doc) => sum + (doc.data().sueldo || 0),
             0
           );
-          
+  
           activeEmployees.forEach((doc) => {
             const gender = doc.data().genero;
             if (gender === "masculino") maleCount++;
             if (gender === "femenino") femaleCount++;
-
-            // Almacenar los sueldos por departamento
+  
             const department = doc.data().departamento;
             if (!departments[department]) departments[department] = [];
             departments[department].push(doc.data().sueldo);
           });
         }
-      } else {
-        // Obtener datos de la empresa seleccionada
-        const employeesSnapshot = await getDocs(
-          collection(db, "Grupo_Pueble", selectedCompany, "empleados")
-        );
-        
-        // Filtrar solo empleados activos
-        const activeEmployees = employeesSnapshot.docs.filter(
-          doc => doc.data().estado === "activo"
-        );
-        
-        employeeCount = activeEmployees.length;
-        payrollExpense = activeEmployees.reduce(
-          (sum, doc) => sum + (doc.data().sueldo || 0),
-          0
-        );
-        
-        activeEmployees.forEach((doc) => {
-          const gender = doc.data().genero;
-          if (gender === "masculino") maleCount++;
-          if (gender === "femenino") femaleCount++;
-
-          // Almacenar los sueldos por departamento
-          const department = doc.data().departamento;
-          if (!departments[department]) departments[department] = [];
-          departments[department].push(doc.data().sueldo);
-        });
+  
+        setTotalEmployees(employeeCount);
+        setTotalPayrollExpense(payrollExpense);
+        setGenderData({ hombres: maleCount, mujeres: femaleCount });
+  
+        const formattedDepartments = Object.keys(departments).map((name) => ({
+          name,
+          salaries: departments[name],
+        }));
+  
+        setDepartmentData(formattedDepartments);
+      } catch (error) {
+        console.error("Error al obtener los datos:", error);
       }
-
-      setTotalEmployees(employeeCount);
-      setTotalPayrollExpense(payrollExpense);
-      setGenderData({ hombres: maleCount, mujeres: femaleCount });
-
-      // Formatear los datos para el hook
-      const formattedDepartments = Object.keys(departments).map((name) => ({
-        name,
-        salaries: departments[name],
-      }));
-
-      setDepartmentData(formattedDepartments);
-    } catch (error) {
-      console.error("Error al obtener los datos:", error);
-    }
-  };
-
-  fetchData();
-}, [selectedCompany]);
+    };
+  
+    fetchData();
+  }, [companies, selectedCompany]); // Escucha cambios en `companies` y `selectedCompany`
 
   // Usamos el hook para calcular los sueldos promedio y desviación estándar
   const salaryStats: SalaryStat[] = useSalaryStats(departmentData); // Especificamos el tipo de salaryStats

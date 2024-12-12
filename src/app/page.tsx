@@ -194,7 +194,7 @@ export default function Inicio() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br py-12 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gradient-to-br py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         <Card className="shadow-2xl border-none rounded-2xl overflow-hidden dark:bg-gray-800/80 backdrop-blur-sm">
           <CardHeader className="bg-gradient-to-r from-blue-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-6 border-b dark:border-gray-700">

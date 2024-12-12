@@ -112,6 +112,12 @@ const resources = {
             ]
           },
           adminPanel: {
+                userTab:"Create User",
+                companyTab:"Add Company",
+                companyNameLabel:"Enter the name of the Company",
+                companyNamePlaceholder:"New Company",
+                loadingCreateCompanyButton:"Adding...",
+                createCompanyButton:"Add",
                 title: "Admin Panel",
                 createUserDescription: "Create a new user in the system",
                 emailLabel: "Email Address",
@@ -847,6 +853,12 @@ const resources = {
     ]
   },
   adminPanel: {
+    userTab:"Crear Usuario",
+    companyTab:"Agregar Empresa",
+    companyNameLabel:"Ingresar el nombre de la Empresa",
+    companyNamePlaceholder:"Nueva Empresa",
+    loadingCreateCompanyButton:"Agregando...",
+    createCompanyButton:"Agregar",
     title: "Panel de Administración",
     createUserDescription: "Crear nuevo usuario en el sistema",
     emailLabel: "Correo Electrónico",
@@ -1383,6 +1395,14 @@ const resources = {
     }
   },
   empleados:{
+    linkedin:{
+      title:"Link no disponible",
+      titlept1:"El empleado",
+      titlept2:"no posee Link de LinkedIn",
+      description:"¿Desea agregarle?",
+      button1:"Cancelar",
+      button2:"Agregar",
+    },
     baja:{
     title:"¿Seguro de dar de baja a",
     description:"Esta acción cambiará el estado del empleado a inactivo.",
@@ -1404,6 +1424,7 @@ const resources = {
     buttons: {
       addEmployee: "Agregar Nuevo Empleado",
       viewEmployeesList: "Ver Lista de Empleados",
+
       save: "Guardar"
     },
     filters: {
@@ -1438,7 +1459,15 @@ const resources = {
           },
           departamento: {
             label: "Departamento",
-            placeholder: "Ventas"
+            placeholder: "Administración"
+          },
+          subdepartamento: {
+            label: "Sub Departamento",
+            placeholder: "Sub Depto"
+          },
+          puesto: {
+            label: "Puesto de Trabajo",
+            placeholder: "Puesto"
           },
           sueldo: {
             label: "Sueldo",
@@ -1454,6 +1483,10 @@ const resources = {
           fechaNacimiento: {
             label: "Fecha de Nacimiento",
             placeholder: "dd/mm/yyyy"
+          },
+          linkedin:{
+            label:"Link de LinkedIn",
+            placeholder: "Link al Perfil",
           }
         }
       }
@@ -1466,6 +1499,8 @@ const resources = {
         titulo: "Título",
         correo: "Correo",
         departamento: "Departamento",
+        subdepartamento:"Sub Departamento",
+        puesto: "Puesto",
         sueldo: "Sueldo",
         genero: "Género",
         fechaNacimiento: "Fecha de Nacimiento",
@@ -1474,6 +1509,7 @@ const resources = {
       actions: {
         delete: "Eliminar"
       },
+      invalidDate:"Fecha invalida",
       noDate: "Fecha no disponible"
     }    
   }
@@ -1592,6 +1628,12 @@ const resources = {
             ]
           },
           adminPanel: {
+                userTab:"Créer un utilisateur",
+                companyTab:"Ajouter une entreprise",
+                companyNameLabel:"Saisir le nom de l'entreprise",
+                companyNamePlaceholder:"Nouvelle entreprise",
+                loadingCreateCompanyButton:"Ajout en cours...",
+                createCompanyButton:"Ajouter",
                 title: "Panneau d'administration",
                 createUserDescription: "Créer un nouvel utilisateur dans le système",
                 emailLabel: "Adresse électronique",

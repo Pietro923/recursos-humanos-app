@@ -7,7 +7,8 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/firebaseConfig";
 import { collection, doc, getDocs, getDoc, updateDoc, setDoc, addDoc } from "firebase/firestore";
-import { Trash2, Users, List, Cake } from "lucide-react";
+import { Trash2, Users, List, Cake} from "lucide-react";
+import { FaLinkedin } from "react-icons/fa";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { differenceInYears, isSameDay } from "date-fns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -21,11 +22,14 @@ interface Employee {
   dni: number;
   correo: string;
   departamento: string;
+  subdepartamento: string;
+  puesto: string;
   sueldo: number;
   genero: string;
   fechaNacimiento: string;
   titulo: string;
   estado: 'activo' | 'inactivo';  // Campo para la baja lógica
+  linkedin?: string; // Nuevo campo para LinkedIn
 }
 
 export default function EmployeesPage() {
@@ -35,6 +39,7 @@ export default function EmployeesPage() {
   const [departments, setDepartments] = useState<string[]>([]);
   const [birthdayEmployees, setBirthdayEmployees] = useState<Employee[]>([]);
   const { t } = useTranslation();
+  const [linkedinValue, setLinkedinValue] = useState('');
   const [newEmployee, setNewEmployee] = useState({
     nombre: "",
     apellido: "",
@@ -42,9 +47,12 @@ export default function EmployeesPage() {
     titulo: "",
     correo: "",
     departamento: "",
+    subdepartamento: "",
+    puesto: "",
     sueldo: "",
     genero: "",
-    fechaNacimiento: ""
+    fechaNacimiento: "",
+    linkedin: ""
   });
   const [selectedCompany, setSelectedCompany] = useState(""); // Aca podes colocar una empresa que sea la que va a cargar de entrada
   const [, setSelectedEmployee] = useState<Employee | null>(null);
@@ -73,9 +81,129 @@ const handleDeactivate = async (employeeId: string) => {
 
   const [view, setView] = useState("list");
 
-  const companies = ["Pueble SA - CASE IH", "KIA"];
+  const [companies, setCompanies] = useState<string[]>([]); // Empresas dinámicas
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        // Obtén referencia a la colección "Grupo_Pueble"
+        const collectionRef = collection(db, "Grupo_Pueble");
+        
+        // Obtén los documentos dentro de la colección
+        const snapshot = await getDocs(collectionRef);
+        
+        // Extrae los nombres de los documentos
+        const companyNames = snapshot.docs.map(doc => doc.id);
+        
+        // Agrega "Todas" al inicio de la lista
+        setCompanies([...companyNames]);
+      } catch (error) {
+        console.error("Error al obtener las compañías:", error);
+      }
+    };
+  
+    fetchCompanies();
+  }, []);
 
-  const checkBirthdays = (employeesData: Employee[]) => {
+  const [departmentos, setDepartmentos] = useState<string[]>([]);
+  useEffect(() => {
+    const fetchDepartmentos = async () => {
+      // Solo intentamos cargar departamentos si hay una empresa seleccionada
+      if (!selectedCompany) {
+        setDepartmentos([]);
+        return;
+      }
+  
+      try {
+        // Referencia a la colección de Departamentos dentro de la empresa seleccionada
+        const departmentosRef = collection(db, 'Grupo_Pueble', selectedCompany, 'Departamentos');
+        
+        // Obtener los documentos
+        const snapshot = await getDocs(departmentosRef);
+        
+        // Extraer los nombres de los documentos
+        const departmentosList = snapshot.docs.map(doc => doc.id);
+  
+        setDepartmentos(departmentosList);
+      } catch (error) {
+        console.error('Error al obtener departamentos:', error);
+      }
+    };
+  
+    fetchDepartmentos();
+  }, [selectedCompany]);
+
+  const [subdepartmentos, setsubDepartmentos] = useState<string[]>([]);
+  const [selectedSubDepartment, setSelectedSubDepartment] = useState<string | null>(null);
+  useEffect(() => {
+    const fetchSubDepartmentos = async () => {
+      // Si no hay un departamento seleccionado, no hacer la consulta
+      if (!selectedDepartment) {
+        setsubDepartmentos([]);
+        return;
+      }
+  
+      try {
+        // Referencia a la colección "SubDepartamento" dentro del departamento seleccionado
+        const departmentRef = collection(
+          db,
+          'Grupo_Pueble',
+          selectedCompany,
+          'Departamentos',
+          selectedDepartment,
+          'SubDepartamento'
+        );
+  
+        // Obtener los documentos dentro de la subcolección
+        const snapshot = await getDocs(departmentRef);
+  
+        // Extraer los nombres de los subdepartamentos
+        const subDepartmentList = snapshot.docs.map(doc => doc.id);
+  
+        setsubDepartmentos(subDepartmentList);  // Establece el estado con los subdepartamentos obtenidos
+      } catch (error) {
+        console.error('Error al obtener subdepartamentos:', error);
+      }
+    };
+  
+    fetchSubDepartmentos();
+  }, [selectedCompany, selectedDepartment]);  // Dependencias: se vuelve a ejecutar cuando cambia selectedCompany o selectedDepartment
+
+  const [puestos, setPuestos] = useState<string[]>([]);
+  const [selectedPuesto, setSelectedPuesto] = useState<string | null>(null);
+  useEffect(() => {
+    const fetchPuestos = async () => {
+      if (!selectedSubDepartment) {
+        setPuestos([]);
+        return;
+      }
+  
+      try {
+        const puestosRef = collection(
+          db,
+          'Grupo_Pueble',
+          selectedCompany,
+          'Departamentos',
+          selectedDepartment,
+          'SubDepartamento',
+          selectedSubDepartment,
+          'Puestos'
+        );
+  
+        const snapshot = await getDocs(puestosRef);
+        const puestosList = snapshot.docs.map(doc => doc.id);
+        setPuestos(puestosList);
+      } catch (error) {
+        console.error('Error al obtener puestos:', error);
+      }
+    };
+  
+    fetchPuestos();
+  }, [selectedCompany, selectedDepartment, selectedSubDepartment]);
+
+  
+
+
+const checkBirthdays = (employeesData: Employee[]) => {
     const today = new Date();
   
     // Filtrar empleados que cumplen años hoy
@@ -219,16 +347,16 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
   
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
     const newEmployeeId = await getNewEmployeeId();
-
     const newEmployeeData = {
       ...newEmployee,
+      departamento: selectedDepartment, // Usa los estados de selección
+      subdepartamento: selectedSubDepartment,
+      puesto: selectedPuesto,
       dni: parseInt(newEmployee.dni, 10) || 0,
       sueldo: parseFloat(newEmployee.sueldo) || 0,
-      estado: 'activo', // Aquí estamos agregando el campo 'estado'
+      estado: 'activo',
     };
-
     try {
       await setDoc(
         doc(collection(db, "Grupo_Pueble", selectedCompany, "empleados"), newEmployeeId),
@@ -242,7 +370,8 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
       if (!departments.includes(newEmployeeData.departamento)) {
         setDepartments(prev => [...prev, newEmployeeData.departamento]);
       }
-
+      
+      // Restablecer todos los estados
       setNewEmployee({
         nombre: "",
         apellido: "",
@@ -250,13 +379,47 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
         titulo: "",
         correo: "",
         departamento: "",
+        subdepartamento: "",
+        puesto: "",
         sueldo: "",
         genero: "",
-        fechaNacimiento: ""
+        fechaNacimiento: "",
+        linkedin: ""
       });
+      
+      // Restablecer también los estados de selección
+      setSelectedDepartment('');
+      setSelectedSubDepartment('');
+      setSelectedPuesto('');
+      
       setView("list");
     } catch (error) {
       console.error("Error al agregar el empleado:", error);
+    }
+  };
+
+  const handleUpdateLinkedin = async (employeeId: string) => {
+    if (!linkedinValue.trim() || !employeeId) return;
+  
+    try {
+      const employeeRef = doc(db, "Grupo_Pueble", selectedCompany, "empleados", employeeId);
+  
+      await updateDoc(employeeRef, {
+        linkedin: linkedinValue.trim(),
+      });
+  
+      // Actualiza el estado local de los empleados
+      setEmployees((prevEmployees) =>
+        prevEmployees.map((employee) =>
+          employee.id === employeeId ? { ...employee, linkedin: linkedinValue.trim() } : employee
+        )
+      );
+  
+      // Limpia el estado del input y cierra el diálogo
+      setLinkedinValue('');
+      setSelectedEmployee(null);
+    } catch (error) {
+      console.error("Error al actualizar el LinkedIn:", error);
     }
   };
   
@@ -454,20 +617,112 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
                     required 
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground" htmlFor="departamento">
-                  {t('empleados.addEmployee.form.fields.departamento.label')}
-                  </label>
-                  <Input 
-                    id="departamento" 
-                    name="departamento" 
-                    value={newEmployee.departamento} 
-                    onChange={handleInputChange} 
-                    placeholder={t('empleados.addEmployee.form.fields.departamento.placeholder')}
-                    className="focus:ring-2 focus:ring-primary/20"
-                    required 
-                  />
-                </div>
+
+                 {/* DEPARTAMENTO */}
+                  <div className="space-y-2">
+                    <label
+                      className="text-sm font-medium text-muted-foreground"
+                      htmlFor="departamentos"
+                    >
+                      {t('empleados.addEmployee.form.fields.departamento.label')}
+                    </label>
+                    <Select value={selectedDepartment || ''} onValueChange={(value) => setSelectedDepartment(value)}>
+                      <SelectTrigger
+                        id="departamento"
+                        className="focus:ring-2 focus:ring-primary/20"
+                      >
+                        <SelectValue
+                          placeholder={t('empleados.addEmployee.form.fields.departamento.placeholder')}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {departmentos.length === 0 ? (
+                          <SelectItem value="no-departments" disabled>
+                            No hay departamentos disponibles
+                          </SelectItem>
+                        ) : (
+                          departmentos.map((dept) => (
+                            <SelectItem key={dept} value={dept}>
+                              {dept}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* SUB DEPARTAMENTO */}
+                  <div className="space-y-2">
+                    <label
+                      className="text-sm font-medium text-muted-foreground"
+                      htmlFor="subdepartamento"
+                    >
+                      {t('empleados.addEmployee.form.fields.subdepartamento.label')}
+                    </label>
+                    <Select
+                      value={selectedSubDepartment || ''} // Se usa el estado correspondiente
+                      onValueChange={(value) => setSelectedSubDepartment(value)}
+                    >
+                      <SelectTrigger
+                        id="subdepartamento"
+                        className="focus:ring-2 focus:ring-primary/20"
+                      >
+                        <SelectValue
+                          placeholder={t('empleados.addEmployee.form.fields.subdepartamento.placeholder')}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {subdepartmentos.length === 0 ? (
+                          <SelectItem value="no-Subdepartments" disabled>
+                            No hay SubDepartamentos disponibles
+                          </SelectItem>
+                        ) : (
+                          subdepartmentos.map((subDep) => (
+                            <SelectItem key={subDep} value={subDep}>
+                              {subDep}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* PUESTO DE TRABAJO */}
+                  <div className="space-y-2">
+                    <label
+                      className="text-sm font-medium text-muted-foreground"
+                      htmlFor="puesto"
+                    >
+                      {t('empleados.addEmployee.form.fields.puesto.label')}
+                    </label>
+                    <Select
+                      value={selectedPuesto || ''} // Se usa el estado correspondiente
+                      onValueChange={(value) => setSelectedPuesto(value)}
+                    >
+                      <SelectTrigger
+                        id="puesto"
+                        className="focus:ring-2 focus:ring-primary/20"
+                      >
+                        <SelectValue
+                          placeholder={t('empleados.addEmployee.form.fields.puesto.placeholder')}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {puestos.length === 0 ? (
+                          <SelectItem value="no-jobs" disabled>
+                            No hay puestos disponibles
+                          </SelectItem>
+                        ) : (
+                          puestos.map((puesto) => (
+                            <SelectItem key={puesto} value={puesto}>
+                              {puesto}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="sueldo">
                   {t('empleados.addEmployee.form.fields.sueldo.label')}
@@ -525,6 +780,21 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
                     required 
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground" htmlFor="linkedin">
+                  {t('empleados.addEmployee.form.fields.linkedin.label')}
+                  </label>
+                  <Input 
+                    id="linkedin" 
+                    name="linkedin" 
+                    value={newEmployee.linkedin} 
+                    onChange={handleInputChange} 
+                    placeholder= {t('empleados.addEmployee.form.fields.linkedin.placeholder')}
+                    className="focus:ring-2 focus:ring-primary/20" 
+                  />
+                </div>
+
               </div>
               <div className="flex justify-end">
                 <Button type="submit" className="w-full sm:w-auto">
@@ -546,6 +816,8 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
         <TableHead>{t('empleados.employeesList.headers.titulo')}</TableHead>
         <TableHead>{t('empleados.employeesList.headers.correo')}</TableHead>
         <TableHead>{t('empleados.employeesList.headers.departamento')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.subdepartamento')}</TableHead>
+        <TableHead>{t('empleados.employeesList.headers.puesto')}</TableHead>
         <TableHead>{t('empleados.employeesList.headers.sueldo')}</TableHead>
         <TableHead>{t('empleados.employeesList.headers.genero')}</TableHead>
         <TableHead>{t('empleados.employeesList.headers.fechaNacimiento')}</TableHead>
@@ -563,13 +835,13 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
             <TableCell>{employee.titulo}</TableCell>
             <TableCell>{employee.correo}</TableCell>
             <TableCell>{employee.departamento}</TableCell>
+            <TableCell>{employee.subdepartamento}</TableCell>
+            <TableCell>{employee.puesto}</TableCell>
             <TableCell>${employee.sueldo}</TableCell>
             <TableCell>{employee.genero}</TableCell>
             <TableCell>
               {employee.fechaNacimiento ? (
                 <>
-                  {/* Verificar si la fecha es un valor válido antes de crear el objeto Date */}
-                  {console.log(employee.fechaNacimiento)} 
                   {isNaN(new Date(employee.fechaNacimiento).getTime()) ? (
                     // Si la fecha no es válida, mostrar un mensaje de error
                     t('empleados.employeesList.invalidDate')
@@ -587,37 +859,75 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
                 t('empleados.employeesList.noDate')
               )}
             </TableCell>
-            <TableCell>
 
+                <TableCell className="space-x-2">
+                {employee.linkedin ? (
+                <a 
+                  href={employee.linkedin.startsWith('http') ? employee.linkedin : `https://${employee.linkedin}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline">
+                    <FaLinkedin className="h-4 w-4 dark:text-white text-black " />
+                  </Button>
+                </a>
+              ) : (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline">
+                      <FaLinkedin className="h-4 w-4 text-black dark:text-white" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-white dark:bg-gray-950 dark:text-white">
+                    <AlertDialogTitle>{t('empleados.linkedin.title')}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {`${t('empleados.linkedin.titlept1')} ${employee.nombre} ${employee.apellido} ${t('empleados.linkedin.titlept2')}`}
+                      <br />
+                      {t('empleados.linkedin.description')}
+                    </AlertDialogDescription>
+                    <Input
+                      className="dark:text-white text-black"
+                      placeholder="www.linkedin.com/in/"
+                      value={linkedinValue}
+                      onChange={(e) => setLinkedinValue(e.target.value)}
+                    />
+                    <div className="flex justify-end space-x-2">
+                      <AlertDialogCancel onClick={() => setSelectedEmployee(null)}>{t('empleados.linkedin.button1')}</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleUpdateLinkedin(employee.id)}>
+                        {t('empleados.linkedin.button2')}
+                      </AlertDialogAction>
+                    </div>
+                  </AlertDialogContent>
+                </AlertDialog>
+                )}
 
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          onClick={() => setSelectedEmployee(employee)}  // Guardamos el empleado seleccionado
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="bg-white dark:bg-gray-950 dark:text-white">
-                      <AlertDialogTitle>{`${t('empleados.baja.title')} ${employee.nombre}?`}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t('empleados.baja.description')}
-                        </AlertDialogDescription>
-                        <div className="flex justify-end space-x-2">
-                          <AlertDialogCancel onClick={() => setSelectedEmployee(null)}>{t('empleados.baja.button1')}</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeactivate(employee.id)}>{t('empleados.baja.button2')}</AlertDialogAction>
-                        </div>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                  <Button
+                  variant="destructive"
+                  onClick={() => setSelectedEmployee(employee)}  // Guardamos el empleado seleccionado
+                  >
+                  <Trash2 className="h-4 w-4" />
+                  </Button>
 
-                    
-                  </TableCell>
-          </TableRow>
-        ))}
-    </TableBody>
-  </Table>
-)}
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-white dark:bg-gray-950 dark:text-white">
+                  <AlertDialogTitle>{`${t('empleados.baja.title')} ${employee.nombre} ${employee.apellido}?`}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                  {t('empleados.baja.description')}
+                  </AlertDialogDescription>
+                  <div className="flex justify-end space-x-2">
+                  <AlertDialogCancel onClick={() => setSelectedEmployee(null)}>{t('empleados.baja.button1')}</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => handleDeactivate(employee.id)}>{t('empleados.baja.button2')}</AlertDialogAction>
+                  </div>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </TableCell>
+            </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 };

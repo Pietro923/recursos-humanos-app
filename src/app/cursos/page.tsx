@@ -73,7 +73,7 @@ export default function TrainingPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string>("");
-  const [companies] = useState(["Pueble SA - CASE IH", "KIA"]);
+  const [companies, setCompanies] = useState<string[]>([]); // Empresas dinámicas
   const [archivedCourses, setArchivedCourses] = useState<Course[]>([]);
   const { t } = useTranslation(); // Hook de traducción
   
@@ -102,6 +102,28 @@ export default function TrainingPage() {
     employees: [] as string[],
     companyId: ""
   });
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        // Obtén referencia a la colección "Grupo_Pueble"
+        const collectionRef = collection(db, "Grupo_Pueble");
+        
+        // Obtén los documentos dentro de la colección
+        const snapshot = await getDocs(collectionRef);
+        
+        // Extrae los nombres de los documentos
+        const companyNames = snapshot.docs.map(doc => doc.id);
+        
+        // Agrega "Todas" al inicio de la lista
+        setCompanies([...companyNames]);
+      } catch (error) {
+        console.error("Error al obtener las compañías:", error);
+      }
+    };
+  
+    fetchCompanies();
+  }, []);
 
   // Efecto para cargar cursos
   useEffect(() => {

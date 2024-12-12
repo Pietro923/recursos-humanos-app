@@ -77,7 +77,7 @@ const NotificationBell = () => {
     };
 
     fetchRecordatorios();
-    const interval = setInterval(fetchRecordatorios, 5 * 60 * 1000);
+    const interval = setInterval(fetchRecordatorios, 2 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 

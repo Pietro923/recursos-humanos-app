@@ -18,14 +18,125 @@ const CompanyChart = () => {
       <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">
         {t('beneficios.organization_chart.title')}
       </h3>
-      <div className="aspect-video bg-slate-50 dark:bg-gray-950 rounded-lg p-4 flex items-center justify-center border dark:border-gray-800 transition-all hover:shadow-md">
-        <p className="text-slate-500 dark:text-gray-400 text-center">
-          {t('beneficios.organization_chart.placeholder')}
-        </p>
+      <div className="flex flex-col items-center">
+        {/* Gerente General */}
+        <div className="text-center mb-4">
+          <div className="bg-gray-200 dark:bg-gray-700 p-3 rounded-lg shadow">
+            <p className="font-bold">Gerente General: Christian de la Vega</p>
+          </div>
+        </div>
+
+        {/* Nivel 1 */}
+        <div className="flex flex-wrap justify-center gap-4 mb-6">
+
+          {/* Gerente Administrativo */}
+          <div className="text-center">
+            <div className="bg-gray-200 dark:bg-gray-700 p-3 rounded-lg shadow">
+              <p className="font-bold">Gerente Administrativo: Fatima Zamorano</p>
+            </div>
+            <div className="ml-6 mt-2">
+              <ul className="text-sm text-left">
+                <li>Contabilidad: Victoria Lobo</li>
+                <li>Tesoreria: Guadalupe Terán Nougues</li>
+                <li>Compras: Carlos Acevedo</li>
+                <li>Marketing: Silvina Durso</li>
+                <li>Mantenimiento: Enrique Geréz</li>
+                <li>Limpieza: Romina Salinas</li>
+              </ul>
+            </div>
+          </div>
+
+           {/* Vendedor Producto */}
+           <div className="text-center">
+            <div className="bg-gray-200 dark:bg-gray-700 p-3 rounded-lg shadow">
+              <p className="font-bold">Vendedor Producto</p>
+              <p className="text-sm">Cesar Guerra</p>
+              <p className="text-sm">Hernan Gómez</p>
+              <p className="text-sm">Rogelio Geréz</p>
+            </div>
+          </div>
+          
+          {/* Lider AFS y CR */}
+          <div className="text-center">
+            <div className="bg-gray-200 dark:bg-gray-700 p-3 rounded-lg shadow">
+              <p className="font-bold">Lider AFS y CR</p>
+            </div>
+            <div className="ml-6 mt-2">
+              <p className="text-sm">Tecnico CR y Especialista AFS</p>
+              <p className="text-sm">Nicolas Fernández</p>
+            </div>
+          </div>
+
+          {/* Control de Gestion y CX */}
+          <div className="text-center">
+            <div className="bg-gray-200 dark:bg-gray-700 p-3 rounded-lg shadow">
+              <p className="font-bold">Control de Gestion y CX</p>
+              <p className="text-sm">Agustina Palacios</p>
+            </div>
+          </div>
+
+          {/* Gerente Post Venta */}
+          <div className="text-center">
+            <div className="bg-gray-200 dark:bg-gray-700 p-3 rounded-lg shadow">
+              <p className="font-bold">Gerente Post Venta: Angel Ortiz</p>
+            </div>
+            <div className="ml-6 mt-2">
+              <ul className="text-sm text-left">
+                <li>Asesor Servicios: Gabriel Galván</li>
+                <li>Administrativo Taller: Lucas Lanzulli</li>
+                <li>Ing. Soporte: Ernesto Fernández</li>
+                <li>Jefe de Depósito: Juan Jose Medina</li>
+                <li>Garantista: Lorena Saavedra</li>
+                <li>Jefe de Repuestos: Maximiliano Dietrich</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Subniveles */}
+        <div className="flex flex-wrap justify-center gap-4">
+          {/* Jefe de Depósito */}
+          <div className="text-center">
+            <div className="bg-gray-200 dark:bg-gray-700 p-3 rounded-lg shadow">
+              <p className="font-bold">Auxiliar Depósito</p>
+              <p className="text-sm">Carlos Zelaya</p>
+            </div>
+          </div>
+
+          {/* Jefe de Repuestos */}
+          <div className="text-center">
+            <div className="bg-gray-200 dark:bg-gray-700 p-3 rounded-lg shadow">
+              <p className="font-bold">Vendedores de Repuestos</p>
+              <ul className="text-sm">
+                <li>Mostrador: Nicolas Cuadra</li>
+                <li>Campo: Luis Geréz</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Jefe de Taller */}
+          <div className="text-center">
+            <div className="bg-gray-200 dark:bg-gray-700 p-3 rounded-lg shadow">
+              <p className="font-bold">Equipo Técnico</p>
+              <ul className="text-sm">
+                <li>Jesus Abregú</li>
+                <li>Ramón Montenegro</li>
+                <li>Franco Montenegro</li>
+                <li>Augusto Montenegro</li>
+                <li>Agustín Castro</li>
+                <li>Claudio Gutierrez</li>
+                <li>Andrés Sosa</li>
+                <li>Rafael Pavon</li>
+                <li>Agustin Pereyra</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </motion.div>
   );
 };
+
 
 const PrintableBenefits = () => {
   const { t } = useTranslation();
