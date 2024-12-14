@@ -58,9 +58,57 @@ export async function POST(request: Request) {
       );
     }
 
-    // Crear una nueva colección con el nombre de la empresa dentro de Grupo_Pueble
-    // No se añade información de creación
-    await db.collection('Grupo_Pueble').doc(companyName).create({})
+// Crear una nueva colección con el nombre de la empresa dentro de Grupo_Pueble
+// Crear el documento de la empresa
+await db.collection('Grupo_Pueble').doc(companyName).create({})
+
+// Crear la colección "Departamentos"
+const departamentosRef = db.collection('Grupo_Pueble').doc(companyName).collection('Departamentos')
+
+// Crear los departamentos
+const departamentos = ['Administracion', 'Comercial', 'Postventa']
+
+// Crear departamentos y sus subcollecciones
+for (const departamento of departamentos) {
+  // Crear un documento en cada departamento
+  const departamentoDocRef = departamentosRef.doc(departamento)
+  await departamentoDocRef.create({})
+
+  // Crear la subcolección SubDepartamento dentro de cada departamento
+  const subDepartamentoRef = departamentoDocRef.collection('SubDepartamento')
+
+  if (departamento === 'Administracion') {
+    // Crear documento de Administracion en SubDepartamento
+    const administracionRef = subDepartamentoRef.doc('Administracion')
+    await administracionRef.create({})
+
+    // Crear colección de Puestos y agregar documentos
+    const puestosRef = administracionRef.collection('Puestos')
+    const puestos = ['Compras', 'Contabilidad', 'Limpieza', 'Mantenimiento', 'Marketing', 'Tesoreria', 'Cobranza']
+    
+    for (const puesto of puestos) {
+      await puestosRef.doc(puesto).create({})
+    }
+  } 
+  else if (departamento === 'Comercial') {
+    // Crear documento de Comercial en SubDepartamento
+    const comercialRef = subDepartamentoRef.doc('Comercial')
+    await comercialRef.create({})
+
+    // Crear colección de Puestos y agregar documento Vendedor Producto
+    const puestosRef = comercialRef.collection('Puestos')
+    await puestosRef.doc('Vendedor Producto').create({})
+  } 
+  else if (departamento === 'Postventa') {
+    // Crear documento de Postventa en SubDepartamento
+    const postventaRef = subDepartamentoRef.doc('Postventa')
+    await postventaRef.create({})
+
+    // Crear dos colecciones: Repuestos y Servicios
+    await postventaRef.collection('Repuestos').doc('placeholder').create({})
+    await postventaRef.collection('Servicios').doc('placeholder').create({})
+  }
+}
 
     return NextResponse.json({
       message: 'Empresa creada exitosamente',

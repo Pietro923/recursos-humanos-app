@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,8 +9,10 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { UserPlus, Building2} from "lucide-react"
+import { UserPlus, Building2, Container} from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { db } from "@/lib/firebaseConfig";
+import { collection, getDocs, addDoc, doc, setDoc, query, where } from "firebase/firestore";
 
 export default function AdminManagementPage() {
   // User Creation State
@@ -19,7 +21,6 @@ export default function AdminManagementPage() {
   const [role, setRole] = useState("rrhh")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
 
   // Company Creation State
   const [companyName, setCompanyName] = useState("")
@@ -28,6 +29,223 @@ export default function AdminManagementPage() {
   const [isCompanyLoading, setIsCompanyLoading] = useState(false)
 
   const { t } = useTranslation()
+
+  // Deparment Creation State
+  const [selectedCompany, setSelectedCompany] = useState("");
+  const [companies, setCompanies] = useState<string[]>([]);
+  // New states for Department, Subdepartment, and Job Position management
+  const [departments, setDepartments] = useState<string[]>([]);
+  const [subdepartments, setSubdepartments] = useState<string[]>([]);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedSubdepartment, setSelectedSubdepartment] = useState("");
+  
+  // Department creation states
+  const [departmentName, setDepartmentName] = useState("");
+  const [subdepartmentName, setSubdepartmentName] = useState("");
+  const [jobPositionName, setJobPositionName] = useState("");
+  
+  // Error and success states for department management
+  const [departmentError, setDepartmentError] = useState("");
+  const [departmentSuccess, setDepartmentSuccess] = useState("");
+  const [subdepartmentError, setSubdepartmentError] = useState("");
+  const [subdepartmentSuccess, setSubdepartmentSuccess] = useState("");
+  const [jobPositionError, setJobPositionError] = useState("");
+  const [jobPositionSuccess, setJobPositionSuccess] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Existing useEffect and other methods...
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const collectionRef = collection(db, "Grupo_Pueble");
+        const snapshot = await getDocs(collectionRef);
+        const companyNames = snapshot.docs.map(doc => doc.id);
+        setCompanies([...companyNames]);
+      } catch (error) {
+        console.error("Error al obtener las compañías:", error);
+      }
+    };
+  
+    fetchCompanies();
+  }, []);
+
+  // New method to fetch departments when a company is selected
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      if (!selectedCompany) return;
+
+      try {
+        const departmentsRef = collection(db, "Grupo_Pueble", selectedCompany, "Departamentos");
+        const snapshot = await getDocs(departmentsRef);
+        const departmentNames = snapshot.docs.map(doc => doc.id);
+        setDepartments(departmentNames);
+      } catch (error) {
+        console.error("Error al obtener los departamentos:", error);
+      }
+    };
+
+    fetchDepartments();
+  }, [selectedCompany]);
+
+  // New method to fetch subdepartments when a department is selected
+  useEffect(() => {
+    const fetchSubdepartments = async () => {
+      if (!selectedCompany || !selectedDepartment) return;
+
+      try {
+        const subdepartmentsRef = collection(
+          db, 
+          "Grupo_Pueble", 
+          selectedCompany, 
+          "Departamentos", 
+          selectedDepartment, 
+          "SubDepartamento"
+        );
+        const snapshot = await getDocs(subdepartmentsRef);
+        const subdepartmentNames = snapshot.docs.map(doc => doc.id);
+        setSubdepartments(subdepartmentNames);
+      } catch (error) {
+        console.error("Error al obtener los subdepartamentos:", error);
+      }
+    };
+
+    fetchSubdepartments();
+  }, [selectedCompany, selectedDepartment]);
+
+  // Handle Department Creation
+  const handleCreateDepartment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setDepartmentError("");
+    setDepartmentSuccess("");
+
+    try {
+      // Validate inputs
+      if (!selectedCompany) {
+        throw new Error("Primero selecciona una empresa");
+      }
+      if (!departmentName.trim()) {
+        throw new Error("El nombre del departamento no puede estar vacío");
+      }
+
+      // Create department as a document in the Departamentos collection
+      const departmentRef = doc(
+        db, 
+        "Grupo_Pueble", 
+        selectedCompany, 
+        "Departamentos", 
+        departmentName
+      );
+
+      // Set an empty document to create the collection
+      await setDoc(departmentRef, {});
+
+      // Update local state
+      setDepartments(prev => [...prev, departmentName]);
+      setDepartmentSuccess(`Departamento ${departmentName} creado exitosamente`);
+      setDepartmentName("");
+    } catch (err) {
+      console.error('Error en handleCreateDepartment:', err);
+      setDepartmentError(err instanceof Error ? err.message : "Error al crear el departamento");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle Subdepartment Creation
+  const handleCreateSubdepartment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setSubdepartmentError("");
+    setSubdepartmentSuccess("");
+
+    try {
+      // Validate inputs
+      if (!selectedCompany) {
+        throw new Error("Primero selecciona una empresa");
+      }
+      if (!selectedDepartment) {
+        throw new Error("Primero selecciona un departamento");
+      }
+      if (!subdepartmentName.trim()) {
+        throw new Error("El nombre del subdepartamento no puede estar vacío");
+      }
+
+      // Create subdepartment as a document in the SubDepartamento collection
+      const subdepartmentRef = doc(
+        db, 
+        "Grupo_Pueble", 
+        selectedCompany, 
+        "Departamentos", 
+        selectedDepartment,
+        "SubDepartamento",
+        subdepartmentName
+      );
+
+      // Set an empty document to create the collection
+      await setDoc(subdepartmentRef, {});
+
+      // Update local state
+      setSubdepartments(prev => [...prev, subdepartmentName]);
+      setSubdepartmentSuccess(`Subdepartamento ${subdepartmentName} creado exitosamente`);
+      setSubdepartmentName("");
+    } catch (err) {
+      console.error('Error en handleCreateSubdepartment:', err);
+      setSubdepartmentError(err instanceof Error ? err.message : "Error al crear el subdepartamento");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle Job Position Creation
+  const handleCreateJobPosition = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setJobPositionError("");
+    setJobPositionSuccess("");
+
+    try {
+      // Validate inputs
+      if (!selectedCompany) {
+        throw new Error("Primero selecciona una empresa");
+      }
+      if (!selectedDepartment) {
+        throw new Error("Primero selecciona un departamento");
+      }
+      if (!selectedSubdepartment) {
+        throw new Error("Primero selecciona un subdepartamento");
+      }
+      if (!jobPositionName.trim()) {
+        throw new Error("El nombre del puesto no puede estar vacío");
+      }
+
+      // Create job position as a document in the Puestos collection
+      const jobPositionRef = doc(
+        db, 
+        "Grupo_Pueble", 
+        selectedCompany, 
+        "Departamentos", 
+        selectedDepartment,
+        "SubDepartamento",
+        selectedSubdepartment,
+        "Puestos",
+        jobPositionName
+      );
+
+      // Set an empty document to create the collection
+      await setDoc(jobPositionRef, {});
+
+      setJobPositionSuccess(`Puesto ${jobPositionName} creado exitosamente`);
+      setJobPositionName("");
+    } catch (err) {
+      console.error('Error en handleCreateJobPosition:', err);
+      setJobPositionError(err instanceof Error ? err.message : "Error al crear el puesto");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
   
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -143,7 +361,7 @@ export default function AdminManagementPage() {
 
   return (
     <div className="bg-gray-50 flex flex-col items-center justify-center p-4 dark:bg-gray-900">
-      <Card className="w-full max-w-md">
+       <Card className="w-full max-w-max">
         <CardHeader className="space-y-1">
         <div className="flex items-center justify-center space-x-2 mb-4">
             <CardTitle className="text-2xl font-bold text-center">
@@ -151,7 +369,7 @@ export default function AdminManagementPage() {
             </CardTitle>
           </div>
           <Tabs defaultValue="user" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="user" className="flex items-center space-x-2">
                 <UserPlus className="h-4 w-4" />
                 <span>{t('adminPanel.userTab')}</span>
@@ -159,6 +377,10 @@ export default function AdminManagementPage() {
               <TabsTrigger value="company" className="flex items-center space-x-2">
                 <Building2 className="h-4 w-4" />
                 <span>{t('adminPanel.companyTab')}</span>
+              </TabsTrigger>
+              <TabsTrigger value="deptos" className="flex items-center space-x-2">
+                <Container className="h-4 w-4" />
+                <span>{t('adminPanel.deptoTab')}</span>
               </TabsTrigger>
             </TabsList>
             
@@ -271,6 +493,173 @@ export default function AdminManagementPage() {
                   </Alert>
                 </CardFooter>
               )}
+            </TabsContent>
+
+            
+            {/* Depto Administration Tab */}
+            <TabsContent value="deptos">
+            <CardContent className="mt-4 space-y-4">
+            <div className="space-y-2">
+            <Label>{t('adminPanel.selectCompanyLabel')}</Label>
+              <Select 
+                value={selectedCompany} 
+                onValueChange={setSelectedCompany}
+              >
+              <SelectTrigger className="w-full bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+                <SelectValue 
+                  placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
+                  className="text-blue-600 dark:text-blue-200"
+                />
+              </SelectTrigger>
+
+              <SelectContent className="bg-white dark:bg-blue-900 border-blue-200 dark:border-blue-700 shadow-xl">
+                {companies.map((company) => (
+                  <SelectItem 
+                    key={company} 
+                    value={company} 
+                    className="hover:bg-blue-100 dark:hover:bg-blue-800 focus:bg-blue-200 dark:focus:bg-blue-700 transition-colors"
+                  >
+                    {company}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            </div>
+            {/* Department Creation */}
+            <form onSubmit={handleCreateDepartment} className="space-y-2">
+              <Label>{t('adminPanel.departmentNameLabel')}</Label>
+              <div className="flex space-x-2">
+                <Input
+                  type="text"
+                  placeholder={t('adminPanel.departmentNamePlaceholder')}
+                  value={departmentName}
+                  onChange={(e) => setDepartmentName(e.target.value)}
+                  required
+                  disabled={!selectedCompany}
+                  className="w-full"
+                />
+                <Button 
+                  type="submit" 
+                  disabled={!selectedCompany || isLoading}
+                >
+                  {t('adminPanel.createDepartmentButton')}
+                </Button>
+              </div>
+            </form>
+            {/* Department Selection */}
+            {departments.length > 0 && (
+              <div className="space-y-2">
+                <Label>{t('adminPanel.selectDepartmentLabel')}</Label>
+                <Select 
+                  value={selectedDepartment} 
+                  onValueChange={setSelectedDepartment}
+                  disabled={!selectedCompany}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t('adminPanel.selectDepartmentPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments.map((dept) => (
+                      <SelectItem key={dept} value={dept}>
+                        {dept}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {/* Subdepartment Creation */}
+            {selectedDepartment && (
+              <form onSubmit={handleCreateSubdepartment} className="space-y-2">
+                <Label>{t('adminPanel.subdepartmentNameLabel')}</Label>
+                <div className="flex space-x-2">
+                  <Input
+                    type="text"
+                    placeholder={t('adminPanel.subdepartmentNamePlaceholder')}
+                    value={subdepartmentName}
+                    onChange={(e) => setSubdepartmentName(e.target.value)}
+                    required
+                    className="w-full"
+                  />
+                  <Button type="submit" disabled={isLoading}>
+                    {t('adminPanel.createSubdepartmentButton')}
+                  </Button>
+                </div>
+              </form>
+            )}
+
+            {/* Subdepartment Selection */}
+            {subdepartments.length > 0 && (
+              <div className="space-y-2">
+                <Label>{t('adminPanel.selectSubdepartmentLabel')}</Label>
+                <Select 
+                  value={selectedSubdepartment} 
+                  onValueChange={setSelectedSubdepartment}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t('adminPanel.selectSubdepartmentPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subdepartments.map((subDept) => (
+                      <SelectItem key={subDept} value={subDept}>
+                        {subDept}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {/* Job Position Creation */}
+            {selectedSubdepartment && (
+              <form onSubmit={handleCreateJobPosition} className="space-y-2">
+                <Label>{t('adminPanel.jobPositionNameLabel')}</Label>
+                <div className="flex space-x-2">
+                  <Input
+                    type="text"
+                    placeholder={t('adminPanel.jobPositionNamePlaceholder')}
+                    value={jobPositionName}
+                    onChange={(e) => setJobPositionName(e.target.value)}
+                    required
+                    className="w-full"
+                  />
+                  <Button type="submit" disabled={isLoading}>
+                    {t('adminPanel.createJobPositionButton')}
+                  </Button>
+                </div>
+              </form>
+            )}
+            {/* Error and Success Messages */}
+            {departmentError && (
+              <Alert variant="destructive">
+                <AlertDescription>{departmentError}</AlertDescription>
+              </Alert>
+            )}
+            {departmentSuccess && (
+              <Alert className="bg-green-50 text-green-700">
+                <AlertDescription>{departmentSuccess}</AlertDescription>
+              </Alert>
+            )}
+            {subdepartmentError && (
+              <Alert variant="destructive">
+                <AlertDescription>{subdepartmentError}</AlertDescription>
+              </Alert>
+            )}
+            {subdepartmentSuccess && (
+              <Alert className="bg-green-50 text-green-700">
+                <AlertDescription>{subdepartmentSuccess}</AlertDescription>
+              </Alert>
+            )}
+            {jobPositionError && (
+              <Alert variant="destructive">
+                <AlertDescription>{jobPositionError}</AlertDescription>
+              </Alert>
+            )}
+            {jobPositionSuccess && (
+              <Alert className="bg-green-50 text-green-700">
+                <AlertDescription>{jobPositionSuccess}</AlertDescription>
+              </Alert>
+            )}
+              </CardContent>
             </TabsContent>
           </Tabs>
         </CardHeader>

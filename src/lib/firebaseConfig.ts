@@ -31,3 +31,4 @@ const storage = getStorage(app);
 // Exportar la instancia de autenticación y Firestore
 export { auth, db, storage };
 export default firebaseConfig;
+

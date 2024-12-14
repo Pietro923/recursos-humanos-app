@@ -114,6 +114,21 @@ const resources = {
           adminPanel: {
                 userTab:"Create User",
                 companyTab:"Add Company",
+                selectCompanyLabel:"Company",
+                departmentNameLabel:"New Department",
+                departmentNamePlaceholder:"Enter Department",
+                createDepartmentButton:"Create Department",
+                selectDepartmentLabel:"Select Department",
+                selectDepartmentPlaceholder:"Department",
+                subdepartmentNameLabel:"New Sub Department",
+                subdepartmentNamePlaceholder:"Enter New Sub Department",
+                createSubdepartmentButton:"Create Sub Department",
+                selectSubdepartmentLabel:"Select Sub Department",
+                selectSubdepartmentPlaceholder:"Sub Department",
+                jobPositionNameLabel:"New Job Position",
+                jobPositionNamePlaceholder:"Job Position",
+                createJobPositionButton:"Create New Position",
+                deptoTab:"Manage Departments",
                 companyNameLabel:"Enter the name of the Company",
                 companyNamePlaceholder:"New Company",
                 loadingCreateCompanyButton:"Adding...",
@@ -650,6 +665,19 @@ const resources = {
               }
             },
             empleados: {
+              linkedin: {
+                title: "Link not available",
+                titlept1: "The employee",
+                titlept2: "does not have a LinkedIn link",
+                description: "Would you like to add one?",
+                button1: "Cancel",
+                button2: "Add",
+              },
+              nohay: {
+                nohaydepto: "No Departments Available",
+                nohaysubdepto: "No Sub Departments Available",
+                nohaypuesto: "No Positions Available",
+              },
               baja: {
                 title: "Are you sure you want to deactivate",
                 description: "This action will change the employee's status to inactive.",
@@ -696,7 +724,7 @@ const resources = {
                       placeholder: "12345678"
                     },
                     titulo:{
-                     label: "Title",
+                     label: "Degree",
                       placeholder: "Academic title or specialization"
                     },
                     correo: {
@@ -706,6 +734,14 @@ const resources = {
                     departamento: {
                       label: "Department",
                       placeholder: "Sales"
+                    },
+                    subdepartamento:{
+                      label:"Sub Department",
+                      placeholder:"Marketing",
+                    },
+                    puesto:{
+                      label:"Position",
+                      placeholder:"Sales Manager",
                     },
                     sueldo: {
                       label: "Salary",
@@ -721,7 +757,11 @@ const resources = {
                     fechaNacimiento: {
                       label: "Date of Birth",
                       placeholder: "dd/mm/yyyy"
-                    }
+                    },
+                    linkedin: {
+                      label: "LinkedIn Link",
+                      placeholder: "Link to Profile",
+                    },
                   }
                 }
               },
@@ -730,8 +770,11 @@ const resources = {
                   nombre: "First Name",
                   apellido: "Last Name",
                   dni: "DNI",
+                  titulo:"Degree",
                   correo: "Email",
                   departamento: "Department",
+                  subdepartamento: "Sub Department",
+                  puesto: "Position",
                   sueldo: "Salary",
                   genero: "Gender",
                   fechaNacimiento: "Date of Birth",
@@ -855,6 +898,21 @@ const resources = {
   adminPanel: {
     userTab:"Crear Usuario",
     companyTab:"Agregar Empresa",
+    selectCompanyLabel:"Empresa",
+    departmentNameLabel:"Nuevo Departamento",
+    departmentNamePlaceholder:"Ingresar Departamento",
+    createDepartmentButton:"Crear Departamento",
+    selectDepartmentLabel:"Seleccionar Departamento",
+    selectDepartmentPlaceholder:"Departamento",
+    subdepartmentNameLabel:"Nuevo Sub Departamento",
+    subdepartmentNamePlaceholder:"Ingresar Nuevo Sub Departamento",
+    createSubdepartmentButton:"Crear Sub Departamento",
+    selectSubdepartmentLabel:"Seleccionar Sub Departamento",
+    selectSubdepartmentPlaceholder:"Sub Departamento",
+    jobPositionNameLabel:"Nuevo Puesto de Trabajo",
+    jobPositionNamePlaceholder:"Puesto de Trabajo",
+    createJobPositionButton:"Crear Nuevo Puesto",
+    deptoTab:"Administrar Departamentos",
     companyNameLabel:"Ingresar el nombre de la Empresa",
     companyNamePlaceholder:"Nueva Empresa",
     loadingCreateCompanyButton:"Agregando...",
@@ -1364,33 +1422,50 @@ const resources = {
       }
     },
     evaluationPage: {
+      dialogs:{
+        uploadedFiles:"Archivos cargados",
+        pdpTitle:"Plan de Desarrollo Profesional",
+        pdcTitle:"Plan de Desarrolo Curricular",
+        self_evaluationTitle:"AutoEvaluación",
+        boss_evaluationTitle:"Evaluación del Jefe Directo",
+        calibrationTitle:"Calibración",
+        asesor_evaluationTitle:"Evaluación del Asesor",
+        capacitador_evaluationTitle:"Evaluación del Capacitador",
+        final_calibrationTitle:"Calibración Final",
+        legajoTitle:"Legajos",
+        self_evaluationDescription:"Ver o Actualizar AutoEvaluación",
+        boss_evaluationDescription:"Ver o Actualizar Evaluación del Jefe Directo",
+        calibrationDescription:"Ver o Actualizar Calibración",
+        asesor_evaluationDescription:"Ver o Actualizar Evaluación del Asesor",
+        capacitador_evaluationDescription:"Ver o Actualizar Evaluación del Capacitador",
+        final_calibrationDescription:"Ver o Actualizar Calibración Final",
+        legajoDescription:"Ver o Actualizar Legajos",
+        pdpDescription:"Ver o Actualizar Plan del empleado",
+        pdcDescription:"Ver o Actualizar Plan del Tecnico",
+      },
       general: {
         employeeTitle: "Evaluación de Desempeño - Empleados",
         techTitle: "Evaluación de Desempeño - Técnicos",
         selectCompany: "Selecciona una empresa"
       },
       tableHeaders: {
-        employee: ["Nombre", "Departamento", "PDP", "Autoevaluación", "Evaluación Jefe", "Calibración Final", "Acciones"],
-        tech: ["Nombre", "Departamento", "PDC", "Evaluación Asesor", "Evaluación Capacitador", "Calibración Final", "Acciones"]
+        employee: ["Nombre", "Apellido","Departamento", "Puesto", "PDP", "Autoevaluación", "Evaluación Jefe", "Calibración Final", "Acciones"],
+        tech: ["Nombre", "Apellido","Departamento", "Puesto", "PDC", "Evaluación Asesor", "Evaluación Capacitador", "Calibración Final", "Legajo"]
       },
       actions: {
-        uploadPDP: "PDP",
-        uploadPDC: "PDC",
-        viewSelfResults: "Resultados Autoevaluacion",
-        viewBossResults: "Resultados Evaluación Jefe",
-        viewCalibrationResults: "Resultados Calibracion",
-        viewCalibrationAsesor: "R. Evaluación Asesor",
-        viewCalibrationCapacitador: "R. Evaluación Capacitador",
-        viewCalibrationTec: "R. Calibracion",
-        evaluate: {
-          self: "Autoevaluar",
-          boss: "Evaluación Jefe",
-          calibration: "Calibrar",
-          asesor: "Evaluación Asesor",
-          capacitador: "Evaluación Capacitador",
-          calibrationTec: "Calibrar", 
-          Legajo: "Legajo",
-        }
+        uploadFile:"Cargar Archivo",
+        uploadAnotherFile:"Cargar un nuevo Archivo",
+        view:"Ver",
+        pdp:"PDP",
+        viewPDP: "PDP",
+        viewPDC: "PDC",
+        uploadAutoevaluación: "Cargar Autoevaluacion",
+        uploadEvaluaciónJefe: "Cargar Evaluación Jefe",
+        uploadCalibración: "Cargar Calibracion",
+        uploadEvaluaciónAsesor: "Cargar Evaluación Asesor",
+        uploadEvaluaciónCapacitador: "Cargar Evaluación Capacitador",
+        uploadCalibraciónFinal: "Cargar Calibracion",
+        uploadLegajo:"Legajo"
       }
     }
   },
@@ -1402,6 +1477,11 @@ const resources = {
       description:"¿Desea agregarle?",
       button1:"Cancelar",
       button2:"Agregar",
+    },
+    nohay:{
+      nohaydepto:"No hay Departamentos Disponibles",
+      nohaysubdepto:"No hay Sub Departamentos Disponibles",
+      nohaypuesto:"No hay Puestos Disponibles",
     },
     baja:{
     title:"¿Seguro de dar de baja a",
@@ -1630,6 +1710,21 @@ const resources = {
           adminPanel: {
                 userTab:"Créer un utilisateur",
                 companyTab:"Ajouter une entreprise",
+                selectCompanyLabel:"Entreprise",
+                departmentNameLabel:"Nouveau Département",
+                departmentNamePlaceholder:"Saisir Département",
+                createDepartmentButton:"Créer Département",
+                selectDepartmentLabel:"Sélectionner Département",
+                selectDepartmentPlaceholder:"Département",
+                subdepartmentNameLabel:"Nouveau Sous-Département",
+                subdepartmentNamePlaceholder:"Saisir Nouveau Sous-Département",
+                createSubdepartmentButton:"Créer Sous-Département",
+                selectSubdepartmentLabel:"Sélectionner Sous-Département",
+                selectSubdepartmentPlaceholder:"Sous-Département",
+                jobPositionNameLabel:"Nouveau Poste de Travail",
+                jobPositionNamePlaceholder:"Poste de Travail",
+                createJobPositionButton:"Créer Nouveau Poste",
+                deptoTab:"Gérer Départements",
                 companyNameLabel:"Saisir le nom de l'entreprise",
                 companyNamePlaceholder:"Nouvelle entreprise",
                 loadingCreateCompanyButton:"Ajout en cours...",
@@ -2165,6 +2260,19 @@ const resources = {
               }
             },
             empleados: {
+              linkedin: {
+                title: "Lien non disponible",
+                titlept1: "L'employé",
+                titlept2: "ne possède pas de lien LinkedIn",
+                description: "Voulez-vous en ajouter un?",
+                button1: "Annuler",
+                button2: "Ajouter",
+              },
+              nohay: {
+                nohaydepto: "Aucun département disponible",
+                nohaysubdepto: "Aucun sous-département disponible",
+                nohaypuesto: "Aucun poste disponible",
+              },
               baja: {
                 title: "Êtes-vous sûr de désactiver",
                 description: "Cette action changera le statut de l'employé en inactif.",
@@ -2219,9 +2327,9 @@ const resources = {
                       placeholder: "Ventes"
                     },
                     titulo: {
-  label: "Titre",
-  placeholder: "Titre académique ou spécialisation"
-},
+                      label: "Titre",
+                      placeholder: "Titre académique ou spécialisation"
+                    },
                     sueldo: {
                       label: "Salaire",
                       placeholder: "70000"
@@ -2236,7 +2344,11 @@ const resources = {
                     fechaNacimiento: {
                       label: "Date de Naissance",
                       placeholder: "jj/mm/aaaa"
-                    }
+                    },
+                    linkedin: {
+                      label: "Lien LinkedIn",
+                      placeholder: "Lien vers le Profil",
+                    },
                   }
                 }
               },
@@ -2245,8 +2357,11 @@ const resources = {
                   nombre: "Prénom",
                   apellido: "Nom de Famille",
                   dni: "DNI",
+                  titulo: "Diplôme", 
                   correo: "E-mail",
                   departamento: "Département",
+                  subdepartamento: "Sous-département",
+                  puesto:"Poste",
                   sueldo: "Salaire",
                   genero: "Genre",
                   fechaNacimiento: "Date de Naissance",
