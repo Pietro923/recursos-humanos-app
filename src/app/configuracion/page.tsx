@@ -103,7 +103,7 @@ const SettingsPage = () => {
   return (
     <div className="container max-w-4xl mx-auto py-10 px-4 ">
       <div className="space-y-6">
-        <div className="flex justify-between items-center ">
+        <div className="flex flex-wrap justify-between items-center ">
           <div>
             <h1 className="text-3xl font-bold dark:text-white">{t('settings.title')}</h1>
             <p className="text-gray-500 dark:text-white"> {t('settings.description')}</p>

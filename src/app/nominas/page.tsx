@@ -302,7 +302,7 @@ const saveGlobalAndGroupData = async () => {
                 </CardTitle>
               </div>
       
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <Select value={selectedCompany || ""} onValueChange={setSelectedCompany}>
                     <SelectValue placeholder={t('nominas.header.selectCompany')} />
                     <SelectTrigger className="w-[250px] bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
