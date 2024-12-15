@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { db } from "@/lib/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+//import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useTranslation } from "react-i18next";
 import { FileManagementDialog } from "@/components/FileManagementDialog";
 
@@ -140,7 +140,7 @@ export default function PerformancePage() {
                     <FileManagementDialog 
                       employeeId={employee.id} 
                       fileType="pdp"
-                      onFileUploaded={(url) => {
+                      onFileUploaded={() => {
                         // Opcional: Actualizar estado de pdpStatus si lo necesitas
                       }}
                     />
@@ -233,7 +233,7 @@ export default function PerformancePage() {
                       <FileManagementDialog 
                         employeeId={employee.id} 
                         fileType="pdc"
-                        onFileUploaded={(url) => {
+                        onFileUploaded={() => {
                           // Opcional: Actualizar estado de pdcStatus si lo necesitas
                         }}
                       />

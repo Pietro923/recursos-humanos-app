@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { UserPlus, Building2, Container} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { db } from "@/lib/firebaseConfig";
-import { collection, getDocs, addDoc, doc, setDoc, query, where } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc } from "firebase/firestore";
 
 export default function AdminManagementPage() {
   // User Creation State

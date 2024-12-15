@@ -44,7 +44,7 @@ function Recordatorios() {
   const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string>("Pueble SA - CASE IH");
   const [companies, setCompanies] = useState<string[]>([]); // Empresas dinámicas
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [, setUnreadCount] = useState(0);
   const [selectedRecordatorio, setSelectedRecordatorio] = useState<Recordatorio | null>(null); // Estado para el recordatorio seleccionado
   const { t } = useTranslation(); // Hook de traducción dentro del componente funcional
   
