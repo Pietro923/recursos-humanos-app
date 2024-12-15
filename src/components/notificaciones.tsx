@@ -37,49 +37,67 @@ interface Recordatorio {
 const NotificationBell = () => {
   const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [, setCompanies] = useState<string[]>([]); // Empresas dinámicas
   const { t } = useTranslation(); // Hook de traducción dentro del componente funcional
+
   useEffect(() => {
-    const fetchRecordatorios = async () => {
-      try {
-        const companies = ["Pueble SA - CASE IH", "KIA"];
-        let allRecordatorios: Recordatorio[] = [];
+  const fetchCompaniesAndRecordatorios = async () => {
+    try {
+      // Obtener dinámicamente las empresas
+      const collectionRef = collection(db, "Grupo_Pueble");
+      const snapshot = await getDocs(collectionRef);
+      const companyNames = snapshot.docs.map(doc => doc.id);
+      
+      // Actualizar estado de empresas
+      setCompanies(companyNames);
 
-        for (const company of companies) {
-          const q = collection(db, "Grupo_Pueble", company, "recordatorios");
-          const snapshot = await getDocs(q);
-          
-          const companyRecordatorios = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            empresa: company,
-          } as Recordatorio));
-          
-          allRecordatorios = [...allRecordatorios, ...companyRecordatorios];
-        }
-
-        const activeRecordatorios = allRecordatorios.filter(recordatorio => {
-          const daysRemaining = differenceInDays(
-            recordatorio.fechaFin.toDate(),
-            new Date()
-          );
-          return daysRemaining >= -1;
-        });
-
-        activeRecordatorios.sort((a, b) => 
-          differenceInDays(a.fechaFin.toDate(), b.fechaFin.toDate())
-        );
-
-        setRecordatorios(activeRecordatorios);
-        setUnreadCount(activeRecordatorios.length);
-      } catch (error) {
-        console.error("Error al obtener recordatorios:", error);
+      // Obtener recordatorios para todas las empresas obtenidas
+      let allRecordatorios: Recordatorio[] = [];
+      for (const company of companyNames) {
+        const q = collection(db, "Grupo_Pueble", company, "recordatorios");
+        const recordatorioSnapshot = await getDocs(q);
+        
+        const companyRecordatorios = recordatorioSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          empresa: company,
+        } as Recordatorio));
+        
+        allRecordatorios = [...allRecordatorios, ...companyRecordatorios];
       }
-    };
 
-    fetchRecordatorios();
-    const interval = setInterval(fetchRecordatorios, 2 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+      // Filtrar recordatorios activos
+      const activeRecordatorios = allRecordatorios.filter(recordatorio => {
+        const daysRemaining = differenceInDays(
+          recordatorio.fechaFin.toDate(),
+          new Date()
+        );
+        return daysRemaining >= -1;
+      });
+
+      // Ordenar recordatorios
+      activeRecordatorios.sort((a, b) => 
+        differenceInDays(a.fechaFin.toDate(), b.fechaFin.toDate())
+      );
+
+      // Actualizar estados
+      setRecordatorios(activeRecordatorios);
+      setUnreadCount(activeRecordatorios.length);
+
+    } catch (error) {
+      console.error("Error al obtener recordatorios:", error);
+    }
+  };
+
+  // Llamada inicial
+  fetchCompaniesAndRecordatorios();
+
+  // Configurar intervalo de actualización
+  const interval = setInterval(fetchCompaniesAndRecordatorios, 2 * 60 * 1000);
+
+  // Limpiar intervalo al desmontar el componente
+  return () => clearInterval(interval);
+}, []);
 
   const archiveNotification = async (recordatorio: Recordatorio) => {
     try {

@@ -18,7 +18,10 @@ import {
   ClockIcon, 
   CalendarIcon, 
   UserIcon, 
-  InfoIcon 
+  InfoIcon, 
+  Archive,
+  Info,
+  Clipboard
 } from "lucide-react";
 import { format, differenceInDays, differenceInHours  } from "date-fns";
 import { es } from "date-fns/locale";
@@ -41,6 +44,7 @@ function Recordatorios() {
   const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string>("Pueble SA - CASE IH");
   const [companies, setCompanies] = useState<string[]>([]); // Empresas dinámicas
+  const [unreadCount, setUnreadCount] = useState(0);
   const [selectedRecordatorio, setSelectedRecordatorio] = useState<Recordatorio | null>(null); // Estado para el recordatorio seleccionado
   const { t } = useTranslation(); // Hook de traducción dentro del componente funcional
   
@@ -176,6 +180,27 @@ function Recordatorios() {
     return "bg-red-50 text-red-600 border-red-200 dark:bg-red-700 dark:text-red-100 dark:border-red-600";
   };
 
+  const archiveNotification = async (recordatorio: Recordatorio) => {
+      try {
+        // Eliminar de la colección original
+        const recordatorioRef = doc(db, "Grupo_Pueble", recordatorio.empresa, "recordatorios", recordatorio.id);
+        await deleteDoc(recordatorioRef);
+  
+        // Agregar a la colección de archivados
+        const archivedRef = collection(db, "Grupo_Pueble", recordatorio.empresa, "notificaciones_archivadas");
+        await addDoc(archivedRef, {
+          ...recordatorio,
+          archivedAt: Timestamp.now()
+        });
+  
+        // Actualizar el estado local
+        setRecordatorios(prev => prev.filter(r => r.id !== recordatorio.id));
+        setUnreadCount(prev => prev - 1);
+      } catch (error) {
+        console.error("Error al archivar la notificación:", error);
+      }
+    };
+
   return (
     <Card className="w-full max-w-5xl mx-auto shadow-lg ">
       <CardHeader className="bg-gray-50 border-b dark:bg-gray-950 dark:text-gray-100">
@@ -214,10 +239,10 @@ function Recordatorios() {
         {recordatorios.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recordatorios.map((recordatorio) => {
-  const startDate = recordatorio.fechaInicio.toDate();
-  const endDate = recordatorio.fechaFin.toDate();
-  const daysRemaining = differenceInDays(endDate, new Date()); // Calculamos los días restantes
-  const statusColor = getStatusColor(recordatorio);  // Pasa el objeto recordatorio directamente
+            const startDate = recordatorio.fechaInicio.toDate();
+            const endDate = recordatorio.fechaFin.toDate();
+            const daysRemaining = differenceInDays(endDate, new Date()); // Calculamos los días restantes
+            const statusColor = getStatusColor(recordatorio);  // Pasa el objeto recordatorio directamente
 
   return (
     <div
@@ -273,33 +298,86 @@ function Recordatorios() {
             : t('expired')}
         </span>
         <Dialog>
-          <DialogTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setSelectedRecordatorio(recordatorio)} // Establece el recordatorio seleccionado
-            >
-              {t('details')}
-            </Button>
+        <DialogTrigger asChild>
+            <div className="flex space-x-2"> {/* Contenedor para agrupar los elementos */}
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setSelectedRecordatorio(recordatorio)} // Establece el recordatorio seleccionado
+              >
+                {t('details')}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={(e) => {
+                  e.preventDefault();
+                  archiveNotification(recordatorio);
+                }}
+              >
+                <Archive className="h-4 w-4 text-gray-500 dark:text-white" />
+              </Button>
+            </div>
           </DialogTrigger>
 
           <DialogContent className={`
-            ${statusColor} 
-            border rounded-xl p-5 space-y-4 
-            transform transition-all duration-300 
-            hover:scale-105 hover:shadow-xl
-          `}>
-            <DialogHeader>
-              <DialogTitle>{t('reminderDetails')}</DialogTitle>
+        ${statusColor} 
+        border-2 border-blue-200 
+        rounded-2xl 
+        p-6 
+        space-y-5 
+        max-w-md 
+        mx-auto 
+        transform 
+        transition-all 
+        duration-300 
+        hover:scale-[1.02] 
+        hover:shadow-2xl 
+        dark:bg-gray-800 
+        dark:border-gray-700
+      `}>
+            <DialogHeader className="border-b pb-3 mb-2">
+            <DialogTitle className="text-2xl font-bold text-blue-800 dark:text-blue-200 flex items-center">
+          <Info className="mr-3 w-7 h-7 text-blue-600" />
+          {t('reminderDetails')}
+        </DialogTitle>
             </DialogHeader>
-            <DialogDescription className="dark:text-white">
+            <DialogDescription className="space-y-4 text-gray-700 dark:text-gray-200"> 
               {selectedRecordatorio && (
                 <>
-                  <p><strong>{t('type')}:</strong> {selectedRecordatorio.tipo}</p>
-                  <p><strong>{t('description')}:</strong> {selectedRecordatorio.descripcion}</p>
-                  <p><strong>{t('employee')}:</strong> {selectedRecordatorio.nombre} {selectedRecordatorio.apellido}</p>
-                  <p><strong>{t('startDate')}:</strong> {format(selectedRecordatorio.fechaInicio.toDate(), "PPP", { locale: es })}</p>
-                  <p><strong>{t('endDate')}:</strong> {format(selectedRecordatorio.fechaFin.toDate(), "PPP", { locale: es })}</p>
+                  <div className="flex items-center">
+                    <Clipboard className="mr-3 w-5 h-5 text-blue-500" />
+                    <p>
+                      <strong>{t('type')}:</strong> {selectedRecordatorio.tipo}
+                    </p>
+                  </div>
+                  <div className="flex items-start">
+                    <Info className="mr-3 w-5 h-5 text-blue-500 mt-1" />
+                    <p>
+                      <strong>{t('description')}:</strong> {selectedRecordatorio.descripcion}
+                    </p>
+                  </div>
+                  <div className="flex items-center">
+                    <UserIcon className="mr-3 w-5 h-5 text-blue-500" />
+                    <p>
+                      <strong>{t('employee')}:</strong> {selectedRecordatorio.nombre} {selectedRecordatorio.apellido}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <CalendarIcon className="mr-3 w-5 h-5 text-blue-500" />
+                    <p>
+                      <strong>{t('startDate')}:</strong> {format(selectedRecordatorio.fechaInicio.toDate(), "PPP", { locale: es })}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <CalendarIcon className="mr-3 w-5 h-5 text-blue-500" />
+                    <p>
+                      <strong>{t('endDate')}:</strong> {format(selectedRecordatorio.fechaFin.toDate(), "PPP", { locale: es })}
+                    </p>
+                  </div>
                 </>
               )}
             </DialogDescription>

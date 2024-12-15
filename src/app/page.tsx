@@ -31,28 +31,39 @@ export default function Inicio() {
 
   const checkBirthdays = async () => {
     try {
-      // Empresas y sus colecciones de empleados
-      const companies = [
-        { name: "Pueble SA - CASE IH", collectionPath: "Grupo_Pueble/Pueble SA - CASE IH/empleados" },
-        { name: "KIA", collectionPath: "Grupo_Pueble/KIA/empleados" },
-      ];
+      // Obtener dinámicamente las empresas de la colección "Grupo_Pueble"
+      const groupRef = collection(db, "Grupo_Pueble");
+      const groupSnapshot = await getDocs(groupRef);
+      
+      const companies = groupSnapshot.docs
+        .filter(doc => doc.id !== 'empleados') // Excluir colecciones que no sean empresas si es necesario
+        .map(doc => ({
+          name: doc.id,
+          collectionPath: `Grupo_Pueble/${doc.id}/empleados`
+        }));
   
       const employeesData: { employee: Employee; companyName: string }[] = [];
   
       // Obtener empleados de cada empresa
       for (const company of companies) {
-        const employeesRef = collection(db, company.collectionPath);
-        const employeesSnapshot = await getDocs(employeesRef);
+        try {
+          const employeesRef = collection(db, company.collectionPath);
+          const employeesSnapshot = await getDocs(employeesRef);
   
-        employeesSnapshot.docs.forEach((doc) => {
-          employeesData.push({
-            employee: {
-              id: doc.id,
-              ...doc.data(),
-            } as Employee,
-            companyName: company.name,
+          employeesSnapshot.docs.forEach((doc) => {
+            employeesData.push({
+              employee: {
+                id: doc.id,
+                ...doc.data(),
+              } as Employee,
+              companyName: company.name,
+            });
           });
-        });
+        } catch (companyError) {
+          console.error(`Error al obtener empleados de ${company.name}:`, companyError);
+          // Continuar con las siguientes empresas si hay un error en una
+          continue;
+        }
       }
   
       const today = new Date();
@@ -66,14 +77,15 @@ export default function Inicio() {
         );
       });
   
+      // Actualizar estado de empleados de cumpleaños (asumiendo que tienes esta función)
       setBirthdayEmployees(birthdays.map(({ employee }) => employee));
   
-      // Crear notificaciones si es necesario
+      // Crear notificaciones para cumpleaños
       for (const { employee, companyName } of birthdays) {
         const remindersRef = collection(db, "Grupo_Pueble", companyName, "recordatorios");
         const archivedRef = collection(db, "Grupo_Pueble", companyName, "notificaciones_archivadas");
   
-        // Verificar si ya existe el recordatorio en "recordatorios"
+        // Verificar si ya existe el recordatorio
         const remindersQuery = await getDocs(remindersRef);
         const existingBirthdayReminder = remindersQuery.docs.find((doc) => {
           const reminder = doc.data();
@@ -84,7 +96,6 @@ export default function Inicio() {
           );
         });
   
-        // Verificar si ya existe el recordatorio en "notificaciones_archivadas"
         const archivedQuery = await getDocs(archivedRef);
         const archivedBirthdayReminder = archivedQuery.docs.find((doc) => {
           const archived = doc.data();
@@ -95,7 +106,7 @@ export default function Inicio() {
           );
         });
   
-        // Crear el recordatorio solo si no existe en ninguna de las dos colecciones
+        // Crear recordatorio solo si no existe
         if (!existingBirthdayReminder && !archivedBirthdayReminder) {
           await addDoc(remindersRef, {
             tipo: "Cumpleaños",

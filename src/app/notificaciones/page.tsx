@@ -35,9 +35,12 @@ export default function ArchivedNotifications() {
   useEffect(() => {
     const fetchArchivedNotifications = async () => {
       try {
-        const companies = ["Pueble SA - CASE IH", "KIA"];
+        // Obtener dinámicamente las empresas
+        const collectionRef = collection(db, "Grupo_Pueble");
+        const companiesSnapshot = await getDocs(collectionRef);
+        const companies = companiesSnapshot.docs.map(doc => doc.id);
+  
         let allNotifications: ArchivedNotification[] = [];
-
         for (const company of companies) {
           const q = query(
             collection(db, "Grupo_Pueble", company, "notificaciones_archivadas"),
@@ -53,12 +56,12 @@ export default function ArchivedNotifications() {
           
           allNotifications = [...allNotifications, ...companyNotifications];
         }
-
+  
         // Ordenar por fecha de archivado
         allNotifications.sort((a, b) => 
           b.archivedAt.toDate().getTime() - a.archivedAt.toDate().getTime()
         );
-
+  
         setArchivedNotifications(allNotifications);
       } catch (error) {
         console.error("Error al obtener notificaciones archivadas:", error);
@@ -66,10 +69,9 @@ export default function ArchivedNotifications() {
         setIsLoading(false);
       }
     };
-
+  
     fetchArchivedNotifications();
   }, []);
-
   const getStatusColor = (tipo: string, fechaFin: Timestamp) => {
     if (tipo === "Cumpleaños") return "text-blue-600"; // Azul para cumpleaños
     
