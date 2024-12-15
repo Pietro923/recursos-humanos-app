@@ -515,154 +515,141 @@ const resources = {
               toast: {
                 error: "Error loading data",
                 success: "Absences saved successfully",
-                errorasistencia: "Error saving absences"
+                errorasistencia: "Error saving absences",
               },
               header: {
                 title: "Payroll Management",
                 sectionTitle: "Monthly Payroll - Period",
-                selectCompany: "Select company",
+                selectCompany: "Select Company",
                 saveAbsences: "Save Absences",
-                filterDepartment: "Filter by department",
-                deptos: "All departments",
-                noEmployees: "No employees to show",
-                selectCompanyMessage: "Select a company to view payroll data"
+                filterDepartment: "Filter by Department",
+                deptos: "All Departments",
+                noEmployees: "No employees to display",
+                selectCompanyMessage: "Select a company to view payroll data",
               },
               columns: {
                 name: "Name",
                 surname: "Surname",
-                dni: "ID Number",
+                dni: "DNI",
                 email: "Email",
                 department: "Department",
+                subdepartment: "Sub Department",
+                puesto: "Position",
                 basicSalary: "Basic Salary",
                 averageIncentive: "Average Incentive",
                 monthlyIncentive: "Monthly Incentive",
-                absenceDays: "Absence Days",
+                absenceDays: "Days of Absence",
                 absenceDiscount: "Absence Discount",
-                totalBasicIncentive: "Basic + Incentive Total",
+                totalBasicIncentive: "Total Basic + Incentive",
                 bonus: "Bonus",
-                finalTotal: "Final Total"
+                finalTotal: "Final Total",
               },
               dialog: {
-                button1: "Calculate Incentives, Bonuses, and Totals",
-                title: "Calculate Incentives, Bonuses, and Totals",
+                button1: "Calculate Salary, Incentives, Bonuses, and Totals",
+                title: "Calculate Salary, Incentives, Bonuses, and Totals",
                 description: "Please enter the required data",
+                globalGroup: "Global Increase (Entire Company)",
+                globalGroupDescription: "Percentage Increase",
+                globalGroupPlaceholder: "Enter percentage",
+                Department: "Department Increase (Entire Department)",
+                selectDepartmentPlaceholder: "Select a Department",
+                DepartmentDescription: "Percentage Increase",
+                SubDepartment: "Sub Department Increase (Entire SubDept)",
+                Empleado: "Incentives and Bonuses by Employee",
+                SubDepartmentDescription: "Percentage Increase",
+                SubDepartmentPlaceholder: "Enter increase for subdepartment",
                 incentivoprom: "Average Incentive",
                 incentivomens: "Monthly Incentive",
-                inas: "Absence Days",
+                inas: "Days of Absence",
                 bono: "Bonus",
-                button2: "Save"
-              }
+                button2: "Save Changes",
+              },
             },
             desempeño: {
               title: "Performance Evaluation System",
-              legajosection:{
-                  tipo1:"Contract",
-                  tipo2:"Evaluations",
-                  tipo3:"Personal Documents",
-                  leg:"File"
+              legajosection: {
+                tipo1: "Contract",
+                tipo2: "Evaluations",
+                tipo3: "Personal Documents",
+                leg: "Records",
               },
               tabs: {
                 employe: "Employees",
-                employeTec: "Technicians"
+                employeTec: "Technicians",
               },
               dialogs: {
                 legajo: {
-                  title: "Files of",
-                  description: "Select the year and document type",
-                  leg: "File",
+                  title: "Records of",
+                  description: "Select the year and type of document",
+                  leg: "Record",
                   fileButtonAlert: "Opening {{fileType}} for {{employeeName}} for the year {{year}}.",
-                  closeButton: "Close"
+                  closeButton: "Close",
                 },
                 evaluation: {
                   titles: {
                     self: "Self-Evaluation",
-                    boss: "Manager Evaluation",
+                    boss: "Manager's Evaluation",
                     calibration: "Final Calibration",
                     asesor: "Advisor Evaluation",
                     capacitador: "Trainer Evaluation",
                     calibrationTec: "Final Technical Calibration",
-                    legajo: "Employee Files"
-                  },
-                  description: "Please complete the following questionnaire",
-                  questions: {
-                    placeholder1: "Write your answer here",
-                    self: [
-                      "What were your main achievements during the last period?",
-                      "What challenges did you face, and how did you overcome them?",
-                      "What areas do you consider you need to improve?"
-                    ],
-                    boss: [
-                      "General evaluation of the employee's performance",
-                      "Observed strengths",
-                      "Identified areas for improvement"
-                    ],
-                    calibration: [
-                      "Final result of the performance evaluation",
-                      "Global score",
-                      "Additional observations"
-                    ],
-                    asesor: [
-                      "How do you evaluate the level of technical assistance provided?",
-                      "How clear were the instructions and expectations set?",
-                      "Was there any project or activity where you felt technical support was insufficient?"
-                    ],
-                    capacitador: [
-                      "How effective do you consider the content and methodology of the training?",
-                      "Have you received enough practice and feedback to apply what you've learned?",
-                      "In what areas do you think you should receive more training?"
-                    ],
-                    calibrationTec: [
-                      "Final result of the performance evaluation",
-                      "Global score",
-                      "Additional observations"
-                    ]
-                  },
-                  scoreInput: {
-                    label: "Final Score",
-                    label2: "Final Score:",
-                    placeholder: "Enter score (1-10)"
+                    legajo: "Employee Records",
                   },
                   footerButtons: {
                     cancel: "Cancel",
-                    save: "Save"
-                  }
+                    save: "Save",
+                  },
                 },
-                results: {
-                  title: "Results - ",
-                  noResults: "No results available.",
-                  closeButton: "Close"
-                }
               },
               evaluationPage: {
+                dialogs: {
+                  uploadedFiles: "Uploaded Files",
+                  pdpTitle: "Professional Development Plan",
+                  pdcTitle: "Curricular Development Plan",
+                  self_evaluationTitle: "Self-Evaluation",
+                  boss_evaluationTitle: "Manager's Evaluation",
+                  calibrationTitle: "Calibration",
+                  asesor_evaluationTitle: "Advisor Evaluation",
+                  capacitador_evaluationTitle: "Trainer Evaluation",
+                  final_calibrationTitle: "Final Calibration",
+                  legajoTitle: "Records",
+                  self_evaluationDescription: "View or Update Self-Evaluation",
+                  boss_evaluationDescription: "View or Update Manager's Evaluation",
+                  calibrationDescription: "View or Update Calibration",
+                  asesor_evaluationDescription: "View or Update Advisor Evaluation",
+                  capacitador_evaluationDescription: "View or Update Trainer Evaluation",
+                  final_calibrationDescription: "View or Update Final Calibration",
+                  legajoDescription: "View or Update Records",
+                  pdpDescription: "View or Update Employee's Plan",
+                  pdcDescription: "View or Update Technician's Plan",
+                },
                 general: {
                   employeeTitle: "Performance Evaluation - Employees",
                   techTitle: "Performance Evaluation - Technicians",
-                  selectCompany: "Select a company"
+                  selectCompany: "Select a company",
                 },
                 tableHeaders: {
-                  employee: ["Name", "Department", "PDP", "Self-Evaluation", "Manager Evaluation", "Final Calibration", "Actions"],
-                  tech: ["Name", "Department", "PDC", "Advisor Evaluation", "Trainer Evaluation", "Final Calibration", "Actions"]
+                  employee: ["Name", "Surname", "Department", "Position", "PDP", "Self-Evaluation", "Manager's Evaluation", "Final Calibration", "Actions"],
+                  tech: ["Name", "Surname", "Department", "Position", "PDC", "Advisor Evaluation", "Trainer Evaluation", "Final Calibration", "Record"],
                 },
                 actions: {
-                  uploadPDP: "PDP",
-                  uploadPDC: "PDC",
-                  viewSelfResults: "Self-Evaluation Results",
-                  viewBossResults: "Manager Evaluation Results",
-                  viewCalibrationResults: "Calibration Results",
-                  viewCalibrationAsesor: "Advisor Evaluation Results",
-                  viewCalibrationCapacitador: "Trainer Evaluation Results",
-                  viewCalibrationTec: "Calibration Results",
-                  evaluate: {
-                    self: "Self-Evaluate",
-                    boss: "Manager Evaluation",
-                    calibration: "Calibrate",
-                    asesor: "Advisor Evaluation",
-                    capacitador: "Trainer Evaluation",
-                    calibrationTec: "Calibrate",
-                    Legajo: "File"
-                  }
-                }
-              }
+                  uploadFile: "Upload File",
+                  uploadAnotherFile: "Upload Another File",
+                  view: "View",
+                  pdp: "PDP",
+                  viewPDP: "PDP",
+                  viewPDC: "PDC",
+                  uploadPDP:"PDP",
+        uploadPDC:"PDC",
+                  uploadAutoevaluación: "Upload Self-Evaluation",
+                  uploadEvaluaciónJefe: "Upload Manager's Evaluation",
+                  uploadCalibración: "Upload Calibration",
+                  uploadEvaluaciónAsesor: "Upload Advisor Evaluation",
+                  uploadEvaluaciónCapacitador: "Upload Trainer Evaluation",
+                  uploadCalibraciónFinal: "Upload Final Calibration",
+                  uploadLegajo: "Record",
+                },
+              },
             },
             empleados: {
               linkedin: {
@@ -1320,6 +1307,8 @@ const resources = {
     dni: "DNI",
     email: "Correo",
     department: "Departamento",
+    subdepartment:"Sub Departamento",
+    puesto: "Puesto",
     basicSalary: "Sueldo Básico",
     averageIncentive: "Incentivo Promedio",
     monthlyIncentive: "Incentivo Mensual",
@@ -1330,14 +1319,24 @@ const resources = {
     finalTotal: "Total Final"
   },
   dialog:{
-    button1:"Calcular Incentivos, Bonos, y Totales",
-    title:"Calcular Incentivos, Bonos, y Totales",
+    button1:"Calcular Sueldo, Incentivos, Bonos, y Totales",
+    title:"Calcular Sueldo, Incentivos, Bonos, y Totales",
     description:"Ingrese por favor los datos requeridos",
+    globalGroup:"Aumento Global (Toda la Empresa)",
+    globalGroupDescription:"Aumento del %",
+    globalGroupPlaceholder:"Ingrese el porcentaje",
+    Department:"Aumento de Departamento (Todo el Departamento)",
+    selectDepartmentPlaceholder:"Seleccione un Departamento",
+    DepartmentDescription:"Aumento del %",
+    SubDepartment:"Aumento de Sub Departamento (Todo el SubDepto)",
+    Empleado:"Incentivos y Bonos por Empleado",
+    SubDepartmentDescription:"Aumento del %",
+    SubDepartmentPlaceholder:"Introduce incremento por subdepartamento",
     incentivoprom: "Incentivo Promedio",
     incentivomens:"Incentivo Mensual",
     inas:"Dias de Inasistencias",
     bono:"Bono",
-    button2:"Guardar",
+    button2:"Guardar Cambios",
   }
   },
 
@@ -1371,55 +1370,11 @@ const resources = {
           calibrationTec: "Calibración Final Tecnico",
           legajo: "Legajos del Empleado"
         },
-        description: "Por favor, complete el siguiente cuestionario",
-        questions: {
-          placeholder1:"Escriba su respuesta aquí",
-          self: [
-            "¿Cuáles fueron tus principales logros en el último período?",
-            "¿Qué desafíos enfrentaste y cómo los superaste?",
-            "¿En qué áreas consideras que necesitas mejorar?"
-          ],
-          boss: [
-            "Evaluación general del desempeño del empleado",
-            "Fortalezas observadas",
-            "Áreas de mejora identificadas"
-          ],
-          calibration: [
-            "Resultado final de la evaluación de desempeño",
-            "Puntuación global",
-            "Observaciones adicionales"
-          ],
-          asesor: [
-            "¿Cómo evalúas el nivel de asistencia técnica proporcionada?",
-            "¿Qué tan claras fueron las instrucciones y expectativas establecidas?",
-            "¿Hubo algún proyecto o actividad donde sentiste que el apoyo técnico fue insuficiente?"
-          ],
-          capacitador: [
-            "¿Qué tan efectivo consideras el contenido y la metodología de las capacitaciones?",
-            "¿Ha recibido suficiente práctica y retroalimentación para aplicar lo aprendido?",
-            "¿En qué áreas consideras que debería recibir más capacitación?"
-          ],
-          calibrationTec: [
-            "Resultado final de la evaluación de desempeño",
-            "Puntuación global",
-            "Observaciones adicionales"
-          ]
-        },
-        scoreInput: {
-          label: "Puntuación Final",
-          label2: "Puntuación Final:",
-          placeholder: "Ingrese puntuación (1-10)"
-        },
         footerButtons: {
           cancel: "Cancelar",
           save: "Guardar"
         }
       },
-      results: {
-        title: "Resultados - ",
-        noResults: "No hay resultados disponibles.",
-        closeButton: "Cerrar"
-      }
     },
     evaluationPage: {
       dialogs:{
@@ -1456,7 +1411,8 @@ const resources = {
         uploadFile:"Cargar Archivo",
         uploadAnotherFile:"Cargar un nuevo Archivo",
         view:"Ver",
-        pdp:"PDP",
+        uploadPDP:"PDP",
+        uploadPDC:"PDC",
         viewPDP: "PDP",
         viewPDC: "PDC",
         uploadAutoevaluación: "Cargar Autoevaluacion",
@@ -2108,156 +2064,143 @@ const resources = {
             },
             nominas: {
               toast: {
-                error: "Erreur de chargement des données",
+                error: "Erreur lors du chargement des données",
                 success: "Absences enregistrées avec succès",
-                errorasistencia: "Erreur lors de l'enregistrement des absences"
+                errorasistencia: "Erreur lors de l'enregistrement des absences",
               },
               header: {
                 title: "Gestion de la Paie",
                 sectionTitle: "Paie Mensuelle - Période",
-                selectCompany: "Sélectionner l'entreprise",
+                selectCompany: "Sélectionner une entreprise",
                 saveAbsences: "Enregistrer les absences",
                 filterDepartment: "Filtrer par département",
                 deptos: "Tous les départements",
                 noEmployees: "Aucun employé à afficher",
-                selectCompanyMessage: "Sélectionnez une entreprise pour voir les données de la paie"
+                selectCompanyMessage: "Sélectionnez une entreprise pour voir les données de paie",
               },
               columns: {
                 name: "Nom",
                 surname: "Prénom",
-                dni: "Numéro d'identification",
+                dni: "DNI",
                 email: "E-mail",
                 department: "Département",
-                basicSalary: "Salaire de base",
-                averageIncentive: "Incitation moyenne",
-                monthlyIncentive: "Incitation mensuelle",
-                absenceDays: "Jours d'absence",
-                absenceDiscount: "Réduction d'absence",
-                totalBasicIncentive: "Total de base + incitation",
-                bonus: "Prime",
-                finalTotal: "Total final"
+                subdepartment: "Sous-département",
+                puesto: "Poste",
+                basicSalary: "Salaire de Base",
+                averageIncentive: "Prime Moyenne",
+                monthlyIncentive: "Prime Mensuelle",
+                absenceDays: "Jours d'Absence",
+                absenceDiscount: "Réduction pour Absences",
+                totalBasicIncentive: "Total Base + Prime",
+                bonus: "Bonus",
+                finalTotal: "Total Final",
               },
               dialog: {
-                button1: "Calculer les Incitations, Primes et Totaux",
-                title: "Calculer les Incitations, Primes et Totaux",
+                button1: "Calculer Salaire, Primes, Bonus, et Totaux",
+                title: "Calculer Salaire, Primes, Bonus, et Totaux",
                 description: "Veuillez entrer les données requises",
-                incentivoprom: "Incentive Moyenne",
-                incentivomens: "Incentive Mensuel",
+                globalGroup: "Augmentation Globale (Toute l'Entreprise)",
+                globalGroupDescription: "Pourcentage d'Augmentation",
+                globalGroupPlaceholder: "Entrez le pourcentage",
+                Department: "Augmentation de Département (Tout le Département)",
+                selectDepartmentPlaceholder: "Sélectionnez un Département",
+                DepartmentDescription: "Pourcentage d'Augmentation",
+                SubDepartment: "Augmentation de Sous-département (Tout le Sous-Dept)",
+                Empleado: "Primes et Bonus par Employé",
+                SubDepartmentDescription: "Pourcentage d'Augmentation",
+                SubDepartmentPlaceholder: "Entrez l'augmentation pour le sous-département",
+                incentivoprom: "Prime Moyenne",
+                incentivomens: "Prime Mensuelle",
                 inas: "Jours d'Absence",
-                bono: "Prime",
-                button2: "Sauvegarder"
-              }
+                bono: "Bonus",
+                button2: "Enregistrer les Modifications",
+              },
             },
             desempeño: {
-              title: "Système d'Évaluation des Performances",
+              title: "Système d'Évaluation de Performance",
               legajosection: {
                 tipo1: "Contrat",
                 tipo2: "Évaluations",
                 tipo3: "Documents Personnels",
-                leg: "Dossier"
+                leg: "Dossiers",
               },
               tabs: {
                 employe: "Employés",
-                employeTec: "Techniciens"
+                employeTec: "Techniciens",
               },
               dialogs: {
                 legajo: {
                   title: "Dossiers de",
                   description: "Sélectionnez l'année et le type de document",
                   leg: "Dossier",
-                  fileButtonAlert: "Ouverture de {{fileType}} pour {{employeeName}} de l'année {{year}}.",
-                  closeButton: "Fermer"
+                  fileButtonAlert: "Ouverture de {{fileType}} pour {{employeeName}} pour l'année {{year}}.",
+                  closeButton: "Fermer",
                 },
                 evaluation: {
                   titles: {
-                    self: "Auto-Évaluation",
-                    boss: "Évaluation du Responsable",
+                    self: "Auto-évaluation",
+                    boss: "Évaluation du Manager",
                     calibration: "Calibration Finale",
-                    asesor: "Évaluation du Conseiller",
+                    asesor: "Évaluation de l'Conseiller",
                     capacitador: "Évaluation du Formateur",
                     calibrationTec: "Calibration Finale Technique",
-                    legajo: "Dossiers de l'Employé"
-                  },
-                  description: "Veuillez remplir le questionnaire suivant",
-                  questions: {
-                    placeholder1: "Écrivez votre réponse ici",
-                    self: [
-                      "Quels ont été vos principaux accomplissements au cours de la dernière période?",
-                      "Quels défis avez-vous rencontrés et comment les avez-vous surmontés?",
-                      "Dans quels domaines considérez-vous que vous devez vous améliorer?"
-                    ],
-                    boss: [
-                      "Évaluation générale de la performance de l'employé",
-                      "Forces observées",
-                      "Domaines d'amélioration identifiés"
-                    ],
-                    calibration: [
-                      "Résultat final de l'évaluation des performances",
-                      "Score global",
-                      "Observations supplémentaires"
-                    ],
-                    asesor: [
-                      "Comment évaluez-vous le niveau d'assistance technique fourni?",
-                      "Les instructions et attentes étaient-elles claires?",
-                      "Y a-t-il eu un projet ou une activité où vous avez estimé que le soutien technique était insuffisant?"
-                    ],
-                    capacitador: [
-                      "Que pensez-vous de l'efficacité du contenu et de la méthodologie des formations?",
-                      "Avez-vous reçu suffisamment de pratique et de retours pour appliquer ce que vous avez appris?",
-                      "Dans quels domaines pensez-vous devoir recevoir plus de formation?"
-                    ],
-                    calibrationTec: [
-                      "Résultat final de l'évaluation des performances",
-                      "Score global",
-                      "Observations supplémentaires"
-                    ]
-                  },
-                  scoreInput: {
-                    label: "Score Final",
-                    label2: "Score Final:",
-                    placeholder: "Entrez le score (1-10)"
+                    legajo: "Dossiers de l'Employé",
                   },
                   footerButtons: {
                     cancel: "Annuler",
-                    save: "Enregistrer"
-                  }
+                    save: "Enregistrer",
+                  },
                 },
-                results: {
-                  title: "Résultats - ",
-                  noResults: "Aucun résultat disponible.",
-                  closeButton: "Fermer"
-                }
               },
               evaluationPage: {
+                dialogs: {
+                  uploadedFiles: "Fichiers Téléchargés",
+                  pdpTitle: "Plan de Développement Professionnel",
+                  pdcTitle: "Plan de Développement Curriculaire",
+                  self_evaluationTitle: "Auto-évaluation",
+                  boss_evaluationTitle: "Évaluation du Manager",
+                  calibrationTitle: "Calibration",
+                  asesor_evaluationTitle: "Évaluation du Conseiller",
+                  capacitador_evaluationTitle: "Évaluation du Formateur",
+                  final_calibrationTitle: "Calibration Finale",
+                  legajoTitle: "Dossiers",
+                  self_evaluationDescription: "Voir ou Mettre à Jour l'Auto-évaluation",
+                  boss_evaluationDescription: "Voir ou Mettre à Jour l'Évaluation du Manager",
+                  calibrationDescription: "Voir ou Mettre à Jour la Calibration",
+                  asesor_evaluationDescription: "Voir ou Mettre à Jour l'Évaluation du Conseiller",
+                  capacitador_evaluationDescription: "Voir ou Mettre à Jour l'Évaluation du Formateur",
+                  final_calibrationDescription: "Voir ou Mettre à Jour la Calibration Finale",
+                  legajoDescription: "Voir ou Mettre à Jour les Dossiers",
+                  pdpDescription: "Voir ou Mettre à Jour le Plan de l'Employé",
+                  pdcDescription: "Voir ou Mettre à Jour le Plan du Technicien",
+                },
                 general: {
-                  employeeTitle: "Évaluation des Performances - Employés",
-                  techTitle: "Évaluation des Performances - Techniciens",
-                  selectCompany: "Sélectionnez une entreprise"
+                  employeeTitle: "Évaluation de Performance - Employés",
+                  techTitle: "Évaluation de Performance - Techniciens",
+                  selectCompany: "Sélectionnez une entreprise",
                 },
                 tableHeaders: {
-                  employee: ["Nom", "Département", "PDP", "Auto-Évaluation", "Évaluation Responsable", "Calibration Finale", "Actions"],
-                  tech: ["Nom", "Département", "PDC", "Évaluation Conseiller", "Évaluation Formateur", "Calibration Finale", "Actions"]
+                  employee: ["Nom", "Prénom", "Département", "Poste", "PDP", "Auto-évaluation", "Évaluation du Manager", "Calibration Finale", "Actions"],
+                  tech: ["Nom", "Prénom", "Département", "Poste", "PDC", "Évaluation du Conseiller", "Évaluation du Formateur", "Calibration Finale", "Dossier"],
                 },
                 actions: {
-                  uploadPDP: "PDP",
-                  uploadPDC: "PDC",
-                  viewSelfResults: "Résultats Auto-Évaluation",
-                  viewBossResults: "Résultats Évaluation Responsable",
-                  viewCalibrationResults: "Résultats Calibration",
-                  viewCalibrationAsesor: "Résultats Évaluation Conseiller",
-                  viewCalibrationCapacitador: "Résultats Évaluation Formateur",
-                  viewCalibrationTec: "Résultats Calibration",
-                  evaluate: {
-                    self: "Auto-Évaluer",
-                    boss: "Évaluation Responsable",
-                    calibration: "Calibrer",
-                    asesor: "Évaluation Conseiller",
-                    capacitador: "Évaluation Formateur",
-                    calibrationTec: "Calibrer",
-                    Legajo: "Dossier"
-                  }
-                }
-              }
+                  uploadFile: "Télécharger un Fichier",
+                  uploadAnotherFile: "Télécharger un Nouveau Fichier",
+                  view: "Voir",
+                  pdp: "PDP",
+                  uploadPDP:"PDP",
+        uploadPDC:"PDC",
+                  viewPDP: "PDP",
+                  viewPDC: "PDC",
+                  uploadAutoevaluación: "Télécharger l'Auto-évaluation",
+                  uploadEvaluaciónJefe: "Télécharger l'Évaluation du Manager",
+                  uploadCalibración: "Télécharger la Calibration",
+                  uploadEvaluaciónAsesor: "Télécharger l'Évaluation du Conseiller",
+                  uploadEvaluaciónCapacitador: "Télécharger l'Évaluation du Formateur",
+                  uploadCalibraciónFinal: "Télécharger la Calibration Finale",
+                  uploadLegajo: "Dossier",
+                },
+              },
             },
             empleados: {
               linkedin: {

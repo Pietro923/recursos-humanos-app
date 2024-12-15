@@ -50,28 +50,6 @@ export default function PerformancePage() {
   }, []);
 
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, employeeId: string, fileType: 'pdp' | 'pdc') => {
-    const file = e.target.files?.[0];
-    if (!file) {
-      alert("No se seleccionó ningún archivo.");
-      return;
-    }
-  
-    try {
-      const storage = getStorage();
-      const fileRef = ref(storage, `${fileType}/${employeeId}/${file.name}`);
-      
-      await uploadBytes(fileRef, file);
-      const fileUrl = await getDownloadURL(fileRef);
-  
-      console.log(`Archivo ${fileType.toUpperCase()} subido correctamente:`, fileUrl);
-      alert(`Archivo ${fileType.toUpperCase()} subido exitosamente.`);
-    } catch (error) {
-      console.error(`Error al subir el archivo ${fileType.toUpperCase()}:`, error);
-      alert(`Hubo un error al subir el archivo ${fileType.toUpperCase()}.`);
-    }
-  };
-
   useEffect(() => {
     const fetchEmployees = async () => {
       if (!selectedCompany) {
@@ -101,7 +79,13 @@ export default function PerformancePage() {
     fetchEmployees();
   }, [selectedCompany]);
 
-  const renderEmployeeEvaluation = () => (
+  const renderEmployeeEvaluation = () => {
+    // Filtro para solo No Tecnicos
+    const filteredEmployees = employees.filter(employee => 
+      !employee.puesto.toLowerCase().includes('tecnico')
+    );
+
+    return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
@@ -146,7 +130,7 @@ export default function PerformancePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {employees.map((employee) => (
+            {filteredEmployees.map((employee) => (
                 <TableRow key={employee.id}>
                   <TableCell>{employee.name}</TableCell>
                   <TableCell>{employee.apellido}</TableCell>
@@ -187,9 +171,10 @@ export default function PerformancePage() {
       </Card>
     </div>
   );
+};
 
   const renderTechEvaluation = () => {
-    // Filter employees to only include those with 'Tecnico' or 'tecnico' in their job position
+    // Filtro para solo Tecnicos
     const techEmployees = employees.filter(employee => 
       employee.puesto.toLowerCase().includes('tecnico')
     );
