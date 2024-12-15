@@ -253,7 +253,7 @@ export default function Inicio() {
                 <Card className="group overflow-hidden transition-all duration-300 
                   hover:shadow-xl hover:scale-[1.02] 
                   dark:bg-gray-700/50 dark:hover:bg-gray-600/60">
-                  <CardContent className="flex flex-wrap items-center p-6 space-x-4">
+                  <CardContent className="flex items-center p-6 space-x-4">
                     <div className="bg-blue-500/10 dark:bg-blue-500/20 p-4 rounded-xl 
                       transition-all group-hover:rotate-6 group-hover:scale-110">
                       <LayoutDashboard className="h-7 w-7 text-blue-600 dark:text-blue-400" />
@@ -288,7 +288,7 @@ export default function Inicio() {
                         hover:shadow-xl hover:scale-[1.02] 
                         dark:bg-gray-700/50 dark:hover:bg-gray-600/60"
                     >
-                      <CardContent className="flex flex-wrap items-center p-6 space-x-4">
+                      <CardContent className="flex items-center p-6 space-x-4">
                         <div className={`p-4 rounded-xl 
                           transition-all group-hover:rotate-6 group-hover:scale-110 
                           ${card.color} dark:opacity-80`}>
