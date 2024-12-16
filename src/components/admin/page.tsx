@@ -361,35 +361,53 @@ export default function AdminManagementPage() {
 
   return (
     <div className="bg-gray-50 flex flex-col items-center justify-center p-4 dark:bg-gray-900">
-       <Card className="w-full max-w-max">
+       <Card className="w-full max-w-2xl mx-auto shadow-2xl hover:shadow-3xl transition-all duration-300 ease-in-out">
         <CardHeader className="space-y-1">
-        <div className="flex items-center justify-center space-x-2 mb-4">
-            <CardTitle className="text-2xl font-bold text-center">
-              {t('adminPanel.title')}
-            </CardTitle>
+        <div className="flex items-center justify-center mb-6">
+        <CardTitle className="text-2xl sm:text-3xl font-bold text-center text-blue-800 dark:text-blue-200">
+            {t('adminPanel.title')}
+          </CardTitle>
           </div>
           <Tabs defaultValue="user" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="user" className="flex items-center space-x-2">
-                <UserPlus className="h-4 w-4" />
-                <span>{t('adminPanel.userTab')}</span>
-              </TabsTrigger>
-              <TabsTrigger value="company" className="flex items-center space-x-2">
-                <Building2 className="h-4 w-4" />
-                <span>{t('adminPanel.companyTab')}</span>
-              </TabsTrigger>
-              <TabsTrigger value="deptos" className="flex items-center space-x-2">
-                <Container className="h-4 w-4" />
-                <span>{t('adminPanel.deptoTab')}</span>
-              </TabsTrigger>
-            </TabsList>
+          <TabsList className="grid grid-cols-3 gap-2 mb-6 bg-blue-100 dark:bg-gray-700 p-1 rounded-xl">
+            <TabsTrigger 
+              value="user" 
+              className="flex items-center justify-center space-x-2 rounded-lg transition-all duration-300 
+                         data-[state=active]:bg-white data-[state=active]:shadow-md 
+                         data-[state=active]:text-blue-700 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-blue-300"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('adminPanel.userTab')}</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="company" 
+              className="flex items-center justify-center space-x-2 rounded-lg transition-all duration-300 
+                         data-[state=active]:bg-white data-[state=active]:shadow-md 
+                         data-[state=active]:text-blue-700 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-blue-300"
+            >
+              <Building2 className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('adminPanel.companyTab')}</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="deptos" 
+              className="flex items-center justify-center space-x-2 rounded-lg transition-all duration-300 
+                         data-[state=active]:bg-white data-[state=active]:shadow-md 
+                         data-[state=active]:text-blue-700 dark:data-[state=active]:bg-gray-800 dark:data-[state=active]:text-blue-300"
+            >
+              <Container className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('adminPanel.deptoTab')}</span>
+            </TabsTrigger>
+          </TabsList>
             
             {/* User Creation Tab */}
-            <TabsContent value="user">
-              <CardContent className="mt-4">
-                <form onSubmit={handleCreateUser} className="space-y-4">
+          <TabsContent value="user" className="space-y-4">
+            <CardContent>
+              <form onSubmit={handleCreateUser} className="space-y-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">{t('adminPanel.emailLabel')}</Label>
+                    <Label htmlFor="email" className="text-blue-800 dark:text-blue-200">
+                      {t('adminPanel.emailLabel')}
+                    </Label>
                     <Input
                       id="email"
                       type="email"
@@ -397,12 +415,15 @@ export default function AdminManagementPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="w-full"
+                      className="w-full transition-all duration-300 focus:ring-2 focus:ring-blue-500 
+                                 dark:bg-gray-800 dark:border-gray-700"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password">{t('adminPanel.passwordLabel')}</Label>
+                    <Label htmlFor="password" className="text-blue-800 dark:text-blue-200">
+                      {t('adminPanel.passwordLabel')}
+                    </Label>
                     <Input
                       id="password"
                       type="password"
@@ -410,17 +431,20 @@ export default function AdminManagementPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="w-full"
+                      className="w-full transition-all duration-300 focus:ring-2 focus:ring-blue-500 
+                                 dark:bg-gray-800 dark:border-gray-700"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="role">{t('adminPanel.roleLabel')}</Label>
+                    <Label htmlFor="role" className="text-blue-800 dark:text-blue-200">
+                      {t('adminPanel.roleLabel')}
+                    </Label>
                     <Select value={role} onValueChange={setRole}>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
                         <SelectValue placeholder={t('adminPanel.selectRolePlaceholder')} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
                         <SelectItem value="ADMIN">{t('adminPanel.roleAdmin')}</SelectItem>
                         <SelectItem value="rrhh">{t('adminPanel.roleRrhh')}</SelectItem>
                         <SelectItem value="nominas">{t('adminPanel.roleNominas')}</SelectItem>
@@ -430,35 +454,40 @@ export default function AdminManagementPage() {
 
                   <Button 
                     type="submit" 
-                    className="w-full dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                    className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white 
+                               transition-all duration-300 ease-in-out transform hover:scale-[1.02] 
+                               dark:bg-blue-800 dark:hover:bg-blue-700"
                     disabled={isLoading}
                   >
                     {isLoading ? t('adminPanel.loadingCreateUserButton') : t('adminPanel.createUserButton')}
                   </Button>
-                </form>
-              </CardContent>
-              {error && (
-                <CardFooter>
-                  <Alert variant="destructive" className="w-full">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                </CardFooter>
-              )}
-              {success && (
-                <CardFooter>
-                  <Alert className="w-full bg-green-50 text-green-700 border-green-200">
-                    <AlertDescription>{success}</AlertDescription>
-                  </Alert>
-                </CardFooter>
-              )}
-            </TabsContent>
-
-            {/* Company Creation Tab */}
-            <TabsContent value="company">
-              <CardContent className="mt-4">
-                <form onSubmit={handleCreateCompany} className="space-y-4">
+                </div>
+              </form>
+            </CardContent>
+            {error && (
+              <CardFooter>
+                <Alert variant="destructive" className="w-full animate-shake">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              </CardFooter>
+            )}
+            {success && (
+              <CardFooter>
+                <Alert className="w-full bg-green-50 text-green-700 border-green-200 animate-bounce">
+                  <AlertDescription>{success}</AlertDescription>
+                </Alert>
+              </CardFooter>
+            )}
+          </TabsContent>
+             {/* Company Creation Tab */}
+          <TabsContent value="company" className="space-y-4">
+            <CardContent>
+              <form onSubmit={handleCreateCompany} className="space-y-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="companyName">{t('adminPanel.companyNameLabel')}</Label>
+                    <Label htmlFor="companyName" className="text-blue-800 dark:text-blue-200">
+                      {t('adminPanel.companyNameLabel')}
+                    </Label>
                     <Input
                       id="companyName"
                       type="text"
@@ -466,53 +495,60 @@ export default function AdminManagementPage() {
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
                       required
-                      className="w-full"
+                      className="w-full transition-all duration-300 focus:ring-2 focus:ring-blue-500 
+                                 dark:bg-gray-800 dark:border-gray-700"
                     />
                   </div>
 
                   <Button 
                     type="submit" 
-                    className="w-full dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
+                    className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white 
+                               transition-all duration-300 ease-in-out transform hover:scale-[1.02] 
+                               dark:bg-blue-800 dark:hover:bg-blue-700"
                     disabled={isCompanyLoading}
                   >
                     {isCompanyLoading ? t('adminPanel.loadingCreateCompanyButton') : t('adminPanel.createCompanyButton')}
                   </Button>
-                </form>
-              </CardContent>
-              {companyError && (
-                <CardFooter>
-                  <Alert variant="destructive" className="w-full">
-                    <AlertDescription>{companyError}</AlertDescription>
-                  </Alert>
-                </CardFooter>
-              )}
-              {companySuccess && (
-                <CardFooter>
-                  <Alert className="w-full bg-green-50 text-green-700 border-green-200">
-                    <AlertDescription>{companySuccess}</AlertDescription>
-                  </Alert>
-                </CardFooter>
-              )}
-            </TabsContent>
+                </div>
+              </form>
+            </CardContent>
+            {companyError && (
+              <CardFooter>
+                <Alert variant="destructive" className="w-full animate-shake">
+                  <AlertDescription>{companyError}</AlertDescription>
+                </Alert>
+              </CardFooter>
+            )}
+            {companySuccess && (
+              <CardFooter>
+                <Alert className="w-full bg-green-50 text-green-700 border-green-200 animate-bounce">
+                  <AlertDescription>{companySuccess}</AlertDescription>
+                </Alert>
+              </CardFooter>
+            )}
+          </TabsContent>
 
             
             {/* Depto Administration Tab */}
             <TabsContent value="deptos">
             <CardContent className="mt-4 space-y-4">
             <div className="space-y-2">
-            <Label>{t('adminPanel.selectCompanyLabel')}</Label>
+            <Label className="text-blue-800 dark:text-blue-200">{t('adminPanel.selectCompanyLabel')}</Label>
               <Select 
                 value={selectedCompany} 
                 onValueChange={setSelectedCompany}
               >
-              <SelectTrigger className="w-full bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+              <SelectTrigger className="w-full transition-all duration-300 
+                             bg-white dark:bg-gray-800 
+                             border-blue-300 dark:border-gray-700 
+                             hover:border-blue-500 focus:ring-2 focus:ring-blue-400">
                 <SelectValue 
-                  placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
-                  className="text-blue-600 dark:text-blue-200"
-                />
+                        placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
+                        className="text-blue-600 dark:text-blue-200"
+                      />
               </SelectTrigger>
 
-              <SelectContent className="bg-white dark:bg-blue-900 border-blue-200 dark:border-blue-700 shadow-xl">
+              <SelectContent className="bg-white dark:bg-gray-800 border-blue-200 dark:border-gray-700 shadow-xl">
                 {companies.map((company) => (
                   <SelectItem 
                     key={company} 
@@ -525,42 +561,49 @@ export default function AdminManagementPage() {
               </SelectContent>
             </Select>
             </div>
-            {/* Department Creation */}
+             {/* Department Creation */}
             <form onSubmit={handleCreateDepartment} className="space-y-2">
-              <Label>{t('adminPanel.departmentNameLabel')}</Label>
-              <div className="flex space-x-2">
-                <Input
-                  type="text"
-                  placeholder={t('adminPanel.departmentNamePlaceholder')}
-                  value={departmentName}
-                  onChange={(e) => setDepartmentName(e.target.value)}
-                  required
-                  disabled={!selectedCompany}
-                  className="w-full"
-                />
-                <Button 
-                  type="submit" 
-                  disabled={!selectedCompany || isLoading}
-                >
-                  {t('adminPanel.createDepartmentButton')}
-                </Button>
-              </div>
-            </form>
+                  <Label className="text-blue-800 dark:text-blue-200">
+                    {t('adminPanel.departmentNameLabel')}
+                  </Label>
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <Input
+                      type="text"
+                      placeholder={t('adminPanel.departmentNamePlaceholder')}
+                      value={departmentName}
+                      onChange={(e) => setDepartmentName(e.target.value)}
+                      required
+                      disabled={!selectedCompany}
+                      className="w-full transition-all duration-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
+                    />
+                    <Button 
+                      type="submit" 
+                      className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:text-white transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
+                      disabled={!selectedCompany || isLoading}
+                    >
+                      {t('adminPanel.createDepartmentButton')}
+                    </Button>
+                  </div>
+                </form>
+
             {/* Department Selection */}
             {departments.length > 0 && (
               <div className="space-y-2">
-                <Label>{t('adminPanel.selectDepartmentLabel')}</Label>
+                <Label className="text-blue-800 dark:text-blue-200">{t('adminPanel.selectDepartmentLabel')}</Label>
                 <Select 
                   value={selectedDepartment} 
                   onValueChange={setSelectedDepartment}
                   disabled={!selectedCompany}
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('adminPanel.selectDepartmentPlaceholder')} />
+                 <SelectTrigger className="w-full transition-all duration-300 
+                             bg-white dark:bg-gray-800 
+                             border-blue-300 dark:border-gray-700 
+                             hover:border-blue-500 focus:ring-2 focus:ring-blue-400">
+                    <SelectValue  placeholder={t('adminPanel.selectDepartmentPlaceholder')} className="text-blue-600 dark:text-blue-200" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white dark:bg-gray-800 border-blue-200 dark:border-gray-700 shadow-xl">
                     {departments.map((dept) => (
-                      <SelectItem key={dept} value={dept}>
+                      <SelectItem key={dept} value={dept} className="hover:bg-blue-100 dark:hover:bg-blue-800 focus:bg-blue-200 dark:focus:bg-blue-700 transition-colors">
                         {dept}
                       </SelectItem>
                     ))}
@@ -571,17 +614,17 @@ export default function AdminManagementPage() {
             {/* Subdepartment Creation */}
             {selectedDepartment && (
               <form onSubmit={handleCreateSubdepartment} className="space-y-2">
-                <Label>{t('adminPanel.subdepartmentNameLabel')}</Label>
-                <div className="flex space-x-2">
+                <Label className="text-blue-800 dark:text-blue-200">{t('adminPanel.subdepartmentNameLabel')}</Label>
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                   <Input
                     type="text"
                     placeholder={t('adminPanel.subdepartmentNamePlaceholder')}
                     value={subdepartmentName}
                     onChange={(e) => setSubdepartmentName(e.target.value)}
                     required
-                    className="w-full"
+                    className="w-full transition-all duration-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
                   />
-                  <Button type="submit" disabled={isLoading}>
+                  <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:text-white transition-all duration-300 ease-in-out transform hover:scale-[1.02]" type="submit" disabled={isLoading}>
                     {t('adminPanel.createSubdepartmentButton')}
                   </Button>
                 </div>
@@ -591,17 +634,20 @@ export default function AdminManagementPage() {
             {/* Subdepartment Selection */}
             {subdepartments.length > 0 && (
               <div className="space-y-2">
-                <Label>{t('adminPanel.selectSubdepartmentLabel')}</Label>
+                <Label className="text-blue-800 dark:text-blue-200">{t('adminPanel.selectSubdepartmentLabel')}</Label>
                 <Select 
                   value={selectedSubdepartment} 
                   onValueChange={setSelectedSubdepartment}
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('adminPanel.selectSubdepartmentPlaceholder')} />
+                  <SelectTrigger className="w-full transition-all duration-300 
+                             bg-white dark:bg-gray-800 
+                             border-blue-300 dark:border-gray-700 
+                             hover:border-blue-500 focus:ring-2 focus:ring-blue-400">
+                    <SelectValue placeholder={t('adminPanel.selectSubdepartmentPlaceholder')} className="text-blue-600 dark:text-blue-200" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white dark:bg-gray-800 border-blue-200 dark:border-gray-700 shadow-xl">
                     {subdepartments.map((subDept) => (
-                      <SelectItem key={subDept} value={subDept}>
+                      <SelectItem key={subDept} value={subDept} className="hover:bg-blue-100 dark:hover:bg-blue-800 focus:bg-blue-200 dark:focus:bg-blue-700 transition-colors">
                         {subDept}
                       </SelectItem>
                     ))}
@@ -612,17 +658,17 @@ export default function AdminManagementPage() {
             {/* Job Position Creation */}
             {selectedSubdepartment && (
               <form onSubmit={handleCreateJobPosition} className="space-y-2">
-                <Label>{t('adminPanel.jobPositionNameLabel')}</Label>
-                <div className="flex space-x-2">
+                <Label className="text-blue-800 dark:text-blue-200">{t('adminPanel.jobPositionNameLabel')}</Label>
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                   <Input
                     type="text"
                     placeholder={t('adminPanel.jobPositionNamePlaceholder')}
                     value={jobPositionName}
                     onChange={(e) => setJobPositionName(e.target.value)}
                     required
-                    className="w-full"
+                    className="w-full transition-all duration-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
                   />
-                  <Button type="submit" disabled={isLoading}>
+                  <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:text-white transition-all duration-300 ease-in-out transform hover:scale-[1.02]" type="submit" disabled={isLoading}>
                     {t('adminPanel.createJobPositionButton')}
                   </Button>
                 </div>
@@ -630,32 +676,32 @@ export default function AdminManagementPage() {
             )}
             {/* Error and Success Messages */}
             {departmentError && (
-              <Alert variant="destructive">
-                <AlertDescription>{departmentError}</AlertDescription>
-              </Alert>
-            )}
+                <Alert variant="destructive" className="animate-shake">
+                  <AlertDescription>{departmentError}</AlertDescription>
+                </Alert>
+              )}
             {departmentSuccess && (
-              <Alert className="bg-green-50 text-green-700">
-                <AlertDescription>{departmentSuccess}</AlertDescription>
-              </Alert>
-            )}
+                <Alert className="bg-green-50 text-green-700 animate-bounce">
+                  <AlertDescription>{departmentSuccess}</AlertDescription>
+                </Alert>
+              )}
             {subdepartmentError && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" className="animate-shake">
                 <AlertDescription>{subdepartmentError}</AlertDescription>
               </Alert>
             )}
             {subdepartmentSuccess && (
-              <Alert className="bg-green-50 text-green-700">
+              <Alert className="bg-green-50 text-green-700 animate-bounce">
                 <AlertDescription>{subdepartmentSuccess}</AlertDescription>
               </Alert>
             )}
             {jobPositionError && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" className="animate-shake">
                 <AlertDescription>{jobPositionError}</AlertDescription>
               </Alert>
             )}
             {jobPositionSuccess && (
-              <Alert className="bg-green-50 text-green-700">
+              <Alert className="bg-green-50 text-green-700 animate-bounce">
                 <AlertDescription>{jobPositionSuccess}</AlertDescription>
               </Alert>
             )}

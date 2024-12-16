@@ -66,7 +66,7 @@ const resources = {
             toggle: "Open/Close Sidebar"
           },
           dashboard: {
-            welcomeMessage: "Welcome, {{userRole}}",
+            welcomeMessage: "Welcome {{userRole}}",
             selectOptionMessage: "Select one of the following options to get started",
             mainDashboard: "Main Dashboard",
             mainDashboardDescription: "Access the main dashboard of the system",
@@ -837,7 +837,7 @@ const resources = {
             toggle: "Abrir/Cerrar Barra Lateral"
           },
           dashboard: {
-            welcomeMessage: "Bienvenido, {{userRole}}",
+            welcomeMessage: "Bienvenido {{userRole}}",
             selectOptionMessage: "Selecciona una de las siguientes opciones para comenzar.",
             mainDashboard: "Dashboard Principal",
             mainDashboardDescription: "Accede al panel principal del sistema",
@@ -1618,7 +1618,7 @@ const resources = {
             toggle: "Ouvrir/Fermer la Barre Latérale"
           },
           dashboard: {
-            welcomeMessage: "Bienvenue, {{userRole}}",
+            welcomeMessage: "Bienvenue {{userRole}}",
             selectOptionMessage: "Sélectionnez l'une des options suivantes pour commencer",
             mainDashboard: "Tableau de bord principal",
             mainDashboardDescription: "Accédez au tableau de bord principal du système",

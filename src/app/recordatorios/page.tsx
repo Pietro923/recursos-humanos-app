@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, InfoIcon } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Textarea } from "@/components/ui/textarea";
@@ -156,13 +156,21 @@ const RecordatoriossForm = () => {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">{t('recordatorios.card.title')}</CardTitle>
+      <CardTitle className="text-2xl font-bold flex items-center">
+            <InfoIcon className="mr-3 text-blue-600" />
+          {t('recordatorios.card.title')}
+          </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Selección de la empresa */}
           <div className="space-y-2">
-            <Label htmlFor="company">{t('recordatorios.card.label1')}</Label>
+          <Label 
+            className="text-lg font-semibold text-gray-800 tracking-wide border-b-2 border-blue-500 pb-1 inline-block dark:text-white"
+            htmlFor="company"
+          >
+            {t('recordatorios.card.label1')}
+          </Label>
             <Select value={selectedCompany} onValueChange={setSelectedCompany}>
               <SelectTrigger>
                 <SelectValue placeholder={t('recordatorios.card.label1PlaceHolder')} />
@@ -179,7 +187,7 @@ const RecordatoriossForm = () => {
 
           {/* Selección de empleado */}
           <div className="space-y-2">
-            <Label htmlFor="employee">{t('recordatorios.card.label2')}</Label>
+            <Label className="text-lg font-semibold text-gray-800 tracking-wide border-b-2 border-blue-500 pb-1 inline-block dark:text-white" htmlFor="employee">{t('recordatorios.card.label2')}</Label>
             <Select value={employee} onValueChange={setEmployee}>
               <SelectTrigger>
                 <SelectValue placeholder={t('recordatorios.card.label2PlaceHolder')} />
@@ -196,7 +204,7 @@ const RecordatoriossForm = () => {
 
           {/* Campos restantes: Tipo, Fechas, Descripción */}
           <div className="space-y-2">
-            <Label htmlFor="type">{t('recordatorios.card.label3')}</Label>
+            <Label className="text-lg font-semibold text-gray-800 tracking-wide border-b-2 border-blue-500 pb-1 inline-block dark:text-white" htmlFor="type">{t('recordatorios.card.label3')}</Label>
             <Select value={type} onValueChange={setType}>
               <SelectTrigger>
                 <SelectValue placeholder={t('recordatorios.card.label3PlaceHolder1')} />
@@ -209,47 +217,55 @@ const RecordatoriossForm = () => {
           </div>
 
           {/* Fechas */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>{t('recordatorios.card.label4')}</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP", { locale: es }) : <span>{t('recordatorios.card.label4PlaceHolder')}</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
-                </PopoverContent>
-              </Popover>
-            </div>
+<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  <div className="space-y-2">
+    <Label className="text-lg font-semibold text-gray-800 tracking-wide border-b-2 border-blue-500 pb-1 inline-block dark:text-white" >{t('recordatorios.card.label4')}</Label>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className="w-full justify-start text-left font-normal sm:py-2 py-1"
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {startDate ? (
+            format(startDate, "PPP", { locale: es })
+          ) : (
+            <span>{t('recordatorios.card.label4PlaceHolder')}</span>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full max-w-md p-0">
+        <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
+      </PopoverContent>
+    </Popover>
+  </div>
 
-            <div className="space-y-2">
-              <Label>{t('recordatorios.card.label5')}</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, "PPP", { locale: es }) : <span>{t('recordatorios.card.label5PlaceHolder')}</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+  <div className="space-y-2">
+    <Label className="text-lg font-semibold text-gray-800 tracking-wide border-b-2 border-blue-500 pb-1 inline-block dark:text-white" >{t('recordatorios.card.label5')}</Label>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className="w-full justify-start text-left font-normal sm:py-2 py-1"
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {endDate ? (
+            format(endDate, "PPP", { locale: es })
+          ) : (
+            <span>{t('recordatorios.card.label5PlaceHolder')}</span>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full max-w-md p-0">
+        <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
+      </PopoverContent>
+    </Popover>
+  </div>
+</div>
 
           {/* Descripción */}
           <div className="space-y-2">
-            <Label>{t('recordatorios.card.label6')}</Label>
+            <Label className="text-lg font-semibold text-gray-800 tracking-wide border-b-2 border-blue-500 pb-1 inline-block dark:text-white" >{t('recordatorios.card.label6')}</Label>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -258,7 +274,7 @@ const RecordatoriossForm = () => {
           </div>
 
           {/* Botón de enviar */}
-          <Button type="submit">{t('recordatorios.card.button')}</Button>
+          <Button className="w-full dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-white" type="submit">{t('recordatorios.card.button')}</Button>
         </form>
       </CardContent>
     </Card>

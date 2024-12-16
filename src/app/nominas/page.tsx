@@ -291,48 +291,63 @@ const saveGlobalAndGroupData = async () => {
         </h1>
       </motion.div>
   
-      <Card className="max-w-screen-2xl border-none shadow-2xl rounded-xl overflow-hidden transition-all duration-300 hover:shadow-3xl">
-        <CardHeader className="bg-gradient-to-r from-muted/50 to-muted/30 dark:from-gray-800 dark:to-gray-900">
-          <div className="flex flex-col gap-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <Building2 className="h-6 w-6 text-primary-500" />
-                <CardTitle className="text-xl font-bold text-gray-800 dark:text-white">
-                  {t('nominas.header.sectionTitle')} {periodId}
-                </CardTitle>
-              </div>
-      
-              <div className="flex flex-wrap items-center gap-4">
-                <Select value={selectedCompany || ""} onValueChange={setSelectedCompany}>
-                    <SelectValue placeholder={t('nominas.header.selectCompany')} />
-                    <SelectTrigger className="w-[250px] bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
-            <SelectValue 
-              placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
-              className="text-blue-600 dark:text-blue-200"
-            />
-          </SelectTrigger>
-                  <SelectContent className="dark:bg-gray-900 dark:border-gray-700">
-                    {companies.map((company) => (
-                      <SelectItem 
-                        key={company} 
-                        value={company}
-                        className="hover:bg-primary-50 dark:hover:bg-gray-800 transition-colors"
-                      >
-                        {company}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+      <Card className="w-full max-w-screen-2xl border-none shadow-2xl rounded-xl overflow-hidden transition-all duration-300 hover:shadow-3xl">
+  <CardHeader className="bg-gradient-to-r from-muted/50 to-muted/30 dark:from-gray-800 dark:to-gray-900 p-4 sm:p-6">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary-500" />
+          <CardTitle className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
+            {t('nominas.header.sectionTitle')} {periodId}
+          </CardTitle>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          <Select 
+            value={selectedCompany || ""} 
+            onValueChange={setSelectedCompany}
+          >
+            <SelectTrigger 
+              className="w-full sm:w-[250px] bg-white dark:bg-blue-800 
+              border-2 border-blue-300 dark:border-blue-600 
+              hover:border-blue-500 focus:ring-2 focus:ring-blue-400 
+              transition-all duration-300"
+            >
+              <SelectValue 
+                placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
+                className="text-blue-600 dark:text-blue-200"
+              />
+            </SelectTrigger>
+            <SelectContent className="dark:bg-gray-900 dark:border-gray-700">
+              {companies.map((company) => (
+                <SelectItem 
+                  key={company} 
+                  value={company}
+                  className="hover:bg-primary-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  {company}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-                <Dialog>
+      <Dialog>
       <DialogTrigger asChild>
-        <Button 
-          disabled={isLoading || !selectedCompany}
-          className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 transition-all duration-300 flex items-center justify-center gap-2 group shadow-md hover:shadow-lg"
-        >
-          <Calculator className="h-5 w-5 group-hover:animate-pulse" />
-          {t('nominas.dialog.button1')}
-        </Button>
+      <Button 
+  disabled={isLoading || !selectedCompany}
+  className="w-full sm:w-auto 
+    bg-gradient-to-r from-blue-500 to-purple-600 
+    text-white hover:from-blue-600 hover:to-purple-700 
+    transition-all duration-300 
+    flex items-center justify-center gap-2 
+    group shadow-md hover:shadow-lg 
+    text-xs sm:text-sm 
+    px-3 sm:px-4 py-2
+    truncate"
+>
+  <Calculator className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse flex-shrink-0" />
+  <span className="truncate max-w-full">{t('nominas.dialog.button1')}</span>
+</Button>
       </DialogTrigger>
 
       <DialogContent className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl border-none  w-full  max-w-3xl mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto">

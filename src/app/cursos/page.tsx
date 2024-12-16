@@ -383,54 +383,56 @@ export default function TrainingPage() {
     );
   };
 
-  // Componente de Vista Global
   const GlobalView = () => {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>{t('cursos.global_view.card_title')}</CardTitle>
-            <div className="flex gap-2">
-              <Select
-                value={selectedMonth.toString()}
-                onValueChange={(v) => setSelectedMonth(parseInt(v))}
-              >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder={t('cursos.global_view.select_month_placeholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <SelectItem key={i} value={i.toString()}>
-                      {new Date(2024, i, 1).toLocaleString('es', { month: 'long' })}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select
-                value={selectedYear.toString()}
-                onValueChange={(v) => setSelectedYear(parseInt(v))}
-              >
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder={t('cursos.global_view.select_year_placeholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {[2024, 2025].map(year => (
-                    <SelectItem key={year} value={year.toString()}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+  return (
+    <Card className="w-full">
+      <CardHeader className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
+          <CardTitle className="text-lg sm:text-xl">
+            {t('cursos.global_view.card_title')}
+          </CardTitle>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Select
+              value={selectedMonth.toString()}
+              onValueChange={(v) => setSelectedMonth(parseInt(v))}
+            >
+              <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectValue placeholder={t('cursos.global_view.select_month_placeholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 12 }, (_, i) => (
+                  <SelectItem key={i} value={i.toString()}>
+                    {new Date(2024, i, 1).toLocaleString('es', { month: 'long' })}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={selectedYear.toString()}
+              onValueChange={(v) => setSelectedYear(parseInt(v))}
+            >
+              <SelectTrigger className="w-full sm:w-[120px]">
+                <SelectValue placeholder={t('cursos.global_view.select_year_placeholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                {[2024, 2025].map(year => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
+        </div>
+      </CardHeader>
+      <CardContent className="p-2 sm:p-6">
+        <div className="overflow-x-auto">
+          <Table className="w-full">
             <TableHeader>
               <TableRow>
-                <TableHead>{t('cursos.global_view.table_headers.employee')}</TableHead>
-                <TableHead>{t('cursos.global_view.table_headers.assigned_courses')}</TableHead>
-                <TableHead>{t('cursos.global_view.table_headers.progress')}</TableHead>
+                <TableHead className="text-xs sm:text-sm hidden sm:table-cell">{t('cursos.global_view.table_headers.employee')}</TableHead>
+                <TableHead className="text-xs sm:text-sm hidden sm:table-cell">{t('cursos.global_view.table_headers.assigned_courses')}</TableHead>
+                <TableHead className="text-xs sm:text-sm text-right">{t('cursos.global_view.table_headers.progress')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -439,14 +441,18 @@ export default function TrainingPage() {
                   course.employees.includes(employee.id)
                 );
                 return (
-                  <TableRow key={employee.id}>
-                    <TableCell>{employee.name}</TableCell>
-                    <TableCell>
+                  <TableRow key={employee.id} className="flex flex-col sm:table-row">
+                    <TableCell className="flex justify-between sm:table-cell">
+                      <span className="sm:hidden font-medium">{t('cursos.global_view.table_headers.employee')}</span>
+                      <span>{employee.name}</span>
+                    </TableCell>
+                    <TableCell className="flex justify-between sm:table-cell">
+                      <span className="sm:hidden">{t('cursos.global_view.table_headers.assigned_courses')}</span>
                       <div className="space-y-1">
                         {employeeCourses.map(course => (
                           <Badge 
                             key={course.id} 
-                            className={`${getStatusStyle(course.status)} dark:text-white`}
+                            className={`${getStatusStyle(course.status)} dark:text-white text-xs sm:text-sm`}
                             onClick={() => {
                               setSelectedCourse(course);
                               setShowDetailsModal(true);
@@ -457,32 +463,37 @@ export default function TrainingPage() {
                         ))}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      {employeeCourses.length} curso(s) asignado(s)
+                    <TableCell className="text-right flex justify-between sm:table-cell">
+                      <span className="sm:hidden">{t('cursos.global_view.table_headers.progress')}</span>
+                      <span>{employeeCourses.length} curso(s) asignado(s)</span>
                     </TableCell>
                   </TableRow>
                 );
               })}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-    );
-  };
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      <div className="flex items-center justify-between dark:text-white">
-        <div className="flex items-center gap-3">
-          <GraduationCap className="h-8 w-8 text-primary" />
-          <h1 className="text-4xl font-bold tracking-tight dark:text-white">{t('cursos.title')}</h1>
-        </div>
-          
+    <div className="container mx-auto py-4 sm:py-8 px-4 sm:px-0 space-y-6 sm:space-y-8">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between dark:text-white gap-4 sm:gap-0">
+      <div className="flex items-center gap-3 w-full sm:w-auto">
+        <GraduationCap className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight dark:text-white">
+          {t('cursos.title')}
+        </h1>
+      </div>
+        
+      <div className="w-full sm:w-auto">
         <Select 
           value={selectedCompany} 
           onValueChange={setSelectedCompany}
         >
-          <SelectTrigger className="w-[250px] bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
+          <SelectTrigger className="w-full sm:w-[250px] bg-white dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 hover:border-blue-500 focus:ring-2 focus:ring-blue-400 transition-all duration-300">
             <SelectValue 
               placeholder={t('pagedashboard.selectCompanyPlaceholder')} 
               className="text-blue-600 dark:text-blue-200"
@@ -501,98 +512,126 @@ export default function TrainingPage() {
           </SelectContent>
         </Select>
       </div>
-
-      <Tabs defaultValue="list" className="w-full">
-        <TabsList className="dark:text-white dark:bg-gray-950 ">
-          <TabsTrigger value="list" className="flex items-center gap-2 dark:hover:bg-gray-800">
-            <List className="h-4 w-4" />
-            {t('cursos.tabs.courses_list')}
-          </TabsTrigger>
-          <TabsTrigger value="calendar" className="flex items-center gap-2 dark:hover:bg-gray-800 ">
-            <Calendar className="h-4 w-4 " />
-            {t('cursos.tabs.calendar')}
-          </TabsTrigger>
-          <TabsTrigger value="global" className="flex items-center gap-2 dark:hover:bg-gray-800">
-            <Users className="h-4 w-4" />
-            {t('cursos.tabs.global_view')}
-          </TabsTrigger>
-          <TabsTrigger value="archived" className="flex items-center gap-2 dark:hover:bg-gray-800">
-            <Archive className="h-4 w-4" />
-            {t('cursos.tabs.archived_courses')}
-          </TabsTrigger>
-        </TabsList>
+    </div>
+    <Tabs defaultValue="list" className="w-full">
+      <TabsList className="grid grid-cols-2 sm:grid-cols-4 dark:text-white dark:bg-gray-950 gap-2">
+        <TabsTrigger 
+          value="list" 
+          className="flex items-center gap-2 dark:hover:bg-gray-800 text-xs sm:text-base"
+        >
+          <List className="h-3 w-3 sm:h-4 sm:w-4" />
+          {t('cursos.tabs.courses_list')}
+        </TabsTrigger>
+        <TabsTrigger 
+          value="calendar" 
+          className="flex items-center gap-2 dark:hover:bg-gray-800 text-xs sm:text-base"
+        >
+          <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+          {t('cursos.tabs.calendar')}
+        </TabsTrigger>
+        <TabsTrigger 
+          value="global" 
+          className="flex items-center gap-2 dark:hover:bg-gray-800 text-xs sm:text-base"
+        >
+          <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+          {t('cursos.tabs.global_view')}
+        </TabsTrigger>
+        <TabsTrigger 
+          value="archived" 
+          className="flex items-center gap-2 dark:hover:bg-gray-800 text-xs sm:text-base"
+        >
+          <Archive className="h-3 w-3 sm:h-4 sm:w-4" />
+          {t('cursos.tabs.archived_courses')}
+        </TabsTrigger>
+      </TabsList>
 
         <TabsContent value="list">
-          <Card className="border-none shadow-lg">
-            <CardHeader className="bg-muted/50">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-muted-foreground" />
-                  <CardTitle> {t('cursos.courses_list.courses')}</CardTitle>
-                </div>
-                <Button
-                  onClick={() => setShowAddCourseModal(true)}
-                  className="gap-2 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
-                  disabled={!selectedCompany}
-                >
-                  <Plus className="h-4 w-4 dark:text-white" />
-                  {t('cursos.courses_list.add_new_course')}
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="dark:text-white">{t('cursos.courses_list.table_headers.course_name')}</TableHead>
-                    <TableHead className="dark:text-white">{t('cursos.courses_list.table_headers.department')}</TableHead>
-                    <TableHead className="dark:text-white">{t('cursos.courses_list.table_headers.duration')}</TableHead>
-                    <TableHead className="dark:text-white">{t('cursos.courses_list.table_headers.status')}</TableHead>
-                    <TableHead className="dark:text-white text-right">{t('cursos.courses_list.table_headers.actions')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {courses.map(course => (
-                    <TableRow key={course.id}>
-                      <TableCell className="font-medium">{course.name}</TableCell>
-                      <TableCell>{course.department}</TableCell>
-                      <TableCell>{course.duration}</TableCell>
-                      <TableCell>
-                      <Badge className={`dark:text-white ${getStatusStyle(course.status)}`}>
-                        {course.status}
-                      </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedCourse(course);
-                              setShowDetailsModal(true);
-                            }}
-                          >
-                            {t('cursos.courses_list.buttons.details')}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedCourse(course);
-                              setShowAssignEmployeeModal(true);
-                            }}
-                          >
-                            {t('cursos.courses_list.buttons.assign')}
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+  <Card className="border-none shadow-lg w-full">
+    <CardHeader className="bg-muted/50 p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Users className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+          <CardTitle className="text-lg sm:text-xl"> 
+            {t('cursos.courses_list.courses')}
+          </CardTitle>
+        </div>
+        <Button
+          onClick={() => setShowAddCourseModal(true)}
+          className="w-full sm:w-auto gap-2 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 flex items-center justify-center"
+          disabled={!selectedCompany}
+        >
+          <Plus className="h-3 w-3 sm:h-4 sm:w-4 dark:text-white" />
+          <span className="text-xs sm:text-sm">{t('cursos.courses_list.add_new_course')}</span>
+        </Button>
+      </div>
+    </CardHeader>
+    <CardContent className="p-2 sm:p-6">
+      <div className="overflow-x-auto">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="dark:text-white text-xs sm:text-sm hidden sm:table-cell">{t('cursos.courses_list.table_headers.course_name')}</TableHead>
+              <TableHead className="dark:text-white text-xs sm:text-sm hidden sm:table-cell">{t('cursos.courses_list.table_headers.department')}</TableHead>
+              <TableHead className="dark:text-white text-xs sm:text-sm hidden sm:table-cell">{t('cursos.courses_list.table_headers.duration')}</TableHead>
+              <TableHead className="dark:text-white text-xs sm:text-sm hidden sm:table-cell">{t('cursos.courses_list.table_headers.status')}</TableHead>
+              <TableHead className="dark:text-white text-xs sm:text-sm text-right">{t('cursos.courses_list.table_headers.actions')}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {courses.map(course => (
+              <TableRow key={course.id} className="flex flex-col sm:table-row">
+                <TableCell className="flex justify-between sm:table-cell">
+                  <span className="sm:hidden font-medium">{t('cursos.courses_list.table_headers.course_name')}</span>
+                  <span className="font-medium">{course.name}</span>
+                </TableCell>
+                <TableCell className="flex justify-between sm:table-cell">
+                  <span className="sm:hidden">{t('cursos.courses_list.table_headers.department')}</span>
+                  <span>{course.department}</span>
+                </TableCell>
+                <TableCell className="flex justify-between sm:table-cell">
+                  <span className="sm:hidden">{t('cursos.courses_list.table_headers.duration')}</span>
+                  <span>{course.duration}</span>
+                </TableCell>
+                <TableCell className="flex justify-between sm:table-cell">
+                  <span className="sm:hidden">{t('cursos.courses_list.table_headers.status')}</span>
+                  <Badge className={`dark:text-white ${getStatusStyle(course.status)} text-xs sm:text-sm`}>
+                    {course.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right flex flex-col sm:table-cell gap-2">
+                  <div className="flex justify-between sm:justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto text-xs sm:text-sm"
+                      onClick={() => {
+                        setSelectedCourse(course);
+                        setShowDetailsModal(true);
+                      }}
+                    >
+                      {t('cursos.courses_list.buttons.details')}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto text-xs sm:text-sm"
+                      onClick={() => {
+                        setSelectedCourse(course);
+                        setShowAssignEmployeeModal(true);
+                      }}
+                    >
+                      {t('cursos.courses_list.buttons.assign')}
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </CardContent>
+  </Card>
+</TabsContent>
 
         <TabsContent value="calendar">
           <Card>

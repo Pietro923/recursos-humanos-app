@@ -273,17 +273,26 @@ export default function PerformancePage() {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <h1 className="text-3xl font-bold dark:text-white">{t('desempeño.title')}</h1>
-
+    <div className="space-y-6 p-4 sm:p-6">
+      <h1 className="text-2xl sm:text-3xl font-bold dark:text-white">{t('desempeño.title')}</h1>
       <Tabs defaultValue="employees" className="w-full">
-        <TabsList className="grid w-[400px] grid-cols-2">
-          <TabsTrigger className="dark:text-white dark:hover:bg-gray-700" value="employees">{t('desempeño.tabs.employe')}</TabsTrigger>
-          <TabsTrigger className="dark:text-white dark:hover:bg-gray-700" value="technicians">{t('desempeño.tabs.employeTec')}</TabsTrigger>
+        <TabsList className="grid grid-cols-2 w-full sm:w-[400px]">
+          <TabsTrigger 
+            className="dark:text-white dark:hover:bg-gray-700 text-sm sm:text-base" 
+            value="employees"
+          >
+            {t('desempeño.tabs.employe')}
+          </TabsTrigger>
+          <TabsTrigger 
+            className="dark:text-white dark:hover:bg-gray-700 text-sm sm:text-base" 
+            value="technicians"
+          >
+            {t('desempeño.tabs.employeTec')}
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="employees">{renderEmployeeEvaluation()}</TabsContent>
         <TabsContent value="technicians">{renderTechEvaluation()}</TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }

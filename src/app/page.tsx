@@ -209,10 +209,10 @@ export default function Inicio() {
       <div className="max-w-5xl mx-auto">
         <Card className="shadow-2xl border-none rounded-2xl overflow-hidden dark:bg-gray-800/80 backdrop-blur-sm">
           <CardHeader className="bg-gradient-to-r from-blue-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-6 border-b dark:border-gray-700">
-            <CardTitle className="text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+            <CardTitle className="text-center text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
               {t('dashboard.welcomeMessage', { userRole: userRole || 'Usuario' })}
             </CardTitle>
-            <CardDescription className="text-lg mt-2 text-gray-600 dark:text-gray-300 font-medium">
+            <CardDescription className="text-center text-lg mt-2 text-gray-600 dark:text-gray-300 font-medium">
               {t('dashboard.selectOptionMessage')}
             </CardDescription>
           </CardHeader>
@@ -252,70 +252,80 @@ export default function Inicio() {
                 {/* Main Dashboard Card */}
                 <Card className="group overflow-hidden transition-all duration-300 
                   hover:shadow-xl hover:scale-[1.02] 
-                  dark:bg-gray-700/50 dark:hover:bg-gray-600/60">
-                  <CardContent className="flex items-center p-6 space-x-4">
-                    <div className="bg-blue-500/10 dark:bg-blue-500/20 p-4 rounded-xl 
-                      transition-all group-hover:rotate-6 group-hover:scale-110">
-                      <LayoutDashboard className="h-7 w-7 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div className="flex-grow">
-                      <h3 className="font-bold text-xl text-gray-800 dark:text-white mb-1">
-                        {t('dashboard.mainDashboard')}
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-300 text-base">
-                        {t('dashboard.mainDashboardDescription')}
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => router.push('/dashboard')}
-                      variant="default"
-                      className="bg-blue-600 hover:bg-blue-700 
-                        dark:bg-blue-700 dark:hover:bg-blue-600 
-                        transition-all duration-300 
-                        px-4 py-2 rounded-lg"
-                    >
-                      {t('dashboard.access')}
-                    </Button>
-                  </CardContent>
-                </Card>
+                  dark:bg-gray-700/50 dark:hover:bg-gray-600/60
+                  w-full max-w-md mx-auto">
+  <CardContent className="flex flex-col sm:flex-row items-center p-6 space-y-4 sm:space-y-0 sm:space-x-4">
+    <div className="flex items-center w-full">
+      <div className="bg-blue-500/10 dark:bg-blue-500/20 p-4 rounded-xl 
+        transition-all group-hover:rotate-6 group-hover:scale-110 mr-4">
+        <LayoutDashboard className="h-7 w-7 text-blue-600 dark:text-blue-400" />
+      </div>
+      <div className="flex-grow">
+        <h3 className="font-bold text-xl text-gray-800 dark:text-white mb-1">
+          {t('dashboard.mainDashboard')}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-300 text-base">
+          {t('dashboard.mainDashboardDescription')}
+        </p>
+      </div>
+    </div>
+    <div className="w-full sm:w-auto mt-4 sm:mt-0">
+      <Button
+        onClick={() => router.push('/dashboard')}
+        variant="default"
+        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 
+          dark:bg-blue-700 dark:hover:bg-blue-600 
+          transition-all duration-300 
+          px-4 py-2 rounded-lg"
+      >
+        {t('dashboard.access')}
+      </Button>
+    </div>
+  </CardContent>
+</Card>
   
                 {/* Role-specific Cards */}
                 {roleCards.map((card) => (
                   userRole?.toUpperCase() === card.role && (
                     <Card 
-                      key={card.role} 
-                      className="group overflow-hidden transition-all duration-300  
-                        hover:shadow-xl hover:scale-[1.02] 
-                        dark:bg-gray-700/50 dark:hover:bg-gray-600/60"
-                    >
-                      <CardContent className="flex items-center p-6 space-x-4">
-                        <div className={`p-4 rounded-xl 
-                          transition-all group-hover:rotate-6 group-hover:scale-110 
-                          ${card.color} dark:opacity-80`}>
-                          <card.icon className="h-7 w-7 dark:text-white" />
-                        </div>
-                        <div className="flex-grow">
-                          <h3 className="font-bold text-xl text-gray-800 dark:text-white mb-1">
-                            {card.title}
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-300 text-base">
-                            {card.description}
-                          </p>
-                        </div>
-                        <Button
-                          onClick={() => router.push(card.path)}
-                          variant="default"
-                          className="bg-blue-600 hover:bg-blue-700 
-                            dark:bg-blue-700 dark:hover:bg-blue-600 
-                            transition-all duration-300 
-                            px-4 py-2 rounded-lg"
-                        >
-                          {t('dashboard.access')}
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  )
-                ))}
+      key={card.role} 
+      className="group overflow-hidden transition-all duration-300  
+        hover:shadow-xl hover:scale-[1.02] 
+        dark:bg-gray-700/50 dark:hover:bg-gray-600/60
+        w-full max-w-md mx-auto"
+    >
+      <CardContent className="flex flex-col sm:flex-row items-center p-6 space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="flex items-center w-full">
+          <div className={`p-4 rounded-xl 
+            transition-all group-hover:rotate-6 group-hover:scale-110 
+            ${card.color} dark:opacity-80 mr-4`}>
+            <card.icon className="h-7 w-7 dark:text-white" />
+          </div>
+          <div className="flex-grow">
+            <h3 className="font-bold text-xl text-gray-800 dark:text-white mb-1">
+              {card.title}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 text-base">
+              {card.description}
+            </p>
+          </div>
+        </div>
+        <div className="w-full sm:w-auto mt-4 sm:mt-0">
+          <Button
+            onClick={() => router.push(card.path)}
+            variant="default"
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 
+              dark:bg-blue-700 dark:hover:bg-blue-600 
+              transition-all duration-300 
+              px-4 py-2 rounded-lg"
+          >
+            {t('dashboard.access')}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+))}
               </div>
             </div>
           </CardContent>
