@@ -127,10 +127,10 @@ const ProfilePage = () => {
   return (
     <div className="container max-w-4xl mx-auto py-10">
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="personal">{t('perfil.info_personal')}</TabsTrigger>
-          <TabsTrigger value="actualizar">{t('perfil.actualizar_info')}</TabsTrigger>
-        </TabsList>
+      <TabsList className="flex flex-col sm:flex-row w-full">
+  <TabsTrigger className="flex-1" value="personal">{t('perfil.info_personal')}</TabsTrigger>
+  <TabsTrigger className="flex-1" value="actualizar">{t('perfil.actualizar_info')}</TabsTrigger>
+</TabsList>
 
         <TabsContent value="personal">
           <Card>
