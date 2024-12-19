@@ -271,6 +271,8 @@ const resources = {
                     dni: "ID Number",
                     correo: "Email",
                     depto: "Department",
+                    subdepto: "Sub Department",
+  puesto: "Position",
                     genero: "Gender",
                     fechanac: "Date of Birth",
                     sueldo: "Salary",
@@ -365,6 +367,7 @@ const resources = {
                   card_title: "Course Calendar"
                 },
                 archived_courses: {
+                  no_courses: "No Archived Courses",
                   card_title: "Completed Courses",
                   table_headers: {
                     course_name: "Course Name",
@@ -376,6 +379,13 @@ const resources = {
                 },
                 modal: {
                   add_course: {
+                    errors: {
+                      name_required: "Name Required",
+                      start_date_required: "Start Date Required",
+                      end_date_required: "End Date Required",
+                      invalid_date_range: "Invalid Dates",
+                      description_required: "Description Required"
+                    },
                     title: "Add New Course",
                     fields: {
                       course_name: "Course Name",
@@ -542,7 +552,7 @@ const resources = {
                 absenceDiscount: "Absence Discount",
                 totalBasicIncentive: "Total Basic + Incentive",
                 bonus: "Bonus",
-                finalTotal: "Final Total",
+                finalTotal: "Final Total (Basic Total + Bonus)"
               },
               dialog: {
                 button1: "Calculate Salary, Incentives, Bonuses, and Totals",
@@ -1024,6 +1034,7 @@ const resources = {
     },
     jobApplications: {
       header: {
+        linkedin:"LinkedIn",
         title: "Publicaciones de trabajo",
         searchButton: "Agregar Busqueda",
         eliminar: "Eliminar",
@@ -1042,6 +1053,8 @@ const resources = {
         dni:"DNI",
         correo:"Correo",
         depto:"Departamento",
+        subdepto:"Sub Departamento",
+        puesto:"Puesto",
         genero:"Genero",
         fechanac:"Fecha de Nacimiento",
         sueldo:"Sueldo",
@@ -1138,6 +1151,7 @@ const resources = {
       card_title: "Calendario de Cursos"
     },
     archived_courses: {
+      no_courses:"No Hay Cursos Archivados",
       card_title: "Cursos Finalizados",
       table_headers: {
         course_name: "Nombre del Curso",
@@ -1149,6 +1163,13 @@ const resources = {
     },
     modal: {
       add_course: {
+        errors:{
+          name_required:"Nombre Requerido",
+          start_date_required:"Fecha de Inicio Requerida",
+          end_date_required:"Fecha de Fin Requerida",
+          invalid_date_range:"Fechas Invalidas",
+          description_required:"Descripción Requerida"
+        },
         title: "Agregar Nuevo Curso",
         fields: {
           course_name: "Nombre del Curso",
@@ -1316,7 +1337,7 @@ const resources = {
     absenceDiscount: "Descuento Inasistencias",
     totalBasicIncentive: "Total Básico + Incentivo",
     bonus: "Bono",
-    finalTotal: "Total Final"
+    finalTotal: "Total Final (Total Basico + Bono)"
   },
   dialog:{
     button1:"Calcular Sueldo, Incentivos, Bonos, y Totales",
@@ -1822,6 +1843,8 @@ const resources = {
                     dni: "DNI",
                     correo: "Email",
                     depto: "Département",
+                     subdepto: "Sous Département",
+  puesto: "Poste",
                     genero: "Genre",
                     fechanac: "Date de naissance",
                     sueldo: "Salaire",
@@ -1916,6 +1939,7 @@ const resources = {
                   card_title: "Calendrier des Cours"
                 },
                 archived_courses: {
+                  no_courses: "Aucun Cours Archivé",
                   card_title: "Cours Terminés",
                   table_headers: {
                     course_name: "Nom du Cours",
@@ -1927,6 +1951,13 @@ const resources = {
                 },
                 modal: {
                   add_course: {
+                    errors: {
+                      name_required: "Nom requis",
+                      start_date_required: "Date de début requise",
+                      end_date_required: "Date de fin requise",
+                      invalid_date_range: "Dates invalides",
+                      description_required: "Description requise"
+                    },
                     title: "Ajouter un Nouveau Cours",
                     fields: {
                       course_name: "Nom du Cours",
@@ -2093,7 +2124,7 @@ const resources = {
                 absenceDiscount: "Réduction pour Absences",
                 totalBasicIncentive: "Total Base + Prime",
                 bonus: "Bonus",
-                finalTotal: "Total Final",
+                finalTotal: "Total Final (Total de Base + Prime)",
               },
               dialog: {
                 button1: "Calculer Salaire, Primes, Bonus, et Totaux",

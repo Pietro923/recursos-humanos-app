@@ -615,7 +615,7 @@ const saveGlobalAndGroupData = async () => {
                       filteredEmployees.map((employee) => {
                         console.log(employee); // Verifica los valores de incentivoMensual y bono
                         const totalBasicoIncentivo = employee.totalBasicoIncentivo || 
-                        (employee.sueldo + (employee.incentivoPromedio || 0));
+                        (employee.sueldo + (employee.incentivo || 0));
                       const totalFinal = employee.totalFinal || 
                         (totalBasicoIncentivo + (employee.bono || 0));
                       
@@ -633,7 +633,7 @@ const saveGlobalAndGroupData = async () => {
                             {formatCurrency(employee.sueldo)}
                           </TableCell>
                           <TableCell className="text-right font-medium text-gray-700 dark:text-gray-300">
-                            {formatCurrency(employee.incentivoPromedio || employee.incentivo)}
+                            {formatCurrency(employee.incentivo)}
                           </TableCell>
                           <TableCell className="text-right font-medium text-blue-700 dark:text-blue-500">
                             {formatCurrency(totalBasicoIncentivo)}

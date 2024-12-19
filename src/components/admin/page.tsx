@@ -1,7 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { getAuth } from "firebase/auth"
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword,
+  signOut
+} from "firebase/auth";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,7 +16,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { UserPlus, Building2, Container} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { db } from "@/lib/firebaseConfig";
-import { collection, getDocs, doc, setDoc } from "firebase/firestore";
+import { 
+  collection, 
+  getDocs, 
+  doc, 
+  setDoc, 
+  getDoc 
+} from "firebase/firestore";
 
 export default function AdminManagementPage() {
   // User Creation State
@@ -28,12 +38,9 @@ export default function AdminManagementPage() {
   const [companySuccess, setCompanySuccess] = useState("")
   const [isCompanyLoading, setIsCompanyLoading] = useState(false)
 
-  const { t } = useTranslation()
-
   // Deparment Creation State
   const [selectedCompany, setSelectedCompany] = useState("");
   const [companies, setCompanies] = useState<string[]>([]);
-  // New states for Department, Subdepartment, and Job Position management
   const [departments, setDepartments] = useState<string[]>([]);
   const [subdepartments, setSubdepartments] = useState<string[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
@@ -52,8 +59,7 @@ export default function AdminManagementPage() {
   const [jobPositionError, setJobPositionError] = useState("");
   const [jobPositionSuccess, setJobPositionSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  // Existing useEffect and other methods...
+  const { t } = useTranslation(); // Hook de traducción 
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
@@ -69,7 +75,6 @@ export default function AdminManagementPage() {
     fetchCompanies();
   }, []);
 
-  // New method to fetch departments when a company is selected
   useEffect(() => {
     const fetchDepartments = async () => {
       if (!selectedCompany) return;
@@ -87,7 +92,6 @@ export default function AdminManagementPage() {
     fetchDepartments();
   }, [selectedCompany]);
 
-  // New method to fetch subdepartments when a department is selected
   useEffect(() => {
     const fetchSubdepartments = async () => {
       if (!selectedCompany || !selectedDepartment) return;
@@ -112,7 +116,99 @@ export default function AdminManagementPage() {
     fetchSubdepartments();
   }, [selectedCompany, selectedDepartment]);
 
-  // Handle Department Creation
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    setSuccess("");
+    
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      
+      if (!currentUser) {
+        throw new Error("No hay sesión de administrador activa");
+      }
+  
+      // Crear usuario en Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Cerrar sesión inmediatamente
+      await signOut(auth);
+  
+      // Guardar información adicional en Firestore antes de volver a iniciar sesión
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        email,
+        role,
+        createdBy: currentUser.email,
+        createdAt: new Date().toISOString()
+      });
+  
+      setSuccess(`Usuario ${email} creado exitosamente con rol ${role}`);
+      
+      // Limpiar el formulario
+      setEmail("");
+      setPassword("");
+      setRole("rrhh");
+    } catch (err) {
+      console.error('Error en handleCreateUser:', err);
+      setError(err instanceof Error ? err.message : "Error al crear el usuario");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleCreateCompany = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCompanyLoading(true);
+    setCompanyError("");
+    setCompanySuccess("");
+  
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      
+      if (!currentUser) {
+        throw new Error("No hay sesión de administrador activa");
+      }
+
+      // Verificar primero si el usuario actual tiene rol de admin
+      const userDocRef = doc(db, 'users', currentUser.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (!userDoc.exists() || userDoc.data()?.role !== 'ADMIN') {
+        throw new Error('No tienes permisos para realizar esta acción');
+      }
+
+      // Verificar si ya existe una empresa con ese nombre
+      const companyRef = doc(db, 'Grupo_Pueble', companyName);
+      const companyDoc = await getDoc(companyRef);
+
+      if (companyDoc.exists()) {
+        throw new Error(`La empresa "${companyName}" ya existe`);
+      }
+
+      // Crear la empresa como un documento en Firestore
+      await setDoc(companyRef, {
+        createdBy: currentUser.email,
+        createdAt: new Date().toISOString()
+      });
+
+      setCompanySuccess(`Empresa ${companyName} creada exitosamente`);
+      
+      // Actualizar lista de empresas
+      setCompanies(prev => [...prev, companyName]);
+      
+      // Limpiar el formulario
+      setCompanyName("");
+    } catch (err) {
+      console.error('Error en handleCreateCompany:', err);
+      setCompanyError(err instanceof Error ? err.message : "Error al crear la empresa");
+    } finally {
+      setIsCompanyLoading(false);
+    }
+  }
+
   const handleCreateDepartment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -120,7 +216,7 @@ export default function AdminManagementPage() {
     setDepartmentSuccess("");
 
     try {
-      // Validate inputs
+      // Validaciones de inputs
       if (!selectedCompany) {
         throw new Error("Primero selecciona una empresa");
       }
@@ -128,7 +224,7 @@ export default function AdminManagementPage() {
         throw new Error("El nombre del departamento no puede estar vacío");
       }
 
-      // Create department as a document in the Departamentos collection
+      // Crear departamento como un documento en la colección de Departamentos
       const departmentRef = doc(
         db, 
         "Grupo_Pueble", 
@@ -137,10 +233,18 @@ export default function AdminManagementPage() {
         departmentName
       );
 
-      // Set an empty document to create the collection
-      await setDoc(departmentRef, {});
+      // Verificar si ya existe
+      const departmentDoc = await getDoc(departmentRef);
+      if (departmentDoc.exists()) {
+        throw new Error(`El departamento ${departmentName} ya existe`);
+      }
 
-      // Update local state
+      // Crear documento vacío para establecer la colección
+      await setDoc(departmentRef, {
+        createdAt: new Date().toISOString()
+      });
+
+      // Actualizar estado local
       setDepartments(prev => [...prev, departmentName]);
       setDepartmentSuccess(`Departamento ${departmentName} creado exitosamente`);
       setDepartmentName("");
@@ -152,7 +256,6 @@ export default function AdminManagementPage() {
     }
   };
 
-  // Handle Subdepartment Creation
   const handleCreateSubdepartment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -160,7 +263,7 @@ export default function AdminManagementPage() {
     setSubdepartmentSuccess("");
 
     try {
-      // Validate inputs
+      // Validaciones de inputs
       if (!selectedCompany) {
         throw new Error("Primero selecciona una empresa");
       }
@@ -171,7 +274,7 @@ export default function AdminManagementPage() {
         throw new Error("El nombre del subdepartamento no puede estar vacío");
       }
 
-      // Create subdepartment as a document in the SubDepartamento collection
+      // Crear subdepartamento como un documento en la colección SubDepartamento
       const subdepartmentRef = doc(
         db, 
         "Grupo_Pueble", 
@@ -182,10 +285,18 @@ export default function AdminManagementPage() {
         subdepartmentName
       );
 
-      // Set an empty document to create the collection
-      await setDoc(subdepartmentRef, {});
+      // Verificar si ya existe
+      const subdepartmentDoc = await getDoc(subdepartmentRef);
+      if (subdepartmentDoc.exists()) {
+        throw new Error(`El subdepartamento ${subdepartmentName} ya existe`);
+      }
 
-      // Update local state
+      // Crear documento vacío para establecer la colección
+      await setDoc(subdepartmentRef, {
+        createdAt: new Date().toISOString()
+      });
+
+      // Actualizar estado local
       setSubdepartments(prev => [...prev, subdepartmentName]);
       setSubdepartmentSuccess(`Subdepartamento ${subdepartmentName} creado exitosamente`);
       setSubdepartmentName("");
@@ -197,7 +308,6 @@ export default function AdminManagementPage() {
     }
   };
 
-  // Handle Job Position Creation
   const handleCreateJobPosition = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -205,7 +315,7 @@ export default function AdminManagementPage() {
     setJobPositionSuccess("");
 
     try {
-      // Validate inputs
+      // Validaciones de inputs
       if (!selectedCompany) {
         throw new Error("Primero selecciona una empresa");
       }
@@ -219,7 +329,7 @@ export default function AdminManagementPage() {
         throw new Error("El nombre del puesto no puede estar vacío");
       }
 
-      // Create job position as a document in the Puestos collection
+      // Crear puesto como un documento en la colección Puestos
       const jobPositionRef = doc(
         db, 
         "Grupo_Pueble", 
@@ -232,8 +342,16 @@ export default function AdminManagementPage() {
         jobPositionName
       );
 
-      // Set an empty document to create the collection
-      await setDoc(jobPositionRef, {});
+      // Verificar si ya existe
+      const jobPositionDoc = await getDoc(jobPositionRef);
+      if (jobPositionDoc.exists()) {
+        throw new Error(`El puesto ${jobPositionName} ya existe`);
+      }
+
+      // Crear documento vacío para establecer la colección
+      await setDoc(jobPositionRef, {
+        createdAt: new Date().toISOString()
+      });
 
       setJobPositionSuccess(`Puesto ${jobPositionName} creado exitosamente`);
       setJobPositionName("");
@@ -244,120 +362,6 @@ export default function AdminManagementPage() {
       setIsLoading(false);
     }
   };
-
-
-  
-  const handleCreateUser = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-    setSuccess("")
-  
-    try {
-      const auth = getAuth()
-      const currentUser = auth.currentUser
-      
-      if (!currentUser) {
-        throw new Error("No hay sesión de administrador activa")
-      }
-  
-      const token = await currentUser.getIdToken()
-  
-      const response = await fetch('/api/admin/create-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          role,
-        }),
-      })
-  
-      const contentType = response.headers.get("content-type")
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Error del servidor: respuesta no válida")
-      }
-  
-      const data = await response.json()
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al crear el usuario')
-      }
-  
-      setSuccess(`Usuario ${email} creado exitosamente con rol ${role}`)
-      
-      // Limpiar el formulario
-      setEmail("")
-      setPassword("")
-      setRole("rrhh")
-    } catch (err) {
-      console.error('Error en handleCreateUser:', err)
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError("Error al crear el usuario. Por favor, intenta de nuevo.")
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleCreateCompany = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsCompanyLoading(true)
-    setCompanyError("")
-    setCompanySuccess("")
-  
-    try {
-      const auth = getAuth()
-      const currentUser = auth.currentUser
-      
-      if (!currentUser) {
-        throw new Error("No hay sesión de administrador activa")
-      }
-  
-      const token = await currentUser.getIdToken()
-  
-      const response = await fetch('/api/admin/create-company', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          companyName,
-        }),
-      })
-  
-      const contentType = response.headers.get("content-type")
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Error del servidor: respuesta no válida")
-      }
-  
-      const data = await response.json()
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al crear la empresa')
-      }
-  
-      setCompanySuccess(`Empresa ${companyName} creada exitosamente`)
-      
-      // Limpiar el formulario
-      setCompanyName("")
-    } catch (err) {
-      console.error('Error en handleCreateCompany:', err)
-      if (err instanceof Error) {
-        setCompanyError(err.message)
-      } else {
-        setCompanyError("Error al crear la empresa. Por favor, intenta de nuevo.")
-      }
-    } finally {
-      setIsCompanyLoading(false)
-    }
-  }
 
   return (
     <div className="bg-gray-50 flex flex-col items-center justify-center p-4 dark:bg-gray-900">
