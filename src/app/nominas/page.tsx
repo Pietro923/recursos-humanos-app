@@ -188,9 +188,11 @@ const saveGlobalAndGroupData = async () => {
     const batch = writeBatch(db);
     const employeesRef = collection(db, "Grupo_Pueble", selectedCompany, "empleados");
     
+    // Get only active employees
     const employeesSnapshot = await getDocs(employeesRef);
+    const activeEmployees = employeesSnapshot.docs.filter(doc => doc.data().estado === "activo");
     
-    employeesSnapshot.docs.forEach((document) => {
+    activeEmployees.forEach((document) => {
       const employee = { id: document.id, ...document.data() } as Employee;
       
       // Funciones de seguridad para parsear valores
@@ -203,13 +205,13 @@ const saveGlobalAndGroupData = async () => {
       let newIncentivo = employee.incentivo || 0;
       let newBono = employee.bono || 0;
 
-      // Global salary increase for all employees
+      // Global salary increase for active employees only
       const globalIncreaseValue = safeParseFloat(globalIncrease);
       if (globalIncreaseValue > 0) {
         newSalary *= (1 + globalIncreaseValue / 100);
       }
 
-      // Department-wide increase
+      // Department-wide increase for active employees only
       const departamentoIncreaseValue = safeParseFloat(departamentoIncrease);
       if (departamentoIncreaseValue > 0 && 
           (selectedDepartment === "todos" || employee.departamento === selectedDepartment)) {
@@ -217,8 +219,7 @@ const saveGlobalAndGroupData = async () => {
         newIncentivo *= (1 + departamentoIncreaseValue / 100);
       }
 
-
-      // Subdepartment-wide increase
+      // Subdepartment-wide increase for active employees only
       const subdepartamentoIncreaseValue = safeParseFloat(subdepartamentoIncrease);
       if (subdepartamentoIncreaseValue > 0 && 
           (selectedSubdepartment === "" || employee.subdepartamento === selectedSubdepartment)) {
@@ -226,12 +227,11 @@ const saveGlobalAndGroupData = async () => {
         newIncentivo *= (1 + subdepartamentoIncreaseValue / 100);
       }
 
-      // Individual incentive and bonus - ONLY for the selected employee
+      // Individual incentive and bonus - ONLY for the selected active employee
       if (selectedEmployee && employee.id === selectedEmployee.id) {
         const incentivoValue = safeParseFloat(incentivoPromedio);
         const bonoValue = safeParseFloat(bono);
 
-        // Si hay un valor específico, reemplazar completamente
         if (incentivoValue > 0) {
           newIncentivo = incentivoValue;
         }
@@ -243,7 +243,7 @@ const saveGlobalAndGroupData = async () => {
 
       const employeeDocRef = doc(db, "Grupo_Pueble", selectedCompany, "empleados", employee.id);
       batch.update(employeeDocRef, {
-        sueldo: Math.round(newSalary * 100) / 100, // Redondear a 2 decimales
+        sueldo: Math.round(newSalary * 100) / 100,
         incentivo: Math.round(newIncentivo * 100) / 100,
         bono: Math.round(newBono * 100) / 100
       });
@@ -251,12 +251,15 @@ const saveGlobalAndGroupData = async () => {
 
     await batch.commit();
 
-    // Refresh employees after update
+    // Refresh employees list with only active employees
     const updatedSnapshot = await getDocs(employeesRef);
-    const updatedEmployeeData: Employee[] = updatedSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Employee[];
+    const updatedEmployeeData: Employee[] = updatedSnapshot.docs
+      .filter(doc => doc.data().estado === "activo")
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Employee[];
+    
     setEmployees(updatedEmployeeData);
 
     toast.success(t('nominas.toast.success'));

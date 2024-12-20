@@ -350,7 +350,7 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
     const newEmployeeId = await getNewEmployeeId();
     const newEmployeeData = {
       ...newEmployee,
-      departamento: selectedDepartment, // Usa los estados de selección
+      departamento: selectedDepartment,
       subdepartamento: selectedSubDepartment,
       puesto: selectedPuesto,
       dni: parseInt(newEmployee.dni, 10) || 0,
@@ -363,15 +363,7 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
         newEmployeeData
       );
       
-      const employeeWithId = { id: newEmployeeId, ...newEmployeeData } as Employee;
-      setEmployees(prev => [...prev, employeeWithId]);
-      
-      // Actualizar departamentos si es uno nuevo
-      if (!departments.includes(newEmployeeData.departamento)) {
-        setDepartments(prev => [...prev, newEmployeeData.departamento]);
-      }
-      
-      // Restablecer todos los estados
+      // Restablecer el formulario
       setNewEmployee({
         nombre: "",
         apellido: "",
@@ -387,11 +379,18 @@ const existingArchivedNotification = archivedQuery.docs.find(doc => {
         linkedin: ""
       });
       
-      // Restablecer también los estados de selección
-      setSelectedDepartment('');
-      setSelectedSubDepartment('');
-      setSelectedPuesto('');
+      // Forzar una recarga de los empleados
+      const employeesRef = collection(db, "Grupo_Pueble", selectedCompany, "empleados");
+      const employeesSnapshot = await getDocs(employeesRef);
+      const employeesData = employeesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Employee[];
       
+      setEmployees(employeesData);
+      setFilteredEmployees(employeesData);
+      
+      // Cambiar a la vista de lista
       setView("list");
     } catch (error) {
       console.error("Error al agregar el empleado:", error);
